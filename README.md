@@ -2,7 +2,7 @@
 
 This repository contains the source code and supporting scripts for Deliverable D7.2 of the PRE-ACT project. The aim of this deliverable is to develop and validate a probabilistic decision-analytic model that assesses the cost-effectiveness of integrating AI-assisted decision-making into current clinical practice for breast cancer patients. The model simulates patient progression using a Markov state-transition framework and estimates outcomes in terms of quality-adjusted life years (QALYs) and incremental cost-effectiveness ratios (ICERs).
 
-The study focuses on women aged ≥18 who have undergone radical surgery for invasive breast cancer (stages pT1‐4, pN0–N3, M0). It evaluates the impact of adding personalized, data-driven AI insights—designed to predict and prevent arm lymphedema—against standard clinical protocols. The analysis spans a lifetime (a 40-year simulation with monthly cycles) from a UK healthcare perspective, while the model is readily adaptable to reflect Dutch (societal perspective) and French (collective perspective) settings.
+The study focuses on women aged ≥18 who have undergone radical surgery for invasive breast cancer (stages pT1‐4, pN0–N3, M0). It evaluates the impact of adding personalized, data-driven AI insights, designed to predict and prevent arm lymphedema, against standard clinical protocols. The analysis spans a lifetime (a 40-year simulation with monthly cycles) from a UK healthcare perspective, while the model is readily adaptable to reflect Dutch (societal perspective) and French (collective perspective) settings.
 
 ## Table of Contents
 
@@ -65,7 +65,7 @@ To replicate the model-based analysis:
 
 ## Input Data and Parameters
 
-All input parameters—including probabilities, costs, and utility values—are are based on published literature from key clinical trials and economic studies, and they have been validated through expert consultation and TECH-VER checklist procedures.
+All input parameters (including probabilities, costs, and utility values) are are based on published literature from key clinical trials and economic studies, and they have been validated through expert consultation and TECH-VER checklist procedures.
 
 ## Model Description
 
