@@ -1,43 +1,88 @@
-Probabilistic PRE-ACT State-Transition Model for Cost-Effectiveness Analysis
-Project Overview
-This repository contains an implementation of a Probabilistic State-Transition Model (STM) for evaluating the cost-effectiveness of healthcare interventions. The model simulates the transitions of a cohort of patients across different health states over time and estimates costs, quality-adjusted life years (QALYs), and life-years (LYs). The analyses use probabilistic sensitivity analysis (PSA) to account for parameter uncertainty and generate cost-effectiveness outputs, including incremental cost-effectiveness ratios (ICERs), cost-effectiveness acceptability curves (CEACs), expected value of perfect information (EVPI), and cost-effectiveness planes.
-Key Features
-•	State-Transition modeling: implements a discrete-time Markov model with a defined set of health states and transitions.
-•	Comprehensive incorporation of toxicity of time
-•	Probabilistic Sensitivity Analysis (PSA): Monte Carlo simulations (n = 5000) sample from probability distributions to account for parameter uncertainty.
-•	Cost-effectiveness metrics: computes ICERs, cost-effectiveness planes, CEACs, EVPI, and Expected Loss Curves (ELC).
-•	Graphical Representation: Generates key plots to visualize results, including density distributions, cost-effectiveness planes, and CEACs.
-Installation & dependencies
-The model requires the following R packages:
-•	docstring, 
-•	DiagrammeR, 
-•	dampack, 
-•	BCEA
-Project structure
-/project_directory
-│── f_input.R                       	# Function to generate input parameters
-│── f_model.R                     	# State-transition model function
-│── f_gen_pop_utility.R          	# Population utility function
-│── f_gen_pop_mortality.R    	# Population mortality function
-│── f_interpolate_toxicity.R 	# Function to interpolate toxicity over time
-│── main_script.R            	# Main script for execution and analysis
-│── README.docx                	# This documentation
-Methods
+# PRE-ACT: Cost-Effectiveness Analysis of AI-Assisted Radiotherapy
 
-Model structure
-A state-transition model (STM) was developed to assess the cost-effectiveness of integrating AI-assisted decision-making in breast cancer treatment. The model consists of four health states:
-•	Event-free survival
-•	Locoregional recurrence (LRR)
-•	Distant metastasis (DM)
-•	Death (absorbing state)
-Patients transition between states in monthly cycles based on transition probabilities derived from clinical trials and epidemiological data.
-The model compares:
-•	Current Practice (CP) – Standard of care
-•	CP + AI-Assisted Decision-Making (AI) – AI-based screening patients at high-risk for toxicity
-The primary outcomes include:
-•	Total costs (£)
-•	Quality-adjusted life-years (QALYs)
-•	Life-years (LYs)
-•	Incremental cost-effectiveness ratios (ICERs)
+This repository contains the source code and supporting scripts for Deliverable D7.2 of the PRE-ACT project. The aim of this deliverable is to develop and validate a probabilistic decision-analytic model that assesses the cost-effectiveness of integrating AI-assisted decision-making into current clinical practice for breast cancer patients. The model simulates patient progression using a Markov state-transition framework and estimates outcomes in terms of quality-adjusted life years (QALYs) and incremental cost-effectiveness ratios (ICERs).
 
- 
+The study focuses on women aged ≥18 who have undergone radical surgery for invasive breast cancer (stages pT1‐4, pN0–N3, M0). It evaluates the impact of adding personalized, data-driven AI insights—designed to predict and prevent arm lymphedema—against standard clinical protocols. The analysis spans a lifetime (a 40-year simulation with monthly cycles) from a UK healthcare perspective, while the model is readily adaptable to reflect Dutch (societal perspective) and French (collective perspective) settings.
+
+## Table of Contents
+
+- [Background](#background)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Input Data and Parameters](#input-data-and-parameters)
+- [Model Description](#model-description)
+- [Validation and Analyses](#validation-and-analyses)
+- [Future Work](#future-work)
+- [Contact](#contact)
+
+## Background
+
+The PRE-ACT project addresses the need for personalized radiotherapy enhancements by integrating advanced AI-assisted risk prediction with economic evaluation. This repository supports Deliverable D7.2, which presents a probabilistic decision-analytic model that leverages clinical evidence, toxicity data, and economic parameters to compare current practice with AI-assisted decision-making. The model captures the evolution of treatment toxicity over time and assesses the incremental cost per QALY gained.
+
+## Installation
+
+### Prerequisites
+
+- **R** (version 4.0.0 or later)
+- R packages:
+  - dampack
+  - ggplot2
+  - data.table
+  - Other dependencies as listed in the DESCRIPTION file
+
+### Steps
+
+1.  **Clone the Repository:**
+    ```bash
+    git clone [https://github.com/Bram-R/PRE-ACT.git](https://github.com/Bram-R/PRE-ACT.git)
+    cd PRE-ACT
+    ```
+2.  **Install Required R Packages:**
+
+    In R, run:
+    ```r
+    required_packages <- c("dampack", "ggplot2", "data.table")
+    install.packages(required_packages)
+    ```
+3.  **Set the Working Directory:**
+    Ensure your R working directory is set to the repository folder.
+
+## Usage
+
+To replicate the model-based analysis:
+
+1.  **Load the Input Data:**
+    Run the script `f_input.R` to generate a data frame containing input parameters for the probabilistic sensitivity analysis (PSA).
+
+2.  **Execute the Model:**
+    Run `f_model.R` to simulate the state-transition model. This script calculates expected costs, QALYs, and life years for both treatment strategies over the defined lifetime horizon.
+
+3.  **Perform Sensitivity Analyses:**
+    Use `f_wrapper.R` to run probabilistic and deterministic sensitivity analyses. This step provides outputs such as the incremental cost-effectiveness plane, cost-effectiveness acceptability curves, and tornado diagrams that help identify key drivers of cost-effectiveness.
+
+## Input Data and Parameters
+
+All input parameters—including probabilities, costs, and utility values—are are based on published literature from key clinical trials and economic studies, and they have been validated through expert consultation and TECH-VER checklist procedures.
+
+## Model Description
+
+The model employs a probabilistic state-transition (Markov) cohort design to simulate patient journeys across defined health states: event-free, locoregional recurrence, distant metastasis, and death. Toxicity outcomes, particularly arm lymphedema, are dynamically incorporated over a 40-year lifetime horizon with monthly cycles. This design enables the assessment of incremental cost-effectiveness ratios and provides insights into the trade-offs between increased upfront costs and long-term quality-of-life benefits.
+
+## Validation and Analyses
+
+The model has been rigorously validated using the TECH-VER checklist to ensure compliance with best practices. Uncertainty is examined via Monte Carlo simulations (5,000 iterations), along with deterministic sensitivity analyses and various scenario analyses. Outputs include cost-effectiveness planes, cost-effectiveness acceptability curves, and tornado diagrams that identify key drivers of model outcomes.
+
+## Future Work
+
+This deliverable feeds directly into subsequent work in Work Package 7. In Task 7.4, the current model will be refined by incorporating updated input data from the PRE-ACT clinical trial and expanding analyses to include perspectives from the Dutch and French healthcare systems. These enhancements will improve the predictive accuracy and generalizability of the model, further informing treatment strategy adjustments and resource allocation across diverse clinical settings.
+
+## Contact
+
+For further information regarding this repository or the associated deliverable, please contact:
+
+**Bram Ramaekers**
+- GitHub: @Bram-R
+- Email: your.email@example.com
+
+**Willem Witlox**
+- GitHub: @willemwitlox
