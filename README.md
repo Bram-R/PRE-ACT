@@ -26,9 +26,12 @@ The PRE-ACT project addresses the need for personalized radiotherapy enhancement
 - **R** (version 4.0.0 or later)
 - R packages:
   - dampack
-  - ggplot2
-  - data.table
-  - Other dependencies as listed in the DESCRIPTION file
+  - docstring
+  - DiagrammeR
+  - dampack
+  - BCEA
+  - matrixStats
+  - summarytools
 
 ### Steps
 
@@ -41,7 +44,7 @@ The PRE-ACT project addresses the need for personalized radiotherapy enhancement
 
     In R, run:
     ```r
-    required_packages <- c("dampack", "ggplot2", "data.table")
+    required_packages <- c("docstring", "DiagrammeR", "dampack", "BCEA", "matrixStats", "summarytools")
     install.packages(required_packages)
     ```
 3.  **Set the Working Directory:**
@@ -51,14 +54,14 @@ The PRE-ACT project addresses the need for personalized radiotherapy enhancement
 
 To replicate the model-based analysis:
 
-1.  **Load the Input Data:**
-    Run the script `f_input.R` to generate a data frame containing input parameters for the probabilistic sensitivity analysis (PSA).
+1.  **Main results:**
+    Run the script `Main.R` to generate the main results.
 
-2.  **Execute the Model:**
-    Run `f_model.R` to simulate the state-transition model. This script calculates expected costs, QALYs, and life years for both treatment strategies over the defined lifetime horizon.
+2.  **Sensitivity analyses:**
+    Run the script `Sensitivity analyses.R` to run probabilistic and deterministic sensitivity analyses. This step provides outputs such as the incremental cost-effectiveness plane, cost-effectiveness acceptability curves, and tornado diagrams that help identify key drivers of cost-effectiveness.
 
-3.  **Perform Sensitivity Analyses:**
-    Use `f_wrapper.R` to run probabilistic and deterministic sensitivity analyses. This step provides outputs such as the incremental cost-effectiveness plane, cost-effectiveness acceptability curves, and tornado diagrams that help identify key drivers of cost-effectiveness.
+3.  **Intermediate results:**
+    Run the script `Intermediate results.R` to generate the intermediate results.
 
 ## Input Data and Parameters
 
@@ -82,7 +85,6 @@ For further information regarding this repository or the associated deliverable,
 
 **Bram Ramaekers**
 - GitHub: @Bram-R
-- Email: your.email@example.com
 
 **Willem Witlox**
 - GitHub: @willemwitlox
