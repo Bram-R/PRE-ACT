@@ -60,8 +60,8 @@ f_input <- function(n_sim = 10000, seed = 12345) {
     tp_dm_dm = generate_beta(0.478^(1/18), (0.436^(1/18) - 0.519^(1/18)) / (2 * qnorm(.975)), n_sim, is_psa),  # OS (18M OS: 47.8% in PCP arm (Source: KEYNOTE-522, NICE TA851)
     
     # Diagnostic performance AI
-    AI_se_arm_lymphedema = generate_beta(0.800, 0.005, n_sim, is_psa),   # hypothetical data
-    AI_sp_arm_lymphedema = generate_beta(0.800, 0.011, n_sim, is_psa),   # hypothetical data
+    AI_se_arm_lymphedema = generate_beta(0.850, 0.005, n_sim, is_psa),   # Based on Canto, HypoG and REQUITE
+    AI_sp_arm_lymphedema = generate_beta(0.680, 0.011, n_sim, is_psa),   # Based on Canto, HypoG and REQUITE
     AI_se_breast_atrophy = generate_static(0.000, n_sim, is_psa),        # Treat all as negative
     AI_sp_breast_atrophy = generate_static(1.000, n_sim, is_psa),        # Treat all as negative    
     AI_se_fatigue = generate_static(0.000, n_sim, is_psa),               # Treat all as negative
