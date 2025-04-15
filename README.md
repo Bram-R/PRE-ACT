@@ -36,9 +36,9 @@ The PRE-ACT project addresses the need for personalized radiotherapy enhancement
 
 ### Steps
 
-1.  **Clone the Repository:**
+1.  **Clone the Repository (Terminal tab next to the Console tab in R Studio):**
     ```bash
-    git clone [https://github.com/Bram-R/PRE-ACT.git](https://github.com/Bram-R/PRE-ACT.git)
+    git clone https://github.com/Bram-R/PRE-ACT.git
     cd PRE-ACT
     ```
 2.  **Install Required R Packages:**
