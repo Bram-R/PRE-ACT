@@ -396,6 +396,9 @@ legend(
 ) # legend end
 
 ##### Summary of intermediate outcomes ----
+
+rowMeans(colSums(a_out_interm, dims = 1))
+
 view(
   dfSummary(
     t(colSums(a_out_interm, dims = 1)), # Convert to data frame automatically

@@ -73,6 +73,8 @@ f_model <- function(params, intermediate = FALSE) {
   #'
   #' @export
   
+  # params <- f_input(n_sim = 1) # for validation purposes
+  
   #### Transition matrices ----
   # Initialize transition probability matrices and transition dynamics matrices
   a_transition <- a_transition_dynamics <- array(
@@ -290,41 +292,87 @@ f_model <- function(params, intermediate = FALSE) {
     n_highrisk_fatigue * params$disutility_prev_fatigue + 
     n_highrisk_breast_atrophy * params$disutility_prev_breast_atrophy 
   
-  # Return results
-  return(
-    if(intermediate == FALSE) { 
-      setNames(
-        c(rowSums(a_costs) + rowSums(m_event_costs) + rowSums(a_costs_tox) + c(0, n_tox_prev_costs),  
-          rowSums(a_qalys) + rowSums(a_qalys_tox) + c(0, n_tox_prev_disutility), 
-          rowSums(a_lys)
-        ), # end c     
-        c(paste0("Cost_", v_treatments),                          
-          paste0("QALY_", v_treatments), 
-          paste0("LY_", v_treatments)
-        ) # end c
-      ) # end setNames
-    } else {
-      data.matrix( # convert dataframe to matrix (for storing in array)
-        data.frame( # create dataframe
-          "t1.Health.state.costs" = a_costs[1,,],
-          "t1.Toxicity.costs" = a_costs_tox[1,,],
-          "t1.Event.costs" = c(0, m_event_costs[1,]),
-          "t2.Health.state.costs" = a_costs[2,,],
-          "t2.Toxicity.costs" = a_costs_tox[2,,],
-          "t2.Event.costs" = c(n_tox_prev_costs, m_event_costs[2,]),
-          "t1.Health.state.qalys" = a_qalys[1,,],
-          "t1.Toxicity.qalys" = a_qalys_tox[1,,],
-          "t1.Event.qalys" = rep(0, n_t + 1),
-          "t2.Health.state.qalys" = a_qalys[2,,],
-          "t2.Toxicity.qalys" = a_qalys_tox[2,,],
-          "t2.Event.qalys" = c(n_tox_prev_disutility, rep(0, n_t)),
-          "t1.Trace" = a_state_trace[1,,],
-          "t2.Trace" = a_state_trace[2,,],
-          "t1.Toxicity" = a_toxicity[1,,],
-          "t2.Toxicity" = a_toxicity[2,,]
-        ) # close dataframe
-      ) # close data.matrix
-    } # close if statement
-  ) # close return
+  #### Results ----
+  if(intermediate == FALSE) { 
+    v_results <- setNames(
+      c(rowSums(a_costs) + rowSums(m_event_costs) + rowSums(a_costs_tox) + c(0, n_tox_prev_costs),  
+        rowSums(a_qalys) + rowSums(a_qalys_tox) + c(0, n_tox_prev_disutility), 
+        rowSums(a_lys)
+      ), # end c     
+      c(paste0("Cost_", v_treatments),                          
+        paste0("QALY_", v_treatments), 
+        paste0("LY_", v_treatments)
+      ) # end c
+    ) # end setNames
+    return(v_results)
+  } else {
+    # a_res_intermediate <- data.matrix( # convert dataframe to matrix (for storing in array)
+    #   data.frame( # create dataframe
+    #     "t1.Health.state.costs" = a_costs[1,,],
+    #     "t1.Toxicity.costs" = a_costs_tox[1,,],
+    #     "t1.Event.costs" = c(0, m_event_costs[1,]),
+    #     "t2.Health.state.costs" = a_costs[2,,],
+    #     "t2.Toxicity.costs" = a_costs_tox[2,,],
+    #     "t2.Event.costs" = c(n_tox_prev_costs, m_event_costs[2,]),
+    #     "t1.Health.state.qalys" = a_qalys[1,,],
+    #     "t1.Toxicity.qalys" = a_qalys_tox[1,,],
+    #     "t1.Event.qalys" = rep(0, n_t + 1),
+    #     "t2.Health.state.qalys" = a_qalys[2,,],
+    #     "t2.Toxicity.qalys" = a_qalys_tox[2,,],
+    #     "t2.Event.qalys" = c(n_tox_prev_disutility, rep(0, n_t)),
+    #     "t1.Trace" = a_state_trace[1,,],
+    #     "t2.Trace" = a_state_trace[2,,],
+    #     "t1.Toxicity" = a_toxicity[1,,],
+    #     "t2.Toxicity" = a_toxicity[2,,]
+    #   ) # close dataframe
+    # ) # close data.matrix
+    # return(a_res_intermediate)
+    # 
+    # create empty array for results per outcome, treatment, cycle and health state
+    a_res_intermediate <- array( # array with 4 dimensions (outcome, treatment, cycles, v_states)
+      data = NA,
+      dim = c( # specify dimensions
+        3, # number of outcomes (Costs, QALYs, LYs/toxicity occurrence)
+        n_treatments, # number of treatments
+        n_t + 1, # number of cycles
+        n_states + 5 # number of health states + 1 for event related costs and outcomes + 4 for toxicity 
+      ), # close dim
+      dimnames = list( # name dimensions
+        c("Cost", "QALY", "LY"),
+        v_treatments, 
+        0:n_t,
+        c(v_states, "Event_related", "arm_lymphedema", "pain", "fatigue", "breast_atrophy")
+      ) # close dimnames
+    ) # close array
+    
+    a_res_intermediate[1, , , 1:n_states] <- a_costs
+    a_res_intermediate[1, , 2:(n_t + 1), (n_states + 1)] <- m_event_costs
+    a_res_intermediate[1, 1, 1, (n_states + 1)] <- 0                      # no event costs in first cycle (for current practice)
+    a_res_intermediate[1, 2, 1, (n_states + 1)] <- n_tox_prev_costs
+    a_res_intermediate[1, , , (n_states + 2):dim(a_res_intermediate)[4]] <- a_costs_tox
+    
+    a_res_intermediate[2, , , 1:n_states] <- a_qalys
+    a_res_intermediate[2, 1, , (n_states + 1)] <- 0                       # no event qalys  (for current practice)
+    a_res_intermediate[2, 2, , (n_states + 1)] <-  c(n_tox_prev_disutility, rep(0, n_t))
+    a_res_intermediate[2, , , (n_states + 2):dim(a_res_intermediate)[4]] <- a_qalys_tox
+    
+    a_res_intermediate[3, , , 1:(n_states - 1)] <- a_lys
+    a_res_intermediate[3, , , n_states] <- 0                              # no LYs in death health state
+    a_res_intermediate[3, , , (n_states + 1)] <- 0                        # no LYs related to events
+    a_res_intermediate[3, , , (n_states + 2):dim(a_res_intermediate)[4]] <-  a_toxicity
+    
+    return(a_res_intermediate)
+    # Check if there are any NA values
+    # any(is.na(a_res_intermediate))
+    # Returns TRUE if at least one NA exists
+    
+    # Check if there are any negative values
+    # any(a_res_intermediate[1,,,] < 0)
+    # any(a_res_intermediate[2,,, 1:n_states] < 0) 
+    # any(a_res_intermediate[2,,, (n_states + 1):dim(a_res_intermediate)[4]] < 0) # these might be negative (disutilies)
+    # any(a_res_intermediate[3,,,] < 0)
+    # Returns TRUE if at least one negative value exists
+    
+  } # close if statement
 }
 
