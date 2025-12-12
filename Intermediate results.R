@@ -30,6 +30,8 @@ n_states <- length(v_states)                            # Number of health state
 v_treatments <- c("Current_practice",
                   "Current_practice_with_AI")           # Vector of strategy names
 n_treatments <- length(v_treatments)                    # Number of treatments
+v_tox <- c("arm_lymphedema", "pain", 
+           "fatigue", "breast_atrophy")                 # Vector of toxicity name
 n_t <- 40 * 12                                          # Model time horizon (monthly cycle)
 n_sim <- 5000                                           # Number of Monte Carlo simulations
 n_age_baseline <- 60                                    # Baseline age
@@ -50,6 +52,30 @@ a_out_interm <- f_wrapper_intermediate(df_input)
 
 # str(a_out_interm[,,]) # inspect
 # names(a_out_interm[1, , 1]) # inspect
+
+##### Summary of intermediate outcomes ----
+v_res <- rowMeans(colSums(a_out_interm, dims = 1))
+
+v_res
+sum(v_res[1:9])
+sum(v_res[10:18])
+sum(v_res[19:27])
+sum(v_res[28:36])
+
+view(
+  dfSummary(
+    t(colSums(a_out_interm, dims = 1)), # Convert to data frame automatically
+    round.digits = 3,
+    style = "grid",
+    plain.ascii = FALSE,
+    graph.magnif = 1.2,
+    headings = FALSE,
+    display.labels = FALSE,
+    escape.pipe = TRUE,
+    varnumbers = FALSE,
+    labels.col = FALSE
+  )
+)
 
 ##### Costs and QALYs per cycle ----
 a_out_cycle_res <- array(
@@ -216,16 +242,16 @@ legend(
 )
 
 ##### Toxicity per cycle ----
-m_toxicity <- rowMeans(a_out_interm[, 45:52, ], dims = 2)
+m_toxicity <- rowMeans(a_out_interm[, c(41:44, 50:53), ], dims = 2)
 m_toxicity_percentiles <- cbind(
-  rowQuantiles(a_out_interm[, 45, ], probs = c(0.025, 0.975)),
-  rowQuantiles(a_out_interm[, 46, ], probs = c(0.025, 0.975)),
-  rowQuantiles(a_out_interm[, 47, ], probs = c(0.025, 0.975)),
-  rowQuantiles(a_out_interm[, 48, ], probs = c(0.025, 0.975)),
-  rowQuantiles(a_out_interm[, 49, ], probs = c(0.025, 0.975)),
+  rowQuantiles(a_out_interm[, 41, ], probs = c(0.025, 0.975)),
+  rowQuantiles(a_out_interm[, 42, ], probs = c(0.025, 0.975)),
+  rowQuantiles(a_out_interm[, 43, ], probs = c(0.025, 0.975)),
+  rowQuantiles(a_out_interm[, 44, ], probs = c(0.025, 0.975)),
   rowQuantiles(a_out_interm[, 50, ], probs = c(0.025, 0.975)),
   rowQuantiles(a_out_interm[, 51, ], probs = c(0.025, 0.975)),
-  rowQuantiles(a_out_interm[, 52, ], probs = c(0.025, 0.975))
+  rowQuantiles(a_out_interm[, 52, ], probs = c(0.025, 0.975)),
+  rowQuantiles(a_out_interm[, 53, ], probs = c(0.025, 0.975))
 )
 
 # Toxicity incidence
@@ -280,18 +306,18 @@ legend(
   bty = "n"
 )
 
-##### Traces per cycle ----
-m_trace <- rowMeans(a_out_interm[, 37:44, ], dims = 2)
+##### LYs cycle ----
+m_trace <- rowMeans(a_out_interm[, c(37:40, 46:49), ], dims = 2)
 
-# Traces
+# Probabilistic LYs
 matplot(
   x = 0:n_t,
   y = m_trace[, 1:8], 
-  ylim = c(0, 1),
+  #ylim = c(0, 1),
   type = "l",
-  ylab = "Probability of state occupancy",
+  ylab = "LYs",
   xlab = "Cycle",
-  main = paste0("Average traces for ", v_treatments[1], " and ", v_treatments[2]),
+  main = paste0("Average LYs for ", v_treatments[1], " and ", v_treatments[2]),
   col = rep(2:5, 2),
   lty = c(rep(1, 4), rep(2, 4))
 ) # matplot end
@@ -302,50 +328,6 @@ legend(
   cex = 0.75,
   col = rep(2:5,2), 
   lty =  c(rep(1, 4), rep(2, 4)),
-  bty = "n"
-) # legend end
-
-# Proportion death
-matplot(
-  x = 0:n_t,
-  y = cbind(m_trace[, 4], m_trace[, 8]), 
-  ylim = c(0, 1),
-  type = "l",
-  ylab = "Proportion death",
-  xlab = "Cycle",
-  main = paste0("Average proportion death for ", v_treatments[1], " and ", v_treatments[2]),
-  col = rep(1, 2),
-  lty = c(1, 2)
-) # matplot end
-legend(
-  "topleft", 
-  inset = c(0.05, 0),
-  c(names(m_trace[1,])[4], names(m_trace[1,])[8]), 
-  cex = 0.75,
-  col = rep(1, 2),
-  lty = c(1, 2),
-  bty = "n"
-) # legend end
-
-# Traces conditional on being alive
-matplot(
-  x = 0:n_t,
-  y = cbind(m_trace[, 1:3]/(1 - m_trace[, 4]), m_trace[, 5:7]/(1 - m_trace[, 8])), 
-  ylim = c(0, 1),
-  type = "l",
-  ylab = "Proportion (conditional on being alive)",
-  xlab = "Cycle",
-  main = paste0("Average traces conditional on being alive ", v_treatments[1], " and ", v_treatments[2]),
-  col = rep(2:4, 2),
-  lty = c(rep(1, 3), rep(2, 3))
-) # matplot end
-legend(
-  "topleft", 
-  inset = c(0.05, 0),
-  c(names(m_trace[1,])[1:3], names(m_trace[1,])[5:7]), 
-  cex = 0.75,
-  col = rep(2:4, 2),
-  lty = c(rep(1, 3), rep(2, 3)),
   bty = "n"
 ) # legend end
 
@@ -377,7 +359,7 @@ legend(
 matplot(
   x = 0:n_t,
   y = m_out_dis_cycle_res[, 19:36], 
-  ylim = c(0, 1),
+  #ylim = c(0, 1),
   type = "l",
   ylab = "Costs",
   xlab = "Cycle",
@@ -395,21 +377,4 @@ legend(
   bty = "n"
 ) # legend end
 
-##### Summary of intermediate outcomes ----
 
-rowMeans(colSums(a_out_interm, dims = 1))
-
-view(
-  dfSummary(
-    t(colSums(a_out_interm, dims = 1)), # Convert to data frame automatically
-    round.digits = 3,
-    style = "grid",
-    plain.ascii = FALSE,
-    graph.magnif = 1.2,
-    headings = FALSE,
-    display.labels = FALSE,
-    escape.pipe = TRUE,
-    varnumbers = FALSE,
-    labels.col = FALSE
-  )
-)

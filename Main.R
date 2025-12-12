@@ -30,6 +30,8 @@ n_states <- length(v_states)                            # Number of health state
 v_treatments <- c("Current_practice",
                   "Current_practice_with_AI")           # Vector of strategy names
 n_treatments <- length(v_treatments)                    # Number of treatments
+v_tox <- c("arm_lymphedema", "pain", 
+           "fatigue", "breast_atrophy")                 # Vector of toxicity names
 n_t <- 40 * 12                                          # Model time horizon (monthly cycle)
 n_sim <- 5000                                           # Number of Monte Carlo simulations
 n_age_baseline <- 60                                    # Baseline age
@@ -84,7 +86,7 @@ write.table(inputs_overview, "clipboard", sep = "\t", row.names = FALSE, col.nam
 #### Model Results ----
 # f_model(df_input[1, ]) # test model
 
-# Use a list to store result matrices
+# Use a matrix to store results 
 m_results <- matrix(
   data = NA,
   nrow = n_sim,
@@ -120,7 +122,53 @@ obj_bcea <- bcea( # create bcea object
   Kmax = 100000 # maximum value possible for the wtp
 ) # bcea end
 
-##### View results ----
+#### Convergence statistics ----
+# Running mean plots
+for (x in 1:dim(m_results)[2]) {
+  v_result <- m_results[, x]
+  plot(cumsum(v_result) / seq_along(v_result), 
+       type = "l",
+       xlab = "Number of simulations",
+       ylab = "Running mean",
+       xlim = c(1000, length(v_result)),
+       ylim = c(mean(v_result) - sd(v_result) * 0.5,
+                mean(v_result) + sd(v_result) * 0.5),
+       main = paste("Convergence plot -", colnames(m_results)[x]))
+  
+  abline(h = mean(v_result), col = "red", lty = 2)
+}
+
+# Running incremental mean plots
+m_inc_results <- matrix(
+  data = cbind(
+    m_results[, 1] - m_results[, 2],                   # iCosts
+    m_results[, 3] - m_results[, 4],                   # iQALYs
+    m_results[, 5] - m_results[, 6],                   # iLYs
+    (m_results[, 1] - m_results[, 2]) /
+      (m_results[, 3] - m_results[, 4])                # iCER
+  ),
+  nrow = n_sim,
+  ncol = 4,
+  dimnames = list(1:n_sim, c("iCosts", "iQALYs", "iLYs", "iCER"))
+)
+
+for (x in 1:dim(m_inc_results)[2]) {
+  v_result <- m_inc_results[, x]
+  plot(cumsum(v_result) / seq_along(v_result), 
+       type = "l",
+       xlab = "Number of simulations",
+       ylab = "Running mean",
+       xlim = c(1000, length(v_result)),
+       ylim = c(mean(v_result) - sd(v_result) * 0.5,
+                mean(v_result) + sd(v_result) * 0.5),
+       main = paste("Convergence plot -", colnames(m_inc_results)[x]))
+  
+  abline(h = mean(v_result), col = "red", lty = 2)
+}
+
+rm(v_result, m_inc_results)
+
+#### View results ----
 summary(m_results[,1:4]) # alternatively use summarytools::dfSummary(m_results[,1:4])
 plot(density(m_results[,1]))
 plot(density(m_results[,2]))

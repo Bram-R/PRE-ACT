@@ -154,50 +154,53 @@ f_model <- function(params, intermediate = FALSE) {
   a_toxicity <- array(
     data = NA,
     dim = c(n_treatments, n_t + 1, 4),  
-    dimnames = list(treatment = v_treatments, month = 0:n_t, outcome = c("arm_lymphedema", "pain", "fatigue", "breast_atrophy"))
+    dimnames = list(treatment = v_treatments, month = 0:n_t, outcome = v_tox)
   )
   
-  a_toxicity[1,,"arm_lymphedema"] <- f_interpolate_toxicity(data.frame(
+  a_toxicity[1,,v_tox[1]] <- f_interpolate_toxicity(data.frame(
     month = c(0, 2, 12, 24, 36, 48, 60, n_t),
     toxicity = c(params$p_arm_lymphedema_m0, params$p_arm_lymphedema_m2, params$p_arm_lymphedema_m12, params$p_arm_lymphedema_m24, 
                  params$p_arm_lymphedema_m36, params$p_arm_lymphedema_m48, params$p_arm_lymphedema_m60, params$p_arm_lymphedema_m60)), 
     monthly_cycles = 0:n_t)[,2]
   
-  a_toxicity[2,,"arm_lymphedema"] <- (a_toxicity[1,,"arm_lymphedema"] * params$AI_se_arm_lymphedema) ^ (1 / params$hr_prev_arm_lymphedema) +
-    a_toxicity[1,,"arm_lymphedema"] * (1 - params$AI_se_arm_lymphedema) 
+  # a_toxicity[2,,v_tox[1]] <- (a_toxicity[1,,v_tox[1]] * params$AI_se_arm_lymphedema) ^ (1 / params$hr_prev_arm_lymphedema) +  # Old (incorrect) integration of HR
+  #   a_toxicity[1,,v_tox[1]] * (1 - params$AI_se_arm_lymphedema) 
   
-  a_toxicity[1,,"pain"] <- f_interpolate_toxicity(data.frame(
+  a_toxicity[2,,v_tox[1]] <- (1 - (1 - a_toxicity[1,,v_tox[1]]) ^ params$hr_prev_arm_lymphedema) * params$AI_se_arm_lymphedema +   
+    a_toxicity[1,,v_tox[1]] * (1 - params$AI_se_arm_lymphedema)                                           
+  
+  a_toxicity[1,,v_tox[2]] <- f_interpolate_toxicity(data.frame(
     month = c(0, 2, 12, 24, 36, 48, 60, n_t),
     toxicity = c(params$p_pain_m0, params$p_pain_m2, params$p_pain_m12, params$p_pain_m24, 
                  params$p_pain_m36, params$p_pain_m48, params$p_pain_m60, params$p_pain_m60)), 
     monthly_cycles = 0:n_t)[,2]
   
-  a_toxicity[2,,"pain"] <- a_toxicity[1,,"pain"] * params$AI_se_pain * params$rr_prev_pain +
-    a_toxicity[1,,"pain"] * (1 - params$AI_se_pain) 
+  a_toxicity[2,,v_tox[2]] <- a_toxicity[1,,v_tox[2]] * params$AI_se_pain * params$rr_prev_pain +
+    a_toxicity[1,,v_tox[2]] * (1 - params$AI_se_pain) 
   
-  a_toxicity[1,,"fatigue"] <- f_interpolate_toxicity(data.frame(
+  a_toxicity[1,,v_tox[3]] <- f_interpolate_toxicity(data.frame(
     month = c(0, 2, 12, 24, 36, 48, 60, n_t),
     toxicity = c(params$p_fatigue_m0, params$p_fatigue_m2, params$p_fatigue_m12, params$p_fatigue_m24, 
                  params$p_fatigue_m36, params$p_fatigue_m48, params$p_fatigue_m60, params$p_fatigue_m60)), 
     monthly_cycles = 0:n_t)[,2]
   
-  a_toxicity[2,,"fatigue"] <- a_toxicity[1,,"fatigue"] * params$AI_se_fatigue * params$rr_prev_fatigue +
-    a_toxicity[1,,"fatigue"] * (1 - params$AI_se_fatigue) 
+  a_toxicity[2,,v_tox[3]] <- a_toxicity[1,,v_tox[3]] * params$AI_se_fatigue * params$rr_prev_fatigue +
+    a_toxicity[1,,v_tox[3]] * (1 - params$AI_se_fatigue) 
   
-  a_toxicity[1,,"breast_atrophy"] <- f_interpolate_toxicity(data.frame(
+  a_toxicity[1,,v_tox[4]] <- f_interpolate_toxicity(data.frame(
     month = c(0, 2, 12, 24, 36, 48, 60, n_t),
     toxicity = c(params$p_breast_atrophy_m0, params$p_breast_atrophy_m2, params$p_breast_atrophy_m12, params$p_breast_atrophy_m24, 
                  params$p_breast_atrophy_m36, params$p_breast_atrophy_m48, params$p_breast_atrophy_m60, params$p_breast_atrophy_m60)), 
     monthly_cycles = 0:n_t)[,2]
   
-  a_toxicity[2,,"breast_atrophy"] <- a_toxicity[1,,"breast_atrophy"] * params$AI_se_breast_atrophy * params$rr_prev_breast_atrophy +
-    a_toxicity[1,,"breast_atrophy"] * (1 - params$AI_se_breast_atrophy) 
+  a_toxicity[2,,v_tox[4]] <- a_toxicity[1,,v_tox[4]] * params$AI_se_breast_atrophy * params$rr_prev_breast_atrophy +
+    a_toxicity[1,,v_tox[4]] * (1 - params$AI_se_breast_atrophy) 
   
   # Calculate prevalence per toxicity 
-  n_prevalence_arm_lymphedema <- max(a_toxicity[1,,"arm_lymphedema"])
-  n_prevalence_pain <- max(a_toxicity[1,,"pain"])
-  n_prevalence_fatigue <- max(a_toxicity[1,,"fatigue"])
-  n_prevalence_breast_atrophy <- max(a_toxicity[1,,"breast_atrophy"])
+  n_prevalence_arm_lymphedema <- max(a_toxicity[1,,v_tox[1]])
+  n_prevalence_pain <- max(a_toxicity[1,,v_tox[2]])
+  n_prevalence_fatigue <- max(a_toxicity[1,,v_tox[3]])
+  n_prevalence_breast_atrophy <- max(a_toxicity[1,,v_tox[4]])
   
   # Estimate number of patients receiving preventative measures (i.e. proportion of positive tests)
   n_highrisk_arm_lymphedema <- n_prevalence_arm_lymphedema * params$AI_se_arm_lymphedema + # True positives 
@@ -250,8 +253,8 @@ f_model <- function(params, intermediate = FALSE) {
   a_costs <- a_state_trace[, , ] * 
     rep(m_cost, each = n_treatments) *                        # Multiply by cost matrix
     rep(m_discount[, 1], each = n_treatments)                 # Multiply by discount factor
-  a_costs[1, 1, 1] <- a_costs[1, 1, 1] + params$cost_t1       # Add strategy costs
-  a_costs[2, 1, 1] <- a_costs[2, 1, 1] + params$cost_t2       # Add strategy costs
+  # a_costs[1, 1, 1] <- a_costs[1, 1, 1] + params$cost_t1     # Add strategy costs (will be added below)
+  # a_costs[2, 1, 1] <- a_costs[2, 1, 1] + params$cost_t2     # Add strategy costs (will be added below)
   a_costs_tox <- a_toxicity[, , ] *
     rep(m_tox_cost, each = n_treatments) *                    # Multiply by cost matrix
     rep(m_discount[, 1], each = n_treatments) *               # Multiply by discount factor
@@ -295,7 +298,7 @@ f_model <- function(params, intermediate = FALSE) {
   #### Results ----
   if(intermediate == FALSE) { 
     v_results <- setNames(
-      c(rowSums(a_costs) + rowSums(m_event_costs) + rowSums(a_costs_tox) + c(0, n_tox_prev_costs),  
+      c(rowSums(a_costs) + rowSums(m_event_costs) + rowSums(a_costs_tox) + c(params$cost_t1, params$cost_t2) + c(0, n_tox_prev_costs),  
         rowSums(a_qalys) + rowSums(a_qalys_tox) + c(0, n_tox_prev_disutility), 
         rowSums(a_lys)
       ), # end c     
@@ -306,72 +309,82 @@ f_model <- function(params, intermediate = FALSE) {
     ) # end setNames
     return(v_results)
   } else {
-    # a_res_intermediate <- data.matrix( # convert dataframe to matrix (for storing in array)
-    #   data.frame( # create dataframe
-    #     "t1.Health.state.costs" = a_costs[1,,],
-    #     "t1.Toxicity.costs" = a_costs_tox[1,,],
-    #     "t1.Event.costs" = c(0, m_event_costs[1,]),
-    #     "t2.Health.state.costs" = a_costs[2,,],
-    #     "t2.Toxicity.costs" = a_costs_tox[2,,],
-    #     "t2.Event.costs" = c(n_tox_prev_costs, m_event_costs[2,]),
-    #     "t1.Health.state.qalys" = a_qalys[1,,],
-    #     "t1.Toxicity.qalys" = a_qalys_tox[1,,],
-    #     "t1.Event.qalys" = rep(0, n_t + 1),
-    #     "t2.Health.state.qalys" = a_qalys[2,,],
-    #     "t2.Toxicity.qalys" = a_qalys_tox[2,,],
-    #     "t2.Event.qalys" = c(n_tox_prev_disutility, rep(0, n_t)),
-    #     "t1.Trace" = a_state_trace[1,,],
-    #     "t2.Trace" = a_state_trace[2,,],
-    #     "t1.Toxicity" = a_toxicity[1,,],
-    #     "t2.Toxicity" = a_toxicity[2,,]
-    #   ) # close dataframe
-    # ) # close data.matrix
-    # return(a_res_intermediate)
-    # 
-    # create empty array for results per outcome, treatment, cycle and health state
-    a_res_intermediate <- array( # array with 4 dimensions (outcome, treatment, cycles, v_states)
-      data = NA,
-      dim = c( # specify dimensions
-        3, # number of outcomes (Costs, QALYs, LYs/toxicity occurrence)
-        n_treatments, # number of treatments
-        n_t + 1, # number of cycles
-        n_states + 5 # number of health states + 1 for event related costs and outcomes + 4 for toxicity 
-      ), # close dim
-      dimnames = list( # name dimensions
-        c("Cost", "QALY", "LY"),
-        v_treatments, 
-        0:n_t,
-        c(v_states, "Event_related", "arm_lymphedema", "pain", "fatigue", "breast_atrophy")
-      ) # close dimnames
-    ) # close array
+    m_res_intermediate <- 
+      matrix(data = NA, 
+             nrow = n_t + 1, # number of cycles
+             ncol = 3 * n_treatments * (length(v_states) + length(v_tox) + 1), # number of results (number of outcomes * number of treatments * number of health states/events/toxicities)
+             dimnames = list( # name dimensions
+               paste0("cycle_", 1:(n_t + 1)),
+               c(paste0("Cost_", v_states, "_", v_treatments[1]),   # Cost per health state for t1
+                 paste0("Cost_", v_tox, "_", v_treatments[1]),      # Tox cost for t1
+                 paste0("Cost_Event_", v_treatments[1]),            # Event cost for t1
+                 
+                 paste0("Cost_", v_states, "_", v_treatments[2]),   # Cost per health state for t2
+                 paste0("Cost_", v_tox, "_", v_treatments[2]),      # Tox cost for t2
+                 paste0("Cost_Event_", v_treatments[2]),            # Event cost for t2
+                 
+                 paste0("QALY_", v_states, "_", v_treatments[1]),   # QALYs per health state for t1
+                 paste0("QALY_", v_tox, "_", v_treatments[1]),      # Tox QALY for t1
+                 paste0("QALY_Event_", v_treatments[1]),            # Event QALY for t1
+                 
+                 paste0("QALY_", v_states, "_", v_treatments[2]),   # QALYs per health state for t2
+                 paste0("QALY_", v_tox, "_", v_treatments[2]),      # Tox QALY for t2
+                 paste0("QALY_Event_", v_treatments[2]),            # Event QALY for t2
+                 
+                 paste0("LY_", v_states, "_", v_treatments[1]),     # LYs per health state for t1 (Markov trace)
+                 paste0("Incidence_", v_tox, "_", v_treatments[1]), # Tox incidence for t1
+                 paste0("LY_Event_", v_treatments[1]),              # Event LYs for t1
+                 
+                 paste0("LY_", v_states, "_", v_treatments[2]),     # LYs per health state for t2 (Markov trace)
+                 paste0("Incidence_", v_tox, "_", v_treatments[2]), # Tox incidence for t2
+                 paste0("LY_Event_", v_treatments[2])               # Event LYs for t2
+               ) # end c
+             ) # close dimnames 
+      ) # end matrix 
     
-    a_res_intermediate[1, , , 1:n_states] <- a_costs
-    a_res_intermediate[1, , 2:(n_t + 1), (n_states + 1)] <- m_event_costs
-    a_res_intermediate[1, 1, 1, (n_states + 1)] <- 0                      # no event costs in first cycle (for current practice)
-    a_res_intermediate[1, 2, 1, (n_states + 1)] <- n_tox_prev_costs
-    a_res_intermediate[1, , , (n_states + 2):dim(a_res_intermediate)[4]] <- a_costs_tox
+    m_res_intermediate[, 1:n_states] <- a_costs[1,,]                                                         # health state costs t1 
+    m_res_intermediate[, (n_states + 1):(n_states + length(v_tox))] <- a_costs_tox[1,,]                      # toxicity costs t1 
+    m_res_intermediate[, (n_states + 1 + length(v_tox))] <- c(params$cost_t1, m_event_costs[1,])                          # event costs t1; no event costs in first cycle (for current practice)
     
-    a_res_intermediate[2, , , 1:n_states] <- a_qalys
-    a_res_intermediate[2, 1, , (n_states + 1)] <- 0                       # no event qalys  (for current practice)
-    a_res_intermediate[2, 2, , (n_states + 1)] <-  c(n_tox_prev_disutility, rep(0, n_t))
-    a_res_intermediate[2, , , (n_states + 2):dim(a_res_intermediate)[4]] <- a_qalys_tox
+    n_dim <- dim(m_res_intermediate)[2] / 3 * 0.5
+    m_res_intermediate[, n_dim + 1:n_states] <- a_costs[2,,]                                                 # health state costs t2
+    m_res_intermediate[, n_dim + (n_states + 1):(n_states + length(v_tox))] <- a_costs_tox[2,,]              # toxicity costs t2
+    m_res_intermediate[, n_dim + (n_states + 1 + length(v_tox))] <- c(params$cost_t2 + n_tox_prev_costs,     # event costs t2
+                                                                      m_event_costs[2,])    
     
-    a_res_intermediate[3, , , 1:(n_states - 1)] <- a_lys
-    a_res_intermediate[3, , , n_states] <- 0                              # no LYs in death health state
-    a_res_intermediate[3, , , (n_states + 1)] <- 0                        # no LYs related to events
-    a_res_intermediate[3, , , (n_states + 2):dim(a_res_intermediate)[4]] <-  a_toxicity
+    n_dim <- dim(m_res_intermediate)[2] / 3 * 1 
+    m_res_intermediate[, n_dim + 1:n_states] <- a_qalys[1,,]                                                 # health state QALYs t1
+    m_res_intermediate[, n_dim + (n_states + 1):(n_states + length(v_tox))] <- a_qalys_tox[1,,]              # toxicity QALYs t1
+    m_res_intermediate[, n_dim + (n_states + 1 + length(v_tox))] <- 0                                        # event QALYs t1 (none for current practice)
     
-    return(a_res_intermediate)
+    n_dim <- dim(m_res_intermediate)[2] / 3 * 1.5 
+    m_res_intermediate[, n_dim + 1:n_states] <- a_qalys[2,,]                                                 # health state QALYs t2
+    m_res_intermediate[, n_dim + (n_states + 1):(n_states + length(v_tox))] <- a_qalys_tox[2,,]              # toxicity QALYs t2
+    m_res_intermediate[, n_dim + (n_states + 1 + length(v_tox))] <- c(n_tox_prev_disutility, rep(0, n_t))    # event QALYs t2 
+    
+    n_dim <- dim(m_res_intermediate)[2] / 3 * 2 
+    m_res_intermediate[, n_dim + 1:n_states] <- cbind(a_lys[1,,], rep(0, n_t + 1))                           # health state LYs t1
+    m_res_intermediate[, n_dim + (n_states + 1):(n_states + length(v_tox))] <- a_toxicity[1,,]               # toxicity incidence t1
+    m_res_intermediate[, n_dim + (n_states + 1 + length(v_tox))] <- 0                                        # event LYs t1 (none)
+    
+    n_dim <- dim(m_res_intermediate)[2] / 3 * 2.5 
+    m_res_intermediate[, n_dim + 1:n_states] <- cbind(a_lys[2,,], rep(0, n_t + 1))                           # health state LYs t2
+    m_res_intermediate[, n_dim + (n_states + 1):(n_states + length(v_tox))] <- a_toxicity[2,,]               # toxicity incidence t2
+    m_res_intermediate[, n_dim + (n_states + 1 + length(v_tox))] <- 0      
+    
+    return(m_res_intermediate)
+    
     # Check if there are any NA values
-    # any(is.na(a_res_intermediate))
+    # any(is.na(m_res_intermediate))
     # Returns TRUE if at least one NA exists
     
     # Check if there are any negative values
-    # any(a_res_intermediate[1,,,] < 0)
-    # any(a_res_intermediate[2,,, 1:n_states] < 0) 
-    # any(a_res_intermediate[2,,, (n_states + 1):dim(a_res_intermediate)[4]] < 0) # these might be negative (disutilies)
-    # any(a_res_intermediate[3,,,] < 0)
-    # Returns TRUE if at least one negative value exists
+    # any(m_res_intermediate[, 1:9] < 0)
+    # any(m_res_intermediate[, 10:18] < 0)
+    # any(m_res_intermediate[, 19:27] < 0) # these might be negative (disutilies)
+    # any(m_res_intermediate[, 28:36] < 0) # these might be negative (disutilies)
+    # any(m_res_intermediate[, 37:45] < 0)
+    # any(m_res_intermediate[, 46:54] < 0)
     
   } # close if statement
 }

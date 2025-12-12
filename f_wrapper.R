@@ -73,7 +73,7 @@ f_wrapper_intermediate <- function(df_input) {
   #' in a 3D array with the following structure:
   #' \itemize{
   #'   \item **Dimension 1 (rows)**: Simulation cycles (e.g., months or years).
-  #'   \item **Dimension 2 (columns)**: Outcomes tracked, including costs, QALYs, and Markov traces.
+  #'   \item **Dimension 2 (columns)**: Outcomes tracked, including costs, QALYs, and Markov traces/LYs.
   #'   \item **Dimension 3 (depth)**: Individual simulations (one per row in `df_input`).
   #' }
   #'
@@ -82,25 +82,23 @@ f_wrapper_intermediate <- function(df_input) {
   #'   \item Costs and QALYs per health state for each treatment strategy.
   #'   \item Toxicity-related costs and QALYs for each treatment.
   #'   \item Event-related costs and QALYs.
-  #'   \item Markov trace (state occupancy probabilities).
+  #'   \item Markov trace/LYs (state occupancy probabilities).
   #'   \item Toxicity incidence rates for each treatment.
   #' }
   #'
   #' @return A 3D array of dimension `(cycles, outcomes, simulations)`, where:
   #' \itemize{
   #'   \item **Rows** represent model cycles.
-  #'   \item **Columns** represent different outcomes (costs, QALYs, Markov trace).
+  #'   \item **Columns** represent different outcomes (costs, QALYs, Markov trace/LYs).
   #'   \item **Depth** represents different simulations (one per row in `df_input`).
   #' }
   #'
   #' @export
   
   # create array to store results; 3 dimensions (cycles, outcomes, simulations)
-  v_tox <- c("Arm lymphedema", "Pain", "Fatigue", "Breast_atrophy")
-  
   a_results <- array(data = NA, 
                      dim = c(n_t + 1, # number of cycles
-                             52, # number of outcomes
+                             3 * n_treatments * (length(v_states) + length(v_tox) + 1), # number of results (number of outcomes * number of treatments * number of health states/events/toxicities)
                              dim(df_input)[1] # number of simulations
                      ), # close dim
                      dimnames = list( # name dimensions
@@ -108,19 +106,26 @@ f_wrapper_intermediate <- function(df_input) {
                        c(paste0("Cost_", v_states, "_", v_treatments[1]),   # Cost per health state for t1
                          paste0("Cost_", v_tox, "_", v_treatments[1]),      # Tox cost for t1
                          paste0("Cost_Event_", v_treatments[1]),            # Event cost for t1
+                         
                          paste0("Cost_", v_states, "_", v_treatments[2]),   # Cost per health state for t2
                          paste0("Cost_", v_tox, "_", v_treatments[2]),      # Tox cost for t2
                          paste0("Cost_Event_", v_treatments[2]),            # Event cost for t2
+                         
                          paste0("QALY_", v_states, "_", v_treatments[1]),   # QALYs per health state for t1
                          paste0("QALY_", v_tox, "_", v_treatments[1]),      # Tox QALY for t1
                          paste0("QALY_Event_", v_treatments[1]),            # Event QALY for t1
+                         
                          paste0("QALY_", v_states, "_", v_treatments[2]),   # QALYs per health state for t2
                          paste0("QALY_", v_tox, "_", v_treatments[2]),      # Tox QALY for t2
                          paste0("QALY_Event_", v_treatments[2]),            # Event QALY for t2
-                         paste0("Trace_", v_states, "_", v_treatments[1]),  # Trace for t1
-                         paste0("Trace_", v_states, "_", v_treatments[2]),  # Trace for t2
-                         paste0("Incidence_", v_tox, "_", v_treatments[1]), # Tox for t1
-                         paste0("Incidence_", v_tox, "_", v_treatments[2])  # Tox for t2
+                         
+                         paste0("LY_", v_states, "_", v_treatments[1]),     # LYs per health state for t1 (Markov trace)
+                         paste0("Incidence_", v_tox, "_", v_treatments[1]), # Tox incidence for t1
+                         paste0("LY_Event_", v_treatments[1]),              # Event LYs for t1
+                         
+                         paste0("LY_", v_states, "_", v_treatments[2]),     # LYs per health state for t2 (Markov trace)
+                         paste0("Incidence_", v_tox, "_", v_treatments[2]), # Tox incidence for t2
+                         paste0("LY_Event_", v_treatments[2])               # Event LYs for t2
                        ), # end c
                        paste0("sim_", 1:dim(df_input)[1])
                      ) # close dimnames 

@@ -30,6 +30,8 @@ n_states <- length(v_states)                            # Number of health state
 v_treatments <- c("Current_practice",
                   "Current_practice_with_AI")           # Vector of strategy names
 n_treatments <- length(v_treatments)                    # Number of treatments
+v_tox <- c("arm_lymphedema", "pain", 
+           "fatigue", "breast_atrophy")                 # Vector of toxicity name
 n_t <- 40 * 12                                          # Model time horizon (monthly cycle)
 n_sim <- 5000                                           # Number of Monte Carlo simulations
 n_age_baseline <- 60                                    # Baseline age
