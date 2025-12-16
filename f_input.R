@@ -82,13 +82,14 @@ f_input <- function(n_sim = 10000, seed = 12345) {
     rr_prev_pain = generate_static(0, n_sim, is_psa),                                                       ## TBD ## 
     
     # Toxicity probabilities
-    p_arm_lymphedema_m0 = generate_beta(, , n_sim, is_psa, alpha = 49 + 45, beta = 1205 + 1975),            # Based on HypoG and REQUITE
-    p_arm_lymphedema_m2 = generate_beta(, , n_sim, is_psa, alpha = 89 + 58, beta = 1104 + 1932),            # Based on HypoG and REQUITE
-    p_arm_lymphedema_m12 = generate_beta(, , n_sim, is_psa, alpha = 130 + 211, beta = 1070 + 1751),         # Based on HypoG and REQUITE
-    p_arm_lymphedema_m24 = generate_beta(, , n_sim, is_psa, alpha = 120 + 296, beta = 1066 + 1660),         # Based on HypoG and REQUITE
-    p_arm_lymphedema_m36 = generate_beta(, , n_sim, is_psa, alpha = 113 + 579, beta = 1082 + 1422),         # Based on HypoG and REQUITE
-    p_arm_lymphedema_m48 = generate_beta(, , n_sim, is_psa, alpha = 60 + 274, beta = 1165 + 1738),          # Based on HypoG and REQUITE
-    p_arm_lymphedema_m60 = generate_beta(, , n_sim, is_psa, alpha = 23 + 472, beta = 1229 + 1534),          # Based on HypoG and REQUITE
+    p_arm_lymphedema_m0 = generate_beta(, , n_sim, is_psa, alpha = 45, beta = 1975),                        # Based on REQUITE
+    p_arm_lymphedema_m2 = generate_beta(, , n_sim, is_psa, alpha = 58, beta = 1932),                        # Based on REQUITE
+    p_arm_lymphedema_m12 = generate_beta(, , n_sim, is_psa, alpha = 60, beta = 1751),                       # Based on REQUITE
+    p_arm_lymphedema_m24 = generate_beta(, , n_sim, is_psa, alpha = 66, beta = 1660),                       # Based on REQUITE
+    p_arm_lymphedema_m36 = generate_beta(, , n_sim, is_psa, alpha = 21, beta = 579),                        # Based on REQUITE
+    p_arm_lymphedema_m48 = generate_beta(, , n_sim, is_psa, alpha = 10, beta = 274),                        # Based on REQUITE
+    p_arm_lymphedema_m60 = generate_beta(, , n_sim, is_psa, alpha = 16, beta = 472),                        # Based on REQUITE
+    p_arm_lymphedema_m72 = generate_beta(, , n_sim, is_psa, alpha = 2, beta = 43),                          # Based on REQUITE
     
     p_breast_atrophy_m0 = generate_static(0, n_sim, is_psa),                                                ## TBD ## 
     p_breast_atrophy_m2 = generate_static(0, n_sim, is_psa),                                                ## TBD ## 
@@ -97,6 +98,7 @@ f_input <- function(n_sim = 10000, seed = 12345) {
     p_breast_atrophy_m36 = generate_static(0, n_sim, is_psa),                                               ## TBD ## 
     p_breast_atrophy_m48 = generate_static(0, n_sim, is_psa),                                               ## TBD ## 
     p_breast_atrophy_m60 = generate_static(0, n_sim, is_psa),                                               ## TBD ## 
+    p_breast_atrophy_m72 = generate_static(0, n_sim, is_psa),                                               ## TBD ## 
     
     p_fatigue_m0 = generate_static(0, n_sim, is_psa),                                                       ## TBD ## 
     p_fatigue_m2 = generate_static(0, n_sim, is_psa),                                                       ## TBD ## 
@@ -105,6 +107,7 @@ f_input <- function(n_sim = 10000, seed = 12345) {
     p_fatigue_m36 = generate_static(0, n_sim, is_psa),                                                      ## TBD ##   
     p_fatigue_m48 = generate_static(0, n_sim, is_psa),                                                      ## TBD ##   
     p_fatigue_m60 = generate_static(0, n_sim, is_psa),                                                      ## TBD ##   
+    p_fatigue_m72 = generate_static(0, n_sim, is_psa),                                                      ## TBD ##   
     
     p_pain_m0  = generate_static(0, n_sim, is_psa),                                                         ## TBD ##   
     p_pain_m2  = generate_static(0, n_sim, is_psa),                                                         ## TBD ##   
@@ -113,6 +116,7 @@ f_input <- function(n_sim = 10000, seed = 12345) {
     p_pain_m36  = generate_static(0, n_sim, is_psa),                                                        ## TBD ##   
     p_pain_m48  = generate_static(0, n_sim, is_psa),                                                        ## TBD ##   
     p_pain_m60  = generate_static(0, n_sim, is_psa),                                                        ## TBD ##   
+    p_pain_m72  = generate_static(0, n_sim, is_psa),                                                        ## TBD ##   
     
     # Health state utilities (Source TA886)
     utility_ef = generate_beta(0.732, 0.021, n_sim, is_psa),                                     # EAG preference in TA886 (Source: Verrill et al 2020)

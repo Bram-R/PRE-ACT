@@ -70,27 +70,19 @@ f_wrapper_intermediate <- function(df_input) {
   #' @details 
   #' This function iterates over each row in `df_input`, passing the corresponding parameters 
   #' to `f_model()` with `intermediate = TRUE`. The results from each simulation are stored 
-  #' in a 3D array with the following structure:
+  #' in a 3D array with the following structure: `cycles, outcomes, simulations`. Here outcomes are Costs, 
+  #' QALYs and LYs/incidence are further specified by: 
   #' \itemize{
-  #'   \item **Dimension 1 (rows)**: Simulation cycles (e.g., months or years).
-  #'   \item **Dimension 2 (columns)**: Outcomes tracked, including costs, QALYs, and Markov traces/LYs.
-  #'   \item **Dimension 3 (depth)**: Individual simulations (one per row in `df_input`).
-  #' }
-  #'
-  #' The column names in the output array include:
-  #' \itemize{
-  #'   \item Costs and QALYs per health state for each treatment strategy.
-  #'   \item Toxicity-related costs and QALYs for each treatment.
-  #'   \item Event-related costs and QALYs.
-  #'   \item Markov trace/LYs (state occupancy probabilities).
-  #'   \item Toxicity incidence rates for each treatment.
+  #'   \item **Health state**: Costs, QALYs and LYs associated with health state occupancy.
+  #'   \item **Toxicity**: Costs, QALYs and incidence associated with the occurrence of toxicities (either decreased HRQoL, costs related to toxicity management or toxicity incidence).
+  #'   \item **Event**: One-off costs and QALYs, i.e. treatment costs, toxicity prevention costs (e.g. arm sleeve) as well as one-off costs related to the development of recurrence (either loco-regional or distant) as well as mortality. 
   #' }
   #'
   #' @return A 3D array of dimension `(cycles, outcomes, simulations)`, where:
   #' \itemize{
-  #'   \item **Rows** represent model cycles.
-  #'   \item **Columns** represent different outcomes (costs, QALYs, Markov trace/LYs).
-  #'   \item **Depth** represents different simulations (one per row in `df_input`).
+  #'   \item **Dimension 1 (rows)**: Simulation cycles (e.g., months or years).
+  #'   \item **Dimension 2 (columns)**: Outcomes tracked, including costs, QALYs, and Markov traces/LYs.
+  #'   \item **Dimension 3 (depth)**: Individual simulations (one per row in `df_input`).
   #' }
   #'
   #' @export

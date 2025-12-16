@@ -158,9 +158,9 @@ f_model <- function(params, intermediate = FALSE) {
   )
   
   a_toxicity[1,,v_tox[1]] <- f_interpolate_toxicity(data.frame(
-    month = c(0, 2, 12, 24, 36, 48, 60, n_t),
+    month = c(0, 2, 12, 24, 36, 48, 60, 72, n_t),
     toxicity = c(params$p_arm_lymphedema_m0, params$p_arm_lymphedema_m2, params$p_arm_lymphedema_m12, params$p_arm_lymphedema_m24, 
-                 params$p_arm_lymphedema_m36, params$p_arm_lymphedema_m48, params$p_arm_lymphedema_m60, params$p_arm_lymphedema_m60)), 
+                 params$p_arm_lymphedema_m36, params$p_arm_lymphedema_m48, params$p_arm_lymphedema_m60, params$p_arm_lymphedema_m72, params$p_arm_lymphedema_m72)), 
     monthly_cycles = 0:n_t)[,2]
   
   # a_toxicity[2,,v_tox[1]] <- (a_toxicity[1,,v_tox[1]] * params$AI_se_arm_lymphedema) ^ (1 / params$hr_prev_arm_lymphedema) +  # Old (incorrect) integration of HR
@@ -170,27 +170,27 @@ f_model <- function(params, intermediate = FALSE) {
     a_toxicity[1,,v_tox[1]] * (1 - params$AI_se_arm_lymphedema)                                           
   
   a_toxicity[1,,v_tox[2]] <- f_interpolate_toxicity(data.frame(
-    month = c(0, 2, 12, 24, 36, 48, 60, n_t),
+    month = c(0, 2, 12, 24, 36, 48, 60, 72, n_t),
     toxicity = c(params$p_pain_m0, params$p_pain_m2, params$p_pain_m12, params$p_pain_m24, 
-                 params$p_pain_m36, params$p_pain_m48, params$p_pain_m60, params$p_pain_m60)), 
+                 params$p_pain_m36, params$p_pain_m48, params$p_pain_m60, params$p_pain_m72, params$p_pain_m72)), 
     monthly_cycles = 0:n_t)[,2]
   
   a_toxicity[2,,v_tox[2]] <- a_toxicity[1,,v_tox[2]] * params$AI_se_pain * params$rr_prev_pain +
     a_toxicity[1,,v_tox[2]] * (1 - params$AI_se_pain) 
   
   a_toxicity[1,,v_tox[3]] <- f_interpolate_toxicity(data.frame(
-    month = c(0, 2, 12, 24, 36, 48, 60, n_t),
+    month = c(0, 2, 12, 24, 36, 48, 60, 72, n_t),
     toxicity = c(params$p_fatigue_m0, params$p_fatigue_m2, params$p_fatigue_m12, params$p_fatigue_m24, 
-                 params$p_fatigue_m36, params$p_fatigue_m48, params$p_fatigue_m60, params$p_fatigue_m60)), 
+                 params$p_fatigue_m36, params$p_fatigue_m48, params$p_fatigue_m60, params$p_fatigue_m72, params$p_fatigue_m72)), 
     monthly_cycles = 0:n_t)[,2]
   
   a_toxicity[2,,v_tox[3]] <- a_toxicity[1,,v_tox[3]] * params$AI_se_fatigue * params$rr_prev_fatigue +
     a_toxicity[1,,v_tox[3]] * (1 - params$AI_se_fatigue) 
   
   a_toxicity[1,,v_tox[4]] <- f_interpolate_toxicity(data.frame(
-    month = c(0, 2, 12, 24, 36, 48, 60, n_t),
+    month = c(0, 2, 12, 24, 36, 48, 60, 72, n_t),
     toxicity = c(params$p_breast_atrophy_m0, params$p_breast_atrophy_m2, params$p_breast_atrophy_m12, params$p_breast_atrophy_m24, 
-                 params$p_breast_atrophy_m36, params$p_breast_atrophy_m48, params$p_breast_atrophy_m60, params$p_breast_atrophy_m60)), 
+                 params$p_breast_atrophy_m36, params$p_breast_atrophy_m48, params$p_breast_atrophy_m60, params$p_breast_atrophy_m72, params$p_breast_atrophy_m72)), 
     monthly_cycles = 0:n_t)[,2]
   
   a_toxicity[2,,v_tox[4]] <- a_toxicity[1,,v_tox[4]] * params$AI_se_breast_atrophy * params$rr_prev_breast_atrophy +
@@ -344,7 +344,7 @@ f_model <- function(params, intermediate = FALSE) {
     
     m_res_intermediate[, 1:n_states] <- a_costs[1,,]                                                         # health state costs t1 
     m_res_intermediate[, (n_states + 1):(n_states + length(v_tox))] <- a_costs_tox[1,,]                      # toxicity costs t1 
-    m_res_intermediate[, (n_states + 1 + length(v_tox))] <- c(params$cost_t1, m_event_costs[1,])                          # event costs t1; no event costs in first cycle (for current practice)
+    m_res_intermediate[, (n_states + 1 + length(v_tox))] <- c(params$cost_t1, m_event_costs[1,])             # event costs t1
     
     n_dim <- dim(m_res_intermediate)[2] / 3 * 0.5
     m_res_intermediate[, n_dim + 1:n_states] <- a_costs[2,,]                                                 # health state costs t2
@@ -370,7 +370,7 @@ f_model <- function(params, intermediate = FALSE) {
     n_dim <- dim(m_res_intermediate)[2] / 3 * 2.5 
     m_res_intermediate[, n_dim + 1:n_states] <- cbind(a_lys[2,,], rep(0, n_t + 1))                           # health state LYs t2
     m_res_intermediate[, n_dim + (n_states + 1):(n_states + length(v_tox))] <- a_toxicity[2,,]               # toxicity incidence t2
-    m_res_intermediate[, n_dim + (n_states + 1 + length(v_tox))] <- 0      
+    m_res_intermediate[, n_dim + (n_states + 1 + length(v_tox))] <- 0                                        # event LYs t1 (none)  
     
     return(m_res_intermediate)
     

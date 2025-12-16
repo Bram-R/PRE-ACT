@@ -47,6 +47,12 @@ m_gen_pop_mortality <- f_gen_pop_mortality(n_age_baseline = n_age_baseline, n_t 
 df_input <- f_input(n_sim = n_sim)
 
 ##### Obtain intermediate results using wrapper intermediate function ----
+# Intermediate outcomes are stored in a 3D array with the following structure: cycles, outcomes, simulations. 
+# Here outcomes are Costs, QALYs and LYs/incidence are further specified by:
+# - Health state: Costs, QALYs and LYs associated with health state occupancy.
+# - Toxicity: Costs, QALYs and incidence associated with the occurrence of toxicities (either decreased HRQoL, costs related to toxicity management or toxicity incidence).
+# - Event: One-off costs and QALYs, i.e. treatment costs, toxicity prevention costs (e.g. arm sleeve) as well as one-off costs related to the development of recurrence (either loco-regional or distant) as well as mortality. 
+
 # Probabilistic results (intermediate)
 a_out_interm <- f_wrapper_intermediate(df_input)
 
@@ -258,7 +264,7 @@ m_toxicity_percentiles <- cbind(
 matplot(
   x = 0:n_t,
   y = m_toxicity[, 1:8], 
-  ylim = c(0, 0.4),
+  ylim = c(0, 0.1),
   type = "l",
   ylab = "Toxicity incidence (conditional on being alive)",
   xlab = "Cycle",
@@ -298,8 +304,8 @@ matplot(
 legend(
   "topright", 
   inset = c(0.05, 0),
-  c(paste0("Probabilistic mean ", v_treatments[1]), dimnames(m_out_cycle_res_percentiles[, 1:2])[[2]],
-    paste0("Probabilistic mean ", v_treatments[2]), dimnames(m_out_cycle_res_percentiles[, 1:2])[[2]]),
+  c(paste0("Probabilistic mean ", v_treatments[1]), dimnames(m_toxicity_percentiles[, 1:2])[[2]],
+    paste0("Probabilistic mean ", v_treatments[2]), dimnames(m_toxicity_percentiles[, 1:2])[[2]]),
   cex = 0.5,
   col = c(2, 2, 2, 3, 3, 3),
   lty = c(1, 2, 2, 1, 2, 2),
