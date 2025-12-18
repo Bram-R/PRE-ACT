@@ -1,4 +1,4 @@
-f_input <- function(n_sim = 10000, seed = 12345) {
+f_input <- function(n_sim = 5000, seed = 12345, setting = 1) {
   #' Generate Inputs for Probabilistic Sensitivity Analysis (PSA)
   #'
   #' This function generates a structured data frame containing input parameters for 
@@ -6,13 +6,15 @@ f_input <- function(n_sim = 10000, seed = 12345) {
   #' (beta, gamma, log-normal, and static values) to account for uncertainty in 
   #' model parameters related to transition probabilities, utilities, and costs.
   #'
-  #' @param n_sim Integer. Number of simulations (use `1` for deterministic values). Default is `10000`.
+  #' @param n_sim Integer. Number of simulations (use `1` for deterministic values). Default is `5000`.
   #' @param seed Integer. Random seed for reproducibility. Default is `12345`.
+  #' @param setting Integer. Selected setting `1` = UK, `2` = FR, `3` = NL. Default is `1`.
   #' 
   #' @details
   #' The function:
   #' \itemize{
   #'   \item Sets a random seed to ensure reproducibility.
+  #'   \item Adjusts inputs based on setting where appropriate.
   #'   \item Uses helper functions (`generate_static`, `generate_beta`, `generate_gamma`, `generate_lognormal`)
   #'         to sample values from different probability distributions.
   #'   \item Defines transition probabilities, health state utilities, toxicity parameters, and costs.

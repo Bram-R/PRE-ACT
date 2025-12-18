@@ -1,46 +1,18 @@
 #### Description: Intermediate results of a State-Transition Model ####
 #### Conventions: n = single number, v = vector, df = dataframe, m = matrix, a = array, l = list ####
 
-# General settings
-options(scipen = 999, max.print = 10000, digits = 4)
-
-# Load and install necessary libraries
-required_packages <- c(
-  "dampack", "matrixStats", "summarytools"
-)
-new_packages <- required_packages[!(required_packages %in% installed.packages()[, "Package"])]
-if (length(new_packages)) install.packages(new_packages)
-suppressPackageStartupMessages(lapply(required_packages, require, character.only = TRUE))
-
 # Clear workspace
 rm(list = ls())
 
 # Load custom functions
-source("f_input.R")                # check function using: docstring(f_input)
-source("f_model.R")                # check function using: docstring(f_model)
-source("f_wrapper.R")              # check function using: docstring(f_wrapper_intermediate)
-source("f_gen_pop_utility.R")      # check function using: docstring(f_gen_pop_utility)
-source("f_gen_pop_mortality.R")    # check function using: docstring(f_gen_pop_mortality)
-source("f_interpolate_toxicity.R") # check function using: docstring(f_interpolate_toxicity)
+source("Model setup.R")            # Model setup and definitions
 
-#### General Setup ----
-v_states <- c("Event free", "Locoregional recurrence",  # Vector of model health states
-              "Distant metastasis",  "Death")          
-n_states <- length(v_states)                            # Number of health states
-v_treatments <- c("Current_practice",
-                  "Current_practice_with_AI")           # Vector of strategy names
-n_treatments <- length(v_treatments)                    # Number of treatments
-v_tox <- c("arm_lymphedema", "pain", 
-           "fatigue", "breast_atrophy")                 # Vector of toxicity name
-n_t <- 40 * 12                                          # Model time horizon (monthly cycle)
-n_sim <- 5000                                           # Number of Monte Carlo simulations
-n_age_baseline <- 60                                    # Baseline age
-n_p_female <- 1.00                                      # Proportion females
+#### Model Inputs ----
+# Country specific
 n_currency <- "Pound"
 n_wtp <- 30000 # willingness to pay value
 v_wtp <- seq(from = 0, to = 50000, by = 2000)  # willingness to pay vector
 
-#### Model Inputs ----
 # Create a dataframe for probabilistic sensitivity analysis (PSA) inputs
 m_gen_pop_utility <- f_gen_pop_utility(n_age_baseline = n_age_baseline, n_t = n_t)
 m_gen_pop_mortality <- f_gen_pop_mortality(n_age_baseline = n_age_baseline, n_t = n_t, n_p_female = n_p_female)
@@ -63,25 +35,30 @@ a_out_interm <- f_wrapper_intermediate(df_input)
 v_res <- rowMeans(colSums(a_out_interm, dims = 1))
 
 v_res
-sum(v_res[1:9])
-sum(v_res[10:18])
-sum(v_res[19:27])
-sum(v_res[28:36])
 
-view(
-  dfSummary(
-    t(colSums(a_out_interm, dims = 1)), # Convert to data frame automatically
-    round.digits = 3,
-    style = "grid",
-    plain.ascii = FALSE,
-    graph.magnif = 1.2,
-    headings = FALSE,
-    display.labels = FALSE,
-    escape.pipe = TRUE,
-    varnumbers = FALSE,
-    labels.col = FALSE
+# Validate intermediate outcomes (comparing the results below with the probabilistic base-case results)
+# sum(v_res[1:9])
+# sum(v_res[10:18])
+# sum(v_res[19:27])
+# sum(v_res[28:36])
+
+txt <- capture.output(
+  print(
+    dfSummary(
+      t(colSums(a_out_interm, dims = 1)), # Convert to data frame automatically
+      round.digits = 3,
+      style = "grid",
+      plain.ascii = FALSE,
+      graph.magnif = 1.2,
+      headings = FALSE,
+      display.labels = FALSE,
+      escape.pipe = TRUE,
+      varnumbers = FALSE,
+      labels.col = FALSE
+    )
   )
 )
+writeLines(txt, "text/Intermediate_results.txt")
 
 ##### Costs and QALYs per cycle ----
 a_out_cycle_res <- array(
@@ -104,6 +81,7 @@ m_out_cycle_res_percentiles <- cbind(
 )
 
 # Probabilistic costs
+png(file = paste0("plots/", "costs_vs_time_", v_treatments[1], ".png"), width = 1500, height = 1500)
 matplot(
   x = 0:n_t,
   y = cbind(
@@ -127,7 +105,9 @@ legend(
   lty = c(1, 2, 2),
   bty = "n"
 )
+dev.off()
 
+png(file = paste0("plots/", "costs_vs_time_", v_treatments[2], ".png"), width = 1500, height = 1500)
 matplot(
   x = 0:n_t,
   y = cbind(
@@ -151,7 +131,9 @@ legend(
   lty = c(1, 2, 2),
   bty = "n"
 )
+dev.off()
 
+png(file = paste0("plots/", "costs_vs_time", ".png"), width = 1500, height = 1500)
 matplot(
   x = 0:n_t,
   y = cbind(
@@ -174,8 +156,10 @@ legend(
   lty = c(1, 2),
   bty = "n"
 )
+dev.off()
 
 # Probabilistic QALYs 
+png(file = paste0("plots/", "qalys_vs_time_", v_treatments[1], ".png"), width = 1500, height = 1500)
 matplot(
   x = 0:n_t,
   y = cbind(
@@ -199,7 +183,9 @@ legend(
   lty = c(1, 2, 2),
   bty = "n"
 )
+dev.off()
 
+png(file = paste0("plots/", "qalys_vs_time_", v_treatments[2], ".png"), width = 1500, height = 1500)
 matplot(
   x = 0:n_t,
   y = cbind(
@@ -223,7 +209,9 @@ legend(
   lty = c(1, 2, 2),
   bty = "n"
 )
+dev.off()
 
+png(file = paste0("plots/", "qalys_vs_time", ".png"), width = 1500, height = 1500)
 matplot(
   x = 0:n_t,
   y = cbind(
@@ -246,6 +234,7 @@ legend(
   lty = c(1, 2),
   bty = "n"
 )
+dev.off()
 
 ##### Toxicity per cycle ----
 m_toxicity <- rowMeans(a_out_interm[, c(41:44, 50:53), ], dims = 2)
@@ -261,6 +250,7 @@ m_toxicity_percentiles <- cbind(
 )
 
 # Toxicity incidence
+png(file = paste0("plots/", "tox_vs_time", ".png"), width = 1500, height = 1500)
 matplot(
   x = 0:n_t,
   y = m_toxicity[, 1:8], 
@@ -281,8 +271,10 @@ legend(
   lty =  c(rep(1, 4), rep(2, 4)),
   bty = "n"
 ) # legend end
+dev.off()
 
 # Arm lymphedema incidence
+png(file = paste0("plots/", "arm_lymphedema_vs_time", ".png"), width = 1500, height = 1500)
 matplot(
   x = 0:n_t,
   y = cbind(
@@ -311,11 +303,13 @@ legend(
   lty = c(1, 2, 2, 1, 2, 2),
   bty = "n"
 )
+dev.off()
 
 ##### LYs cycle ----
 m_trace <- rowMeans(a_out_interm[, c(37:40, 46:49), ], dims = 2)
 
 # Probabilistic LYs
+png(file = paste0("plots/", "ly_by_hs_vs_time", ".png"), width = 1500, height = 1500)
 matplot(
   x = 0:n_t,
   y = m_trace[, 1:8], 
@@ -336,11 +330,13 @@ legend(
   lty =  c(rep(1, 4), rep(2, 4)),
   bty = "n"
 ) # legend end
+dev.off()
 
 ##### Disaggregated costs and QALYs per cycle ----
 m_out_dis_cycle_res <- rowMeans(a_out_interm[, 1:36, ], dims = 2)
 
 # Health state costs
+png(file = paste0("plots/", "costs_by_hs_vs_time", ".png"), width = 1500, height = 1500)
 matplot(
   x = 0:n_t,
   y = m_out_dis_cycle_res[, 1:18], 
@@ -348,20 +344,22 @@ matplot(
   ylab = "Costs",
   xlab = "Cycle",
   main = paste0("Average health state costs for ", v_treatments[1], " and ", v_treatments[2]),
-  col = rep(2:4, 2),
-  lty = c(rep(1, 3), rep(2, 3))
+  col = rainbow(9),
+  lty = c(rep(1, 9), rep(2, 9))
 ) # matplot end
 legend(
   "topright", 
   inset = c(0.05, 0),
   dimnames(m_out_dis_cycle_res[, 1:18])[[2]], 
   cex = 0.75,
-  col = rep(2:4,2), 
-  lty =  c(rep(1, 3), rep(2, 3)),
+  col = rainbow(9), 
+  lty =  c(rep(1, 9), rep(2, 9)),
   bty = "n"
 ) # legend end
+dev.off()
 
 # Health state QALYs
+png(file = paste0("plots/", "qalys_by_hs_vs_time", ".png"), width = 1500, height = 1500)
 matplot(
   x = 0:n_t,
   y = m_out_dis_cycle_res[, 19:36], 
@@ -370,17 +368,16 @@ matplot(
   ylab = "Costs",
   xlab = "Cycle",
   main = paste0("Average health state QALYs ", v_treatments[1], " and ", v_treatments[2]),
-  col = rep(2:4, 2),
-  lty = c(rep(1, 3), rep(2, 3))
+  col = rainbow(9),
+  lty = c(rep(1, 9), rep(2, 9))
 ) # matplot end
 legend(
   "topright", 
   inset = c(0.05, 0),
   dimnames(m_out_dis_cycle_res[, 19:36])[[2]], 
   cex = 0.75,
-  col = rep(2:4,2), 
-  lty =  c(rep(1, 3), rep(2, 3)),
+  col = rainbow(9), 
+  lty =  c(rep(1, 9), rep(2, 9)),
   bty = "n"
 ) # legend end
-
-
+dev.off()

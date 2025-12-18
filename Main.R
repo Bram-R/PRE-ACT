@@ -1,44 +1,11 @@
 #### Description: Probabilistic State-Transition Model ####
 #### Conventions: n = single number, v = vector, df = dataframe, m = matrix, a = array, l = list ####
 
-# General settings
-options(scipen = 999, max.print = 10000, digits = 4)
-
-# Load and install necessary libraries
-required_packages <- c(
-  "docstring", "DiagrammeR", "dampack", "BCEA"
-)
-new_packages <- required_packages[!(required_packages %in% installed.packages()[, "Package"])]
-if (length(new_packages)) install.packages(new_packages)
-suppressPackageStartupMessages(lapply(required_packages, require, character.only = TRUE))
-
 # Clear workspace
 rm(list = ls())
 
 # Load custom functions
-source("f_stm_diagram.R")          # check function using: docstring(f_stm_diagram)
-source("f_input.R")                # check function using: docstring(f_input)
-source("f_model.R")                # check function using: docstring(f_model)
-source("f_gen_pop_utility.R")      # check function using: docstring(f_gen_pop_utility)
-source("f_gen_pop_mortality.R")    # check function using: docstring(f_gen_pop_mortality)
-source("f_interpolate_toxicity.R") # check function using: docstring(f_interpolate_toxicity)
-
-#### General Setup ----
-v_states <- c("Event free", "Locoregional recurrence",  # Vector of model health states
-              "Distant metastasis",  "Death")          
-n_states <- length(v_states)                            # Number of health states
-v_treatments <- c("Current_practice",
-                  "Current_practice_with_AI")           # Vector of strategy names
-n_treatments <- length(v_treatments)                    # Number of treatments
-v_tox <- c("arm_lymphedema", "pain", 
-           "fatigue", "breast_atrophy")                 # Vector of toxicity names
-n_t <- 40 * 12                                          # Model time horizon (monthly cycle)
-n_sim <- 5000                                           # Number of Monte Carlo simulations
-n_age_baseline <- 60                                    # Baseline age
-n_p_female <- 1.00                                      # Proportion females
-n_currency <- "Pound"
-n_wtp <- 30000 # willingness to pay value
-v_wtp <- seq(from = 0, to = 50000, by = 2000)  # willingness to pay vector
+source("Model setup.R")            # Model setup and definitions
 
 #### Model structure ----
 state_labels <- list(
@@ -65,6 +32,11 @@ rm(state_labels, transitions)
 rm(validate_state_labels, validate_transitions, generate_nodes, generate_edges, get_self_loop_style)
 
 #### Model Inputs ----
+# Country specific
+n_currency <- "Pound"
+n_wtp <- 30000 # willingness to pay value
+v_wtp <- seq(from = 0, to = 50000, by = 2000)  # willingness to pay vector
+
 # Create a dataframe for probabilistic sensitivity analysis (PSA) inputs
 m_gen_pop_utility <- f_gen_pop_utility(n_age_baseline = n_age_baseline, n_t = n_t)
 m_gen_pop_mortality <- f_gen_pop_mortality(n_age_baseline = n_age_baseline, n_t = n_t, n_p_female = n_p_female)
@@ -81,7 +53,11 @@ inputs_overview <- data.frame( # dataframe to be used for OWSA
   max = as.numeric(lapply(df_input, max)) # max values
 ) # close params_range dataframe 
 
-write.table(inputs_overview, "clipboard", sep = "\t", row.names = FALSE, col.names = FALSE)
+sink(file = paste0("text/", "Inputs_overview.txt"))
+cat("\n")
+inputs_overview
+cat("\n")
+sink()
 
 #### Model Results ----
 # f_model(df_input[1, ]) # test model
@@ -126,6 +102,8 @@ obj_bcea <- bcea( # create bcea object
 # Running mean plots
 for (x in 1:dim(m_results)[2]) {
   v_result <- m_results[, x]
+  
+  png(file = paste0("plots/", "convergence_", colnames(m_results)[x], ".png"), width = 1500, height = 1500)
   plot(cumsum(v_result) / seq_along(v_result), 
        type = "l",
        xlab = "Number of simulations",
@@ -136,6 +114,7 @@ for (x in 1:dim(m_results)[2]) {
        main = paste("Convergence plot -", colnames(m_results)[x]))
   
   abline(h = mean(v_result), col = "red", lty = 2)
+  dev.off()
 }
 
 # Running incremental mean plots
@@ -154,6 +133,8 @@ m_inc_results <- matrix(
 
 for (x in 1:dim(m_inc_results)[2]) {
   v_result <- m_inc_results[, x]
+  
+  png(file = paste0("plots/", "convergence_", colnames(m_inc_results)[x], ".png"), width = 1500, height = 1500)
   plot(cumsum(v_result) / seq_along(v_result), 
        type = "l",
        xlab = "Number of simulations",
@@ -164,6 +145,7 @@ for (x in 1:dim(m_inc_results)[2]) {
        main = paste("Convergence plot -", colnames(m_inc_results)[x]))
   
   abline(h = mean(v_result), col = "red", lty = 2)
+  dev.off()
 }
 
 rm(v_result, m_inc_results)
@@ -175,22 +157,32 @@ plot(density(m_results[,2]))
 plot(density(m_results[,3]))
 plot(density(m_results[,4]))
 
+sink(file = paste0("text/", "Probabilistic_base_case.txt"))
+cat("\n")
 obj_icers
+cat("\n")
+sink()
 
-costCP_CrI <- quantile(m_results[,1], probs = c(0.025, 0.975))
-costCPAI_CrI <- quantile(m_results[,2], probs = c(0.025, 0.975))
-qalyCP_CrI <- quantile(m_results[,3], probs = c(0.025, 0.975))
-qalyCPAI_CrI <- quantile(m_results[,4], probs = c(0.025, 0.975))
+# Optionally obtain 95CI for (incremental) costs and QALYs
+# costCP_CrI <- quantile(m_results[,1], probs = c(0.025, 0.975))
+# costCPAI_CrI <- quantile(m_results[,2], probs = c(0.025, 0.975))
+# qalyCP_CrI <- quantile(m_results[,3], probs = c(0.025, 0.975))
+# qalyCPAI_CrI <- quantile(m_results[,4], probs = c(0.025, 0.975))
+# icost_CrI <- quantile(m_results[,1] - m_results[,2], probs = c(0.025, 0.975))
+# iqaly_CrI <- quantile(m_results[,3] - m_results[,4], probs = c(0.025, 0.975))
 
 # Cost effectiveness frontier
+png(file = paste0("plots/", "ce_frontier", ".png"), width = 1500, height = 1500)
 plot(
   x = obj_icers, # icers object
   currency = n_currency, # costs units
   effect_units = "QALYs", # effects units
   label = "all" # add label to all strategies
 ) # plot end
+dev.off()
 
 # Incremental cost effectiveness plane
+png(file = paste0("plots/", "ice_plane", ".png"), width = 1500, height = 1500)
 contour2(
   he = obj_bcea, # bcea object
   wtp = n_wtp, # selects the wtp
@@ -201,23 +193,29 @@ contour2(
   scale = 0.5, # scales the bandwiths for both x- and y-axis (default=0.5)
   graph = "base" # uses base graphics to produce the plot,
 ) # contour2 end
+dev.off()
 
 # Incremental Benefit plots
+png(file = paste0("plots/", "inmb_vs_wtp", ".png"), width = 1500, height = 1500)
 eib.plot(
   he = obj_bcea, # bcea object
   comparison = 1, # if more than 2 interventions, selects the pairwise comparison
   plot.cri = TRUE,
   graph = "base" # use base graphics (instead of ggplot)
 ) # eib.plot end
+dev.off()
 
+png(file = paste0("plots/", "inmb_density", ".png"), width = 1500, height = 1500)
 ib.plot(
   he = obj_bcea, # bcea object
   comparison = 1, # if more than 2 interventions, selects the pairwise comparison
   wtp = n_wtp, # selects the wtp
   graph = "base" # uses base graphics (instead of ggplot)
 ) # ib.plot end
+dev.off()
 
 # CEAC
+png(file = paste0("plots/", "ceac", ".png"), width = 1500, height = 1500)
 plot(
   ceac(
     psa = obj_psa_dam, 
@@ -228,8 +226,10 @@ plot(
   frontier = TRUE,
   points = TRUE
 ) # plot end
+dev.off()
 
 # ELC
+png(file = paste0("plots/", "elc", ".png"), width = 1500, height = 1500)
 plot(
   calc_exp_loss(
     psa = obj_psa_dam, 
@@ -239,8 +239,10 @@ plot(
   n_x_ticks = 8, 
   n_y_ticks = 6
 ) # plot end
+dev.off()
 
-# EVPI
+# EVPI (per patient)
+png(file = paste0("plots/", "individual_evpi", ".png"), width = 1500, height = 1500)
 plot(
   calc_evpi(
     psa = obj_psa_dam, 
@@ -251,8 +253,10 @@ plot(
   n_x_ticks = 8, 
   n_y_ticks = 6
 ) # plot end
+dev.off()
 
 # info rank
+png(file = paste0("plots/", "info_rank", ".png"), width = 1500, height = 1500)
 info.rank(
   parameter = 1:ncol(df_input),
   inp = createInputs(inputs = df_input, print_is_linear_comb = FALSE),
@@ -261,4 +265,5 @@ info.rank(
   howManyPars = 10, 
   graph = "base"
 ) # plot end
+dev.off()
 
