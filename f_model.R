@@ -344,7 +344,8 @@ f_model <- function(params, intermediate = FALSE) {
     
     m_res_intermediate[, 1:n_states] <- a_costs[1,,]                                                         # health state costs t1 
     m_res_intermediate[, (n_states + 1):(n_states + length(v_tox))] <- a_costs_tox[1,,]                      # toxicity costs t1 
-    m_res_intermediate[, (n_states + 1 + length(v_tox))] <- c(params$cost_t1, m_event_costs[1,])             # event costs t1
+    m_res_intermediate[, (n_states + 1 + length(v_tox))] <- c(params$cost_t1 + 0,                            # event costs t1 (no n_tox_prev_costs)
+                                                              m_event_costs[1,])           
     
     n_dim <- dim(m_res_intermediate)[2] / 3 * 0.5
     m_res_intermediate[, n_dim + 1:n_states] <- a_costs[2,,]                                                 # health state costs t2

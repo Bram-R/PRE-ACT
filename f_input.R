@@ -114,7 +114,7 @@ f_input <- function(n_sim = 5000, seed = 12345, setting = 1) {
     p_pain_m36  = generate_static(0, n_sim, is_psa),                                                        ## TBD ##   
     p_pain_m48  = generate_static(0, n_sim, is_psa),                                                        ## TBD ##   
     p_pain_m60  = generate_static(0, n_sim, is_psa),                                                        ## TBD ##   
-    p_pain_m72  = generate_static(0, n_sim, is_psa)                                                        ## TBD ##   
+    p_pain_m72  = generate_static(0, n_sim, is_psa)                                                         ## TBD ##   
   )
   
   #### UK specific parameters ----
@@ -153,8 +153,8 @@ f_input <- function(n_sim = 5000, seed = 12345, setting = 1) {
       cost_death = generate_static(0, n_sim, is_psa),                                              # Assumption
       
       # Strategy costs
-      cost_t1 = generate_gamma(2590.22, 641.97, n_sim, is_psa),                                  # Costing analysis by Teresa (assumed without WGS)
-      cost_t2 = generate_gamma(2612.74, 642.09, n_sim, is_psa),                                  # Costing analysis by Teresa (assumed without WGS)  
+      cost_t1 = generate_gamma(2377, (3601 - 1507) / (2 * qnorm(.975)), n_sim, is_psa),            # Costing analysis by Teresa (assumed without WGS)
+      cost_t2 = generate_gamma(22, (33 - 13) / (2 * qnorm(.975)), n_sim, is_psa),                  # Costing analysis by Teresa (assumed without WGS)  
       
       # Toxicity prevention costs (e.g. arm sleeve) - one-off --> Year: 2020
       cost_prev_arm_lymphedema = generate_gamma(521.29 + 122.29, sqrt(105.83^2 + 105.85^2), n_sim, is_psa) * 5/12,  #  Table 3 of https://link.springer.com/article/10.1007/s00520-020-05890-3 converted from year to 5 months (arm sleeve for 8h/day from the first day of RT until 3 months after completion of adjuvant radiotherapy = ~ 5 months)
@@ -211,8 +211,8 @@ f_input <- function(n_sim = 5000, seed = 12345, setting = 1) {
       cost_death = generate_static(0, n_sim, is_psa),                                              # Assumption
       
       # Strategy costs
-      cost_t1 = generate_gamma(2590.22, 641.97, n_sim, is_psa),                                  # Costing analysis by Teresa (assumed without WGS)
-      cost_t2 = generate_gamma(2612.74, 642.09, n_sim, is_psa),                                  # Costing analysis by Teresa (assumed without WGS)  
+      cost_t1 = generate_gamma(5421, (9087 - 3655) / (2 * qnorm(.975)), n_sim, is_psa),            # Costing analysis by Teresa (assumed without WGS)
+      cost_t2 = generate_gamma(36, (86 - 15) / (2 * qnorm(.975)), n_sim, is_psa),                  # Costing analysis by Teresa (assumed without WGS)  
       
       # Toxicity prevention costs (e.g. arm sleeve) - one-off --> Year: 2020
       cost_prev_arm_lymphedema = generate_gamma(521.29 + 122.29, sqrt(105.83^2 + 105.85^2), n_sim, is_psa) * 5/12,  #  Table 3 of https://link.springer.com/article/10.1007/s00520-020-05890-3 converted from year to 5 months (arm sleeve for 8h/day from the first day of RT until 3 months after completion of adjuvant radiotherapy = ~ 5 months)
@@ -269,8 +269,8 @@ f_input <- function(n_sim = 5000, seed = 12345, setting = 1) {
       cost_death = generate_static(0, n_sim, is_psa),                                              # Assumption
       
       # Strategy costs
-      cost_t1 = generate_gamma(2590.22, 641.97, n_sim, is_psa),                                  # Costing analysis by Teresa (assumed without WGS)
-      cost_t2 = generate_gamma(2612.74, 642.09, n_sim, is_psa),                                  # Costing analysis by Teresa (assumed without WGS)  
+      cost_t1 = generate_gamma(17953, (28116 - 11318) / (2 * qnorm(.975)), n_sim, is_psa),         # Costing analysis by Teresa (assumed without WGS)
+      cost_t2 = generate_gamma(36, (93 - 16) / (2 * qnorm(.975)), n_sim, is_psa),                  # Costing analysis by Teresa (assumed without WGS)  
       
       # Toxicity prevention costs (e.g. arm sleeve) - one-off --> Year: 2020
       cost_prev_arm_lymphedema = generate_gamma(521.29 + 122.29, sqrt(105.83^2 + 105.85^2), n_sim, is_psa) * 5/12,  #  Table 3 of https://link.springer.com/article/10.1007/s00520-020-05890-3 converted from year to 5 months (arm sleeve for 8h/day from the first day of RT until 3 months after completion of adjuvant radiotherapy = ~ 5 months)
@@ -305,6 +305,7 @@ f_input <- function(n_sim = 5000, seed = 12345, setting = 1) {
   # Dependent calculations
   df_input$tp_lrr_death <- (1 - df_input$tp_ef_ef) * df_input$p_event_death
   df_input$disutility_arm_lymphedema <- pmin(df_input$utility_arm_lymphedema - df_input$utility_ef, 0)
+  df_input$cost_t2 <- df_input$cost_t1 + df_input$cost_t2
   df_input <- subset(df_input, select = -utility_arm_lymphedema)                                                  # remove temporary variable utility_arm_lymphedema
   
   return(df_input)
