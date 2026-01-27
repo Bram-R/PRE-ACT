@@ -32,19 +32,12 @@ rm(state_labels, transitions)
 rm(validate_state_labels, validate_transitions, generate_nodes, generate_edges, get_self_loop_style)
 
 #### Model Inputs ----
-# Country specific
-n_currency <- "Pound"
-n_wtp <- 30000 # willingness to pay value
-v_wtp <- seq(from = 0, to = 50000, by = 2000)  # willingness to pay vector
-
 # Create a dataframe for probabilistic sensitivity analysis (PSA) inputs
-m_gen_pop_utility <- f_gen_pop_utility(n_age_baseline = n_age_baseline, n_t = n_t)
-m_gen_pop_mortality <- f_gen_pop_mortality(n_age_baseline = n_age_baseline, n_t = n_t, n_p_female = n_p_female)
-df_input <- f_input(n_sim = n_sim)
+df_input <- f_input(n_sim = n_sim, setting = n_setting)
 
 inputs_overview <- data.frame( # dataframe to be used for OWSA
   pars = names(df_input), # parameter names
-  deterministic = as.numeric(f_input(n_sim = 1)), # deterministic values
+  deterministic = as.numeric(f_input(n_sim = 1, setting = n_setting)), # deterministic values
   mean = as.numeric(lapply(df_input, mean)), # mean values
   sd = as.numeric(lapply(df_input, sd)), # sd values
   CI_min = stack(sapply(df_input, quantile, prob = 0.025, names = FALSE))[,1], # 95% percentiles 

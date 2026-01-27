@@ -45,3 +45,25 @@ n_sim <- 5000                                           # Number of Monte Carlo 
 n_age_baseline <- 60                                    # Baseline age
 n_p_female <- 1.00                                      # Proportion females
 
+# Country specific
+n_setting <- 1 # must be 1 (UK), 2 (FR), or 3 (NL)
+if (n_setting == 1) {
+  n_currency <- "Pound"
+  n_wtp <- 30000
+  v_wtp <- seq(from = 0, to = 50000, by = 2000) 
+} else if (n_setting == 2) {
+  n_currency <- "Euro"
+  n_wtp <- 50000 # TO BE CHECKED
+  v_wtp <- seq(from = 0, to = 80000, by = 2000) 
+} else if (n_setting == 3) {
+  n_currency <- "Euro"
+  n_wtp <- 80000
+  v_wtp <- seq(from = 0, to = 100000, by = 2000) 
+} else {
+  stop("Invalid n_setting: must be 1 (UK), 2 (FR), or 3 (NL)")
+}
+
+# General population mortality and utility values
+m_gen_pop_utility <- f_gen_pop_utility(n_age_baseline = n_age_baseline, n_t = n_t)
+m_gen_pop_mortality <- f_gen_pop_mortality(n_age_baseline = n_age_baseline, n_t = n_t, n_p_female = n_p_female)
+

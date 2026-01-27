@@ -8,15 +8,8 @@ rm(list = ls())
 source("Model setup.R")            # Model setup and definitions
 
 #### Model Inputs ----
-# Country specific
-n_currency <- "Pound"
-n_wtp <- 30000 # willingness to pay value
-v_wtp <- seq(from = 0, to = 50000, by = 2000)  # willingness to pay vector
-
 # Create a dataframe for probabilistic sensitivity analysis (PSA) inputs
-m_gen_pop_utility <- f_gen_pop_utility(n_age_baseline = n_age_baseline, n_t = n_t)
-m_gen_pop_mortality <- f_gen_pop_mortality(n_age_baseline = n_age_baseline, n_t = n_t, n_p_female = n_p_female)
-df_input <- f_input(n_sim = n_sim)
+df_input <- f_input(n_sim = n_sim, setting = n_setting)
 
 ##### Obtain intermediate results using wrapper intermediate function ----
 # Intermediate outcomes are stored in a 3D array with the following structure: cycles, outcomes, simulations. 
