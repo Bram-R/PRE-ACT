@@ -14,13 +14,14 @@ for (d in dirs) {
 
 # Load and install necessary libraries
 required_packages <- c(
-  "docstring", "DiagrammeR", "dampack", "BCEA", "matrixStats", "summarytools"
+  "docstring", "DiagrammeR", "DiagrammeRsvg", "rsvg",
+  "dampack", "BCEA", "matrixStats", "summarytools"
 )
 new_packages <- required_packages[!(required_packages %in% installed.packages()[, "Package"])]
 if (length(new_packages)) install.packages(new_packages)
 suppressPackageStartupMessages(lapply(required_packages, require, character.only = TRUE))
 
-rm(required_packages, new_packages)
+rm(required_packages, new_packages, d, dirs)
 
 # Load custom functions
 source("f_stm_diagram.R")          # check function using: docstring(f_stm_diagram)
@@ -40,6 +41,7 @@ v_treatments <- c("Current_practice",
 n_treatments <- length(v_treatments)                    # Number of treatments
 v_tox <- c("arm_lymphedema", "pain", 
            "fatigue", "breast_atrophy")                 # Vector of toxicity names
+n_tox  <- length(v_tox)                                 # Number of toxicities
 n_t <- 40 * 12                                          # Model time horizon (monthly cycle)
 n_sim <- 5000                                           # Number of Monte Carlo simulations
 n_age_baseline <- 60                                    # Baseline age

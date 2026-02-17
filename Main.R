@@ -27,7 +27,14 @@ transitions <- data.frame(
   label = rep("", 10) 
 )
 
-f_stm_diagram(state_labels, transitions)
+# f_stm_diagram(state_labels, transitions) # Shows model Figure in Viewer
+
+rsvg_png( # Save model structure figure as .png
+  charToRaw(export_svg(
+    f_stm_diagram(state_labels, transitions)
+  )), file = "plots/Model_structure.png"
+)
+
 rm(state_labels, transitions)
 rm(validate_state_labels, validate_transitions, generate_nodes, generate_edges, get_self_loop_style)
 
@@ -46,7 +53,7 @@ inputs_overview <- data.frame( # dataframe to be used for OWSA
   max = as.numeric(lapply(df_input, max)) # max values
 ) # close params_range dataframe 
 
-sink(file = paste0("text/", "Inputs_overview.txt"))
+sink(file = paste0("text/Setting_", n_setting, "_Inputs_overview.txt"))
 cat("\n")
 inputs_overview
 cat("\n")
@@ -67,25 +74,25 @@ m_results <- matrix(
 for (x in 1:n_sim) m_results[x, ] <- f_model(df_input[x, ])
 
 # obtain dampack object
-v_out_mean <- as.vector(colMeans(m_results[, 1:4])) # calculate average results
+v_out_mean <- as.vector(colMeans(m_results[, 1:(n_treatments * 2)])) # calculate average results
 
 obj_icers <- calculate_icers( # create calculate_icers object
-  cost = v_out_mean[1:2], # mean costs per strategy
-  effect = v_out_mean[3:4], # mean effects per strategy
+  cost = v_out_mean[1:n_treatments], # mean costs per strategy
+  effect = v_out_mean[(n_treatments + 1):(n_treatments * 2)], # mean effects per strategy
   strategies = v_treatments # vector of strategy names
 ) # calculate_icers end
 
 obj_psa_dam <- make_psa_obj( # generate dampack PSA object
-  cost = as.data.frame(m_results[,1:2]), # dataframe of costs
-  effectiveness = as.data.frame(m_results[,3:4]), # dataframe of effects
+  cost = as.data.frame(m_results[,1:n_treatments]), # dataframe of costs
+  effectiveness = as.data.frame(m_results[,(n_treatments + 1):(n_treatments * 2)]), # dataframe of effects
   parameters = df_input, # dataframe of input parameters
   strategies = v_treatments, # vector of strategy names
 ) # end make_psa_obj
 
 # obtain bcea object
 obj_bcea <- bcea( # create bcea object
-  e = m_results[,3:4], # matrix of effects
-  c = m_results[,1:2], # matrix of costs
+  e = m_results[,(n_treatments + 1):(n_treatments * 2)], # matrix of effects
+  c = m_results[,1:n_treatments], # matrix of costs
   ref = 2, # selects the 2nd row of (e,c) as reference intervention
   interventions = v_treatments, # vector of strategy names
   Kmax = 100000 # maximum value possible for the wtp
@@ -96,7 +103,7 @@ obj_bcea <- bcea( # create bcea object
 for (x in 1:dim(m_results)[2]) {
   v_result <- m_results[, x]
   
-  png(file = paste0("plots/", "convergence_", colnames(m_results)[x], ".png"), width = 1500, height = 1500)
+  png(file = paste0("plots/Setting_", n_setting, "_convergence_", colnames(m_results)[x], ".png"), width = 1500, height = 1500)
   plot(cumsum(v_result) / seq_along(v_result), 
        type = "l",
        xlab = "Number of simulations",
@@ -127,7 +134,7 @@ m_inc_results <- matrix(
 for (x in 1:dim(m_inc_results)[2]) {
   v_result <- m_inc_results[, x]
   
-  png(file = paste0("plots/", "convergence_", colnames(m_inc_results)[x], ".png"), width = 1500, height = 1500)
+  png(file = paste0("plots/Setting_", n_setting, "_convergence_", colnames(m_inc_results)[x], ".png"), width = 1500, height = 1500)
   plot(cumsum(v_result) / seq_along(v_result), 
        type = "l",
        xlab = "Number of simulations",
@@ -150,7 +157,7 @@ plot(density(m_results[,2]))
 plot(density(m_results[,3]))
 plot(density(m_results[,4]))
 
-sink(file = paste0("text/", "Probabilistic_base_case.txt"))
+sink(file = paste0("text/Setting_", n_setting, "_Probabilistic_base_case.txt"))
 cat("\n")
 obj_icers
 cat("\n")
@@ -165,7 +172,7 @@ sink()
 # iqaly_CrI <- quantile(m_results[,3] - m_results[,4], probs = c(0.025, 0.975))
 
 # Cost effectiveness frontier
-png(file = paste0("plots/", "ce_frontier", ".png"), width = 1500, height = 1500)
+png(file = paste0("plots/Setting_", n_setting, "_ce_frontier", ".png"), width = 1500, height = 1500)
 plot(
   x = obj_icers, # icers object
   currency = n_currency, # costs units
@@ -175,7 +182,7 @@ plot(
 dev.off()
 
 # Incremental cost effectiveness plane
-png(file = paste0("plots/", "ice_plane", ".png"), width = 1500, height = 1500)
+png(file = paste0("plots/Setting_", n_setting, "_ice_plane", ".png"), width = 1500, height = 1500)
 contour2(
   he = obj_bcea, # bcea object
   wtp = n_wtp, # selects the wtp
@@ -189,7 +196,7 @@ contour2(
 dev.off()
 
 # Incremental Benefit plots
-png(file = paste0("plots/", "inmb_vs_wtp", ".png"), width = 1500, height = 1500)
+png(file = paste0("plots/Setting_", n_setting, "_inmb_vs_wtp", ".png"), width = 1500, height = 1500)
 eib.plot(
   he = obj_bcea, # bcea object
   comparison = 1, # if more than 2 interventions, selects the pairwise comparison
@@ -198,7 +205,7 @@ eib.plot(
 ) # eib.plot end
 dev.off()
 
-png(file = paste0("plots/", "inmb_density", ".png"), width = 1500, height = 1500)
+png(file = paste0("plots/Setting_", n_setting, "_inmb_density", ".png"), width = 1500, height = 1500)
 ib.plot(
   he = obj_bcea, # bcea object
   comparison = 1, # if more than 2 interventions, selects the pairwise comparison
@@ -208,7 +215,7 @@ ib.plot(
 dev.off()
 
 # CEAC
-png(file = paste0("plots/", "ceac", ".png"), width = 1500, height = 1500)
+png(file = paste0("plots/Setting_", n_setting, "_ceac", ".png"), width = 1500, height = 1500)
 plot(
   ceac(
     psa = obj_psa_dam, 
@@ -222,7 +229,7 @@ plot(
 dev.off()
 
 # ELC
-png(file = paste0("plots/", "elc", ".png"), width = 1500, height = 1500)
+png(file = paste0("plots/Setting_", n_setting, "_elc", ".png"), width = 1500, height = 1500)
 plot(
   calc_exp_loss(
     psa = obj_psa_dam, 
@@ -235,7 +242,7 @@ plot(
 dev.off()
 
 # EVPI (per patient)
-png(file = paste0("plots/", "individual_evpi", ".png"), width = 1500, height = 1500)
+png(file = paste0("plots/Setting_", n_setting, "_individual_evpi", ".png"), width = 1500, height = 1500)
 plot(
   calc_evpi(
     psa = obj_psa_dam, 
@@ -249,7 +256,7 @@ plot(
 dev.off()
 
 # info rank
-png(file = paste0("plots/", "info_rank", ".png"), width = 1500, height = 1500)
+png(file = paste0("plots/Setting_", n_setting, "_info_rank", ".png"), width = 1500, height = 1500)
 info.rank(
   parameter = 1:ncol(df_input),
   inp = createInputs(inputs = df_input, print_is_linear_comb = FALSE),

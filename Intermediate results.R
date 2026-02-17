@@ -26,7 +26,6 @@ a_out_interm <- f_wrapper_intermediate(df_input)
 
 ##### Summary of intermediate outcomes ----
 v_res <- rowMeans(colSums(a_out_interm, dims = 1))
-
 v_res
 
 # Validate intermediate outcomes (comparing the results below with the probabilistic base-case results)
@@ -35,12 +34,15 @@ v_res
 # sum(v_res[19:27])
 # sum(v_res[28:36])
 
+# Create df_tmp (required for dfSummary())
+df_tmp <- as.data.frame(t(colSums(a_out_interm, dims = 1)))
+
 txt <- capture.output(
   print(
     dfSummary(
-      t(colSums(a_out_interm, dims = 1)), # Convert to data frame automatically
+      df_tmp, 
       round.digits = 3,
-      style = "grid",
+      #style = "grid",
       plain.ascii = FALSE,
       graph.magnif = 1.2,
       headings = FALSE,
@@ -51,7 +53,8 @@ txt <- capture.output(
     )
   )
 )
-writeLines(txt, "text/Intermediate_results.txt")
+writeLines(txt, paste0("text/Setting_", n_setting, "_Intermediate_results.txt"))
+rm(df_tmp, txt)
 
 ##### Costs and QALYs per cycle ----
 a_out_cycle_res <- array(
@@ -74,7 +77,7 @@ m_out_cycle_res_percentiles <- cbind(
 )
 
 # Probabilistic costs
-png(file = paste0("plots/", "costs_vs_time_", v_treatments[1], ".png"), width = 1500, height = 1500)
+png(file = paste0("plots/Setting_", n_setting, "_costs_vs_time_", v_treatments[1], ".png"), width = 1500, height = 1500)
 matplot(
   x = 0:n_t,
   y = cbind(
@@ -100,7 +103,7 @@ legend(
 )
 dev.off()
 
-png(file = paste0("plots/", "costs_vs_time_", v_treatments[2], ".png"), width = 1500, height = 1500)
+png(file = paste0("plots/Setting_", n_setting, "_costs_vs_time_", v_treatments[2], ".png"), width = 1500, height = 1500)
 matplot(
   x = 0:n_t,
   y = cbind(
@@ -126,7 +129,7 @@ legend(
 )
 dev.off()
 
-png(file = paste0("plots/", "costs_vs_time", ".png"), width = 1500, height = 1500)
+png(file = paste0("plots/Setting_", n_setting, "_costs_vs_time", ".png"), width = 1500, height = 1500)
 matplot(
   x = 0:n_t,
   y = cbind(
@@ -152,7 +155,7 @@ legend(
 dev.off()
 
 # Probabilistic QALYs 
-png(file = paste0("plots/", "qalys_vs_time_", v_treatments[1], ".png"), width = 1500, height = 1500)
+png(file = paste0("plots/Setting_", n_setting, "_qalys_vs_time_", v_treatments[1], ".png"), width = 1500, height = 1500)
 matplot(
   x = 0:n_t,
   y = cbind(
@@ -178,7 +181,7 @@ legend(
 )
 dev.off()
 
-png(file = paste0("plots/", "qalys_vs_time_", v_treatments[2], ".png"), width = 1500, height = 1500)
+png(file = paste0("plots/Setting_", n_setting, "_qalys_vs_time_", v_treatments[2], ".png"), width = 1500, height = 1500)
 matplot(
   x = 0:n_t,
   y = cbind(
@@ -204,7 +207,7 @@ legend(
 )
 dev.off()
 
-png(file = paste0("plots/", "qalys_vs_time", ".png"), width = 1500, height = 1500)
+png(file = paste0("plots/Setting_", n_setting, "_qalys_vs_time", ".png"), width = 1500, height = 1500)
 matplot(
   x = 0:n_t,
   y = cbind(
@@ -243,7 +246,7 @@ m_toxicity_percentiles <- cbind(
 )
 
 # Toxicity incidence
-png(file = paste0("plots/", "tox_vs_time", ".png"), width = 1500, height = 1500)
+png(file = paste0("plots/Setting_", n_setting, "_tox_vs_time", ".png"), width = 1500, height = 1500)
 matplot(
   x = 0:n_t,
   y = m_toxicity[, 1:8], 
@@ -267,7 +270,7 @@ legend(
 dev.off()
 
 # Arm lymphedema incidence
-png(file = paste0("plots/", "arm_lymphedema_vs_time", ".png"), width = 1500, height = 1500)
+png(file = paste0("plots/Setting_", n_setting, "_arm_lymphedema_vs_time", ".png"), width = 1500, height = 1500)
 matplot(
   x = 0:n_t,
   y = cbind(
@@ -302,7 +305,7 @@ dev.off()
 m_trace <- rowMeans(a_out_interm[, c(37:40, 46:49), ], dims = 2)
 
 # Probabilistic LYs
-png(file = paste0("plots/", "ly_by_hs_vs_time", ".png"), width = 1500, height = 1500)
+png(file = paste0("plots/Setting_", n_setting, "_ly_by_hs_vs_time", ".png"), width = 1500, height = 1500)
 matplot(
   x = 0:n_t,
   y = m_trace[, 1:8], 
@@ -329,7 +332,7 @@ dev.off()
 m_out_dis_cycle_res <- rowMeans(a_out_interm[, 1:36, ], dims = 2)
 
 # Health state costs
-png(file = paste0("plots/", "costs_by_hs_vs_time", ".png"), width = 1500, height = 1500)
+png(file = paste0("plots/Setting_", n_setting, "_costs_by_hs_vs_time", ".png"), width = 1500, height = 1500)
 matplot(
   x = 0:n_t,
   y = m_out_dis_cycle_res[, 1:18], 
@@ -352,7 +355,7 @@ legend(
 dev.off()
 
 # Health state QALYs
-png(file = paste0("plots/", "qalys_by_hs_vs_time", ".png"), width = 1500, height = 1500)
+png(file = paste0("plots/Setting_", n_setting, "_qalys_by_hs_vs_time", ".png"), width = 1500, height = 1500)
 matplot(
   x = 0:n_t,
   y = m_out_dis_cycle_res[, 19:36], 

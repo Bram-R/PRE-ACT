@@ -112,7 +112,7 @@ obj_twsa_dam6 <- run_twsa_det( # generate dampack TWSA object
 
 #### Deterministic sensitivity analyses results ----
 # Optimal strategy plots
-png(file = paste0("plots/", "opt_strat_", "QALY.png"), width = 1500, height = 1500)
+png(file = paste0("plots/Setting_", n_setting, "_opt_strat_", "QALY.png"), width = 1500, height = 1500)
 owsa_opt_strat( # gives error as no parameter leads to changes in optimal strategy as they vary
   obj_owsa_dam$owsa_QALY,
   plot_const = FALSE, # TRUE = do also plot parameters that don't lead to changes in optimal strategy as they vary
@@ -120,7 +120,7 @@ owsa_opt_strat( # gives error as no parameter leads to changes in optimal strate
 ) # owsa_opt_strat end
 dev.off()
 
-png(file = paste0("plots/", "opt_strat_", "Cost.png"), width = 1500, height = 1500)
+png(file = paste0("plots/Setting_", n_setting, "_opt_strat_", "Cost.png"), width = 1500, height = 1500)
 owsa_opt_strat( # gives error as no parameter leads to changes in optimal strategy as they vary
   obj_owsa_dam$owsa_Cost,
   maximize = FALSE, # need to minimize costs
@@ -129,7 +129,7 @@ owsa_opt_strat( # gives error as no parameter leads to changes in optimal strate
 ) # owsa_opt_strat end
 dev.off()
 
-png(file = paste0("plots/", "opt_strat_", "NMB.png"), width = 1500, height = 1500)
+png(file = paste0("plots/Setting_", n_setting, "_opt_strat_", "NMB.png"), width = 1500, height = 1500)
 owsa_opt_strat(
   obj_owsa_dam$owsa_NMB,
   plot_const = FALSE, # TRUE = do also plot parameters that don't lead to changes in optimal strategy as they vary
@@ -138,7 +138,7 @@ owsa_opt_strat(
 dev.off()
 
 # One way sensitivity analyses plots
-png(file = paste0("plots/", "owsa_", "QALY.png"), width = 1500, height = 1500)
+png(file = paste0("plots/Setting_", n_setting, "_owsa_", "QALY.png"), width = 1500, height = 1500)
 plot(
   obj_owsa_dam$owsa_QALY,
   n_y_ticks = 3, 
@@ -146,7 +146,7 @@ plot(
 ) # plot end
 dev.off()
 
-png(file = paste0("plots/", "owsa_", "Cost.png"), width = 1500, height = 1500)
+png(file = paste0("plots/Setting_", n_setting, "_owsa_", "Cost.png"), width = 1500, height = 1500)
 plot(
   obj_owsa_dam$owsa_Cost,
   n_y_ticks = 3, 
@@ -154,7 +154,7 @@ plot(
 ) # plot end
 dev.off()
 
-png(file = paste0("plots/", "owsa_", "NMB.png"), width = 1500, height = 1500)
+png(file = paste0("plots/Setting_", n_setting, "_owsa_", "NMB.png"), width = 1500, height = 1500)
 plot(
   obj_owsa_dam$owsa_NMB,
   n_y_ticks = 3, 
@@ -163,28 +163,28 @@ plot(
 dev.off()
 
 # Tornado plots
-png(file = paste0("plots/", "tornado_", "iQALY.png"), width = 1500, height = 1500)
+png(file = paste0("plots/Setting_", n_setting, "_tornado_", "iQALY.png"), width = 1500, height = 1500)
 owsa_tornado(
   obj_owsa_dam$owsa_iQALY,
   #min_rel_diff = 0.05 # only plot parameters that lead to a relative change in the outcome greater than or equal to this value
 ) # owsa_tornado end
 dev.off()
 
-png(file = paste0("plots/", "tornado_", "iCosts.png"), width = 1500, height = 1500)
+png(file = paste0("plots/Setting_", n_setting, "_tornado_", "iCosts.png"), width = 1500, height = 1500)
 owsa_tornado(
   obj_owsa_dam$owsa_iCost,
   #min_rel_diff = 0.05 # only plot parameters that lead to a relative change in the outcome greater than or equal to this value
 ) # owsa_tornado end
 dev.off()
 
-png(file = paste0("plots/", "tornado_", "iNMB.png"), width = 1500, height = 1500)
+png(file = paste0("plots/Setting_", n_setting, "_tornado_", "iNMB.png"), width = 1500, height = 1500)
 owsa_tornado(
   obj_owsa_dam$owsa_iNMB,
   #min_rel_diff = 0.05 # only plot parameters that lead to a relative change in the outcome greater than or equal to this value
 ) # owsa_tornado end
 dev.off()
 
-png(file = paste0("plots/", "tornado_", "iCER.png"), width = 1500, height = 1500)
+png(file = paste0("plots/Setting_", n_setting, "_tornado_", "iCER.png"), width = 1500, height = 1500)
 owsa_tornado(
   obj_owsa_dam$owsa_iCER,
   #min_rel_diff = 0.05 # only plot parameters that lead to a relative change in the outcome greater than or equal to this value
@@ -192,77 +192,77 @@ owsa_tornado(
 dev.off()
 
 # Two way sensitivity analyses strategy plots Cost
-png(file = paste0("plots/", "twsa_cost_", "1.png"), width = 1500, height = 1500)
+png(file = paste0("plots/Setting_", n_setting, "_twsa_cost_", "1.png"), width = 1500, height = 1500)
 plot(obj_twsa_dam1$twsa_Cost)
 dev.off()
 
-png(file = paste0("plots/", "twsa_cost_", "2.png"), width = 1500, height = 1500)
+png(file = paste0("plots/Setting_", n_setting, "_twsa_cost_", "2.png"), width = 1500, height = 1500)
 plot(obj_twsa_dam2$twsa_Cost)
 dev.off()
 
-png(file = paste0("plots/", "twsa_cost_", "3.png"), width = 1500, height = 1500)
+png(file = paste0("plots/Setting_", n_setting, "_twsa_cost_", "3.png"), width = 1500, height = 1500)
 plot(obj_twsa_dam3$twsa_Cost)
 dev.off()
 
-png(file = paste0("plots/", "twsa_cost_", "4.png"), width = 1500, height = 1500)
+png(file = paste0("plots/Setting_", n_setting, "_twsa_cost_", "4.png"), width = 1500, height = 1500)
 plot(obj_twsa_dam4$twsa_Cost)
 dev.off()
 
-png(file = paste0("plots/", "twsa_cost_", "5.png"), width = 1500, height = 1500)
+png(file = paste0("plots/Setting_", n_setting, "_twsa_cost_", "5.png"), width = 1500, height = 1500)
 plot(obj_twsa_dam5$twsa_Cost)
 dev.off()
 
-png(file = paste0("plots/", "twsa_cost_", "6.png"), width = 1500, height = 1500)
+png(file = paste0("plots/Setting_", n_setting, "_twsa_cost_", "6.png"), width = 1500, height = 1500)
 plot(obj_twsa_dam6$twsa_Cost)
 dev.off()
 
 # Two way sensitivity analyses strategy plots QALY
-png(file = paste0("plots/", "twsa_qaly_", "1.png"), width = 1500, height = 1500)
+png(file = paste0("plots/Setting_", n_setting, "_twsa_qaly_", "1.png"), width = 1500, height = 1500)
 plot(obj_twsa_dam1$twsa_QALY)
 dev.off()
 
-png(file = paste0("plots/", "twsa_qaly_", "2.png"), width = 1500, height = 1500)
+png(file = paste0("plots/Setting_", n_setting, "_twsa_qaly_", "2.png"), width = 1500, height = 1500)
 plot(obj_twsa_dam2$twsa_QALY)
 dev.off()
 
-png(file = paste0("plots/", "twsa_qaly_", "3.png"), width = 1500, height = 1500)
+png(file = paste0("plots/Setting_", n_setting, "_twsa_qaly_", "3.png"), width = 1500, height = 1500)
 plot(obj_twsa_dam3$twsa_QALY)
 dev.off()
 
-png(file = paste0("plots/", "twsa_qaly_", "4.png"), width = 1500, height = 1500)
+png(file = paste0("plots/Setting_", n_setting, "_twsa_qaly_", "4.png"), width = 1500, height = 1500)
 plot(obj_twsa_dam4$twsa_QALY)
 dev.off()
 
-png(file = paste0("plots/", "twsa_qaly_", "5.png"), width = 1500, height = 1500)
+png(file = paste0("plots/Setting_", n_setting, "_twsa_qaly_", "5.png"), width = 1500, height = 1500)
 plot(obj_twsa_dam5$twsa_QALY)
 dev.off()
 
-png(file = paste0("plots/", "twsa_qaly_", "6.png"), width = 1500, height = 1500)
+png(file = paste0("plots/Setting_", n_setting, "_twsa_qaly_", "6.png"), width = 1500, height = 1500)
 plot(obj_twsa_dam6$twsa_QALY)
 dev.off()
 
 # Two way sensitivity analyses strategy plots NMB
-png(file = paste0("plots/", "twsa_nmb_", "1.png"), width = 1500, height = 1500)
+png(file = paste0("plots/Setting_", n_setting, "_twsa_nmb_", "1.png"), width = 1500, height = 1500)
 plot(obj_twsa_dam1$twsa_NMB)
 dev.off()
 
-png(file = paste0("plots/", "twsa_nmb_", "2.png"), width = 1500, height = 1500)
+png(file = paste0("plots/Setting_", n_setting, "_twsa_nmb_", "2.png"), width = 1500, height = 1500)
 plot(obj_twsa_dam2$twsa_NMB)
 dev.off()
 
-png(file = paste0("plots/", "twsa_nmb_", "3.png"), width = 1500, height = 1500)
+png(file = paste0("plots/Setting_", n_setting, "_twsa_nmb_", "3.png"), width = 1500, height = 1500)
 plot(obj_twsa_dam3$twsa_NMB)
 dev.off()
 
-png(file = paste0("plots/", "twsa_nmb_", "4.png"), width = 1500, height = 1500)
+png(file = paste0("plots/Setting_", n_setting, "_twsa_nmb_", "4.png"), width = 1500, height = 1500)
 plot(obj_twsa_dam4$twsa_NMB)
 dev.off()
 
-png(file = paste0("plots/", "twsa_nmb_", "5.png"), width = 1500, height = 1500)
+png(file = paste0("plots/Setting_", n_setting, "_twsa_nmb_", "5.png"), width = 1500, height = 1500)
 plot(obj_twsa_dam5$twsa_NMB)
 dev.off()
 
-png(file = paste0("plots/", "twsa_nmb_", "6.png"), width = 1500, height = 1500)
+png(file = paste0("plots/Setting_", n_setting, "_twsa_nmb_", "6.png"), width = 1500, height = 1500)
 plot(obj_twsa_dam6$twsa_NMB)
 dev.off()
 
@@ -302,7 +302,7 @@ df_input_scen$cost_arm_lymphedema <- 5000
 m_results_scen_6 <- f_model(df_input_scen)
 
 #### Deterministic scenario analyses results ----
-sink(file = paste0("text/", "Deterministic_scenario_analyses.txt"))
+sink(file = paste0("text/Setting_", n_setting, "_Deterministic_scenario_analyses.txt"))
 cat("\n")
 cat("Deterministic base-case")
 cat("\n")

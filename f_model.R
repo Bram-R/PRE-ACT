@@ -153,7 +153,7 @@ f_model <- function(params, intermediate = FALSE) {
   #### Toxicity over time ----
   a_toxicity <- array(
     data = NA,
-    dim = c(n_treatments, n_t + 1, 4),  
+    dim = c(n_treatments, n_t + 1, n_tox),  
     dimnames = list(treatment = v_treatments, month = 0:n_t, outcome = v_tox)
   )
   
