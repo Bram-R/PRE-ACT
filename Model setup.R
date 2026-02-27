@@ -40,7 +40,7 @@ v_treatments <- c("Current_practice",
                   "Current_practice_with_AI")           # Vector of strategy names
 n_treatments <- length(v_treatments)                    # Number of treatments
 v_tox <- c("arm_lymphedema", "pain", 
-           "fatigue", "breast_atrophy")                 # Vector of toxicity names
+           "fatigue", "fibrosis_induration")                 # Vector of toxicity names
 n_tox  <- length(v_tox)                                 # Number of toxicities
 n_t <- 40 * 12                                          # Model time horizon (monthly cycle)
 n_sim <- 5000                                           # Number of Monte Carlo simulations
@@ -49,6 +49,7 @@ n_p_female <- 1.00                                      # Proportion females
 
 # Country specific
 n_setting <- 1 # must be 1 (UK), 2 (FR), or 3 (NL)
+
 if (n_setting == 1) {
   n_currency <- "Pound"
   n_wtp <- 30000
@@ -66,6 +67,5 @@ if (n_setting == 1) {
 }
 
 # General population mortality and utility values
-m_gen_pop_utility <- f_gen_pop_utility(n_age_baseline = n_age_baseline, n_t = n_t)
-m_gen_pop_mortality <- f_gen_pop_mortality(n_age_baseline = n_age_baseline, n_t = n_t, n_p_female = n_p_female)
-
+m_gen_pop_utility <- f_gen_pop_utility(n_age_baseline = n_age_baseline, n_t = n_t, setting = n_setting)
+m_gen_pop_mortality <- f_gen_pop_mortality(n_age_baseline = n_age_baseline, n_t = n_t, n_p_female = n_p_female, setting = n_setting)

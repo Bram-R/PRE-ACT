@@ -28,11 +28,15 @@ a_out_interm <- f_wrapper_intermediate(df_input)
 v_res <- rowMeans(colSums(a_out_interm, dims = 1))
 v_res
 
-# Validate intermediate outcomes (comparing the results below with the probabilistic base-case results)
+# Validate intermediate outcomes (comparing the results below with the probabilistic base-case results: v_out_mean)
 # sum(v_res[1:9])
 # sum(v_res[10:18])
+# sum(v_res[1:9]) - sum(v_res[10:18])
 # sum(v_res[19:27])
 # sum(v_res[28:36])
+# sum(v_res[19:27]) - sum(v_res[28:36])
+# v_res[1:9] - v_res[10:18] # check intermediate difference in costs
+# v_res[19:27] - v_res[28:36] # check intermediate difference in qalys
 
 # Create df_tmp (required for dfSummary())
 df_tmp <- as.data.frame(t(colSums(a_out_interm, dims = 1)))

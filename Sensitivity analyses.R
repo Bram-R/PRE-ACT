@@ -40,7 +40,7 @@ obj_twsa_dam1 <- run_twsa_det( # generate dampack TWSA object
   progress = TRUE # show progression in console
 ) # end run_twsa_det
 
-df_input_twsa <- df_input_owsa[, c("cost_arm_lymphedema", "hr_prev_arm_lymphedema")] 
+df_input_twsa <- df_input_owsa[, c("cost_arm_lymphedema_event", "hr_prev_arm_lymphedema")] 
 obj_twsa_dam2 <- run_twsa_det( # generate dampack TWSA object
   params_range = data.frame( # dataframe to be used for TWSA
     pars = names(df_input_twsa), # parameter names
@@ -54,7 +54,7 @@ obj_twsa_dam2 <- run_twsa_det( # generate dampack TWSA object
   progress = TRUE # show progression in console
 ) # end run_twsa_det
 
-df_input_twsa <- df_input_owsa[, c("disutility_arm_lymphedema", "cost_arm_lymphedema")] 
+df_input_twsa <- df_input_owsa[, c("disutility_arm_lymphedema", "cost_arm_lymphedema_event")] 
 obj_twsa_dam3 <- run_twsa_det( # generate dampack TWSA object
   params_range = data.frame( # dataframe to be used for TWSA
     pars = names(df_input_twsa), # parameter names
@@ -82,7 +82,7 @@ obj_twsa_dam4 <- run_twsa_det( # generate dampack TWSA object
   progress = TRUE # show progression in console
 ) # end run_twsa_det
 
-df_input_twsa <- df_input_owsa[, c("hr_prev_arm_lymphedema", "cost_prev_arm_lymphedema")] 
+df_input_twsa <- df_input_owsa[, c("hr_prev_arm_lymphedema", "cost_prev_arm_lymphedema_event")] 
 obj_twsa_dam5 <- run_twsa_det( # generate dampack TWSA object
   params_range = data.frame( # dataframe to be used for TWSA
     pars = names(df_input_twsa), # parameter names
@@ -96,7 +96,7 @@ obj_twsa_dam5 <- run_twsa_det( # generate dampack TWSA object
   progress = TRUE # show progression in console
 ) # end run_twsa_det
 
-df_input_twsa <- df_input_owsa[, c("tp_ef_ef", "cost_arm_lymphedema")] 
+df_input_twsa <- df_input_owsa[, c("tp_ef_ef", "cost_arm_lymphedema_event")] 
 obj_twsa_dam6 <- run_twsa_det( # generate dampack TWSA object
   params_range = data.frame( # dataframe to be used for TWSA
     pars = names(df_input_twsa), # parameter names

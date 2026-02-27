@@ -70,8 +70,11 @@ m_results <- matrix(
   dimnames = list(1:n_sim, c(paste0("Cost_", v_treatments), paste0("QALY_", v_treatments), paste0("LY_", v_treatments)))
 )
 
-# Run PSA
+# Run probabilistic analyses
 for (x in 1:n_sim) m_results[x, ] <- f_model(df_input[x, ])
+
+# Run deterministic analyses
+v_out_det <- as.vector(f_model(f_input(n_sim = 1, setting = n_setting))) 
 
 # obtain dampack object
 v_out_mean <- as.vector(colMeans(m_results[, 1:(n_treatments * 2)])) # calculate average results
@@ -79,6 +82,12 @@ v_out_mean <- as.vector(colMeans(m_results[, 1:(n_treatments * 2)])) # calculate
 obj_icers <- calculate_icers( # create calculate_icers object
   cost = v_out_mean[1:n_treatments], # mean costs per strategy
   effect = v_out_mean[(n_treatments + 1):(n_treatments * 2)], # mean effects per strategy
+  strategies = v_treatments # vector of strategy names
+) # calculate_icers end
+
+obj_icers_det <- calculate_icers( # create calculate_icers object
+  cost = v_out_det[1:n_treatments], # costs per strategy
+  effect = v_out_det[(n_treatments + 1):(n_treatments * 2)], # effects per strategy
   strategies = v_treatments # vector of strategy names
 ) # calculate_icers end
 
@@ -102,9 +111,9 @@ obj_bcea <- bcea( # create bcea object
 # Running mean plots
 for (x in 1:dim(m_results)[2]) {
   v_result <- m_results[, x]
-  
+
   png(file = paste0("plots/Setting_", n_setting, "_convergence_", colnames(m_results)[x], ".png"), width = 1500, height = 1500)
-  plot(cumsum(v_result) / seq_along(v_result), 
+  plot(cumsum(v_result) / seq_along(v_result),
        type = "l",
        xlab = "Number of simulations",
        ylab = "Running mean",
@@ -112,7 +121,7 @@ for (x in 1:dim(m_results)[2]) {
        ylim = c(mean(v_result) - sd(v_result) * 0.5,
                 mean(v_result) + sd(v_result) * 0.5),
        main = paste("Convergence plot -", colnames(m_results)[x]))
-  
+
   abline(h = mean(v_result), col = "red", lty = 2)
   dev.off()
 }
@@ -123,19 +132,19 @@ m_inc_results <- matrix(
     m_results[, 1] - m_results[, 2],                   # iCosts
     m_results[, 3] - m_results[, 4],                   # iQALYs
     m_results[, 5] - m_results[, 6],                   # iLYs
-    (m_results[, 1] - m_results[, 2]) /
-      (m_results[, 3] - m_results[, 4])                # iCER
+    (m_results[, 1] - m_results[, 2]) -
+      (m_results[, 3] - m_results[, 4]) * n_wtp        # iNMB
   ),
   nrow = n_sim,
   ncol = 4,
-  dimnames = list(1:n_sim, c("iCosts", "iQALYs", "iLYs", "iCER"))
+  dimnames = list(1:n_sim, c("iCosts", "iQALYs", "iLYs", "iNMB"))
 )
 
 for (x in 1:dim(m_inc_results)[2]) {
   v_result <- m_inc_results[, x]
-  
+
   png(file = paste0("plots/Setting_", n_setting, "_convergence_", colnames(m_inc_results)[x], ".png"), width = 1500, height = 1500)
-  plot(cumsum(v_result) / seq_along(v_result), 
+  plot(cumsum(v_result) / seq_along(v_result),
        type = "l",
        xlab = "Number of simulations",
        ylab = "Running mean",
@@ -143,7 +152,7 @@ for (x in 1:dim(m_inc_results)[2]) {
        ylim = c(mean(v_result) - sd(v_result) * 0.5,
                 mean(v_result) + sd(v_result) * 0.5),
        main = paste("Convergence plot -", colnames(m_inc_results)[x]))
-  
+
   abline(h = mean(v_result), col = "red", lty = 2)
   dev.off()
 }
@@ -160,6 +169,12 @@ plot(density(m_results[,4]))
 sink(file = paste0("text/Setting_", n_setting, "_Probabilistic_base_case.txt"))
 cat("\n")
 obj_icers
+cat("\n")
+sink()
+
+sink(file = paste0("text/Setting_", n_setting, "_Deterministic_base_case.txt"))
+cat("\n")
+obj_icers_det
 cat("\n")
 sink()
 
@@ -262,8 +277,7 @@ info.rank(
   inp = createInputs(inputs = df_input, print_is_linear_comb = FALSE),
   he = obj_bcea,
   wtp = n_wtp,
-  howManyPars = 10, 
+  howManyPars = 10,
   graph = "base"
 ) # plot end
 dev.off()
-

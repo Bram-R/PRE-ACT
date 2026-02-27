@@ -1,9 +1,10 @@
-f_gen_pop_utility <- function(n_age_baseline, n_t) {
+f_gen_pop_utility <- function(n_age_baseline, n_t, setting = 1) {
   #' @title Prepare Utility Data for State Transition Model
   #' @description Processes general population utility data to match the monthly cycles
   #' of a state transition model.
   #' @param n_age_baseline Integer. The starting age of the cohort.
   #' @param n_t Integer. The total number of months in the model.
+  #' @param setting Integer. Selected setting `1` = UK, `2` = FR, `3` = NL. Default is `1`.
   #' @return A data frame containing utility values replicated for monthly cycles, with
   #'   columns for age, utility, and cycle number.
   #' @examples
@@ -16,6 +17,17 @@ f_gen_pop_utility <- function(n_age_baseline, n_t) {
     "Gen_pop_utility.csv",
     fileEncoding = "UTF-8-BOM"
   )
+
+  # Select specific setting
+  if (setting == 1) {
+    utility_data$utility <- utility_data$utility_UK
+  } else if (setting == 2) {
+    utility_data$utility <- utility_data$utility_FR
+  } else if (setting == 3) {
+    utility_data$utility <- utility_data$utility_NL
+  } else {
+    stop("Invalid setting: must be 1 (UK), 2 (FR), or 3 (NL)")
+  }
   
   # Calculate the age range
   age_min <- n_age_baseline                      # Minimum age to include
@@ -24,7 +36,7 @@ f_gen_pop_utility <- function(n_age_baseline, n_t) {
   # Filter utility data for ages within the specified range
   filtered_data <- utility_data[
     utility_data$age >= age_min & utility_data$age <= age_max,  # Filter by age range
-    c("age", "utility_UK")                                      # Select relevant columns
+    c("age", "utility")                                      # Select relevant columns
   ]
   
   # Expand filtered data to match monthly cycles
@@ -36,5 +48,5 @@ f_gen_pop_utility <- function(n_age_baseline, n_t) {
   expanded_data$cycle <- seq_len(nrow(expanded_data))
   
   # Return the processed data
-  return(expanded_data[1:(n_t + 1),]) # remove last 11 rows
+  return(expanded_data[1:(n_t + 1),]) # remove rows beyond time horizon
 }

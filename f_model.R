@@ -23,7 +23,7 @@ f_model <- function(params, intermediate = FALSE) {
   #'       \item \code{cost_t1}, \code{cost_t2}: Strategy-specific costs.
   #'       \item \code{cost_ef_y6}, \code{cost_lrr}, \code{cost_dm}, \code{cost_death}: Costs per health state.
   #'       \item \code{cost_lrr_event}, \code{cost_dm_event}, \code{cost_death_event}: Event-related costs.
-  #'       \item \code{cost_prev_arm_lymphedema}, \code{cost_prev_pain}, \code{cost_prev_fatigue}, \code{cost_prev_breast_atrophy}: Costs of toxicity prevention.
+  #'       \item \code{cost_prev_arm_lymphedema_event}, \code{cost_prev_pain_event}, \code{cost_prev_fatigue_event}, \code{cost_prev_fibrosis_induration_event}: Costs of toxicity prevention.
   #'     }
   #'   \item **Discount Rates:**
   #'     \itemize{
@@ -84,11 +84,11 @@ f_model <- function(params, intermediate = FALSE) {
   )
   
   # Ensure transitions to death are > age and gender matched general population mortality 
-  tp_ef_death <- pmax(m_gen_pop_mortality[, 2], rep((1 - params$tp_ef_ef) * params$p_event_death, n_t)) 
+  tp_ef_death <- pmax(m_gen_pop_mortality$prob, rep((1 - params$tp_ef_ef) * params$p_event_death, n_t)) 
   tp_ef_ef <- pmin(params$tp_ef_ef, 1 - tp_ef_death) # correction for consistency (else negative transitions might occur with higher mortality)   
   
-  tp_lrr_death <- pmax(m_gen_pop_mortality[, 2], params$tp_lrr_death)
-  tp_dm_death <- pmax(m_gen_pop_mortality[, 2], 1 - params$tp_dm_dm)
+  tp_lrr_death <- pmax(m_gen_pop_mortality$prob, params$tp_lrr_death)
+  tp_dm_death <- pmax(m_gen_pop_mortality$prob, 1 - params$tp_dm_dm)
   
   # Transition probabilities for treatment 1
   # From health state 1 "Event free"
@@ -189,18 +189,19 @@ f_model <- function(params, intermediate = FALSE) {
   
   a_toxicity[1,,v_tox[4]] <- f_interpolate_toxicity(data.frame(
     month = c(0, 2, 12, 24, 36, 48, 60, 72, n_t),
-    toxicity = c(params$p_breast_atrophy_m0, params$p_breast_atrophy_m2, params$p_breast_atrophy_m12, params$p_breast_atrophy_m24, 
-                 params$p_breast_atrophy_m36, params$p_breast_atrophy_m48, params$p_breast_atrophy_m60, params$p_breast_atrophy_m72, params$p_breast_atrophy_m72)), 
+    toxicity = c(params$p_fibrosis_induration_m0, params$p_fibrosis_induration_m2, params$p_fibrosis_induration_m12, params$p_fibrosis_induration_m24, 
+                 params$p_fibrosis_induration_m36, params$p_fibrosis_induration_m48, params$p_fibrosis_induration_m60, params$p_fibrosis_induration_m72, params$p_fibrosis_induration_m72)), 
     monthly_cycles = 0:n_t)[,2]
   
-  a_toxicity[2,,v_tox[4]] <- a_toxicity[1,,v_tox[4]] * params$AI_se_breast_atrophy * params$rr_prev_breast_atrophy +
-    a_toxicity[1,,v_tox[4]] * (1 - params$AI_se_breast_atrophy) 
+  a_toxicity[2,,v_tox[4]] <- a_toxicity[1,,v_tox[4]] * params$AI_se_fibrosis_induration * params$rr_prev_fibrosis_induration +
+    a_toxicity[1,,v_tox[4]] * (1 - params$AI_se_fibrosis_induration) 
   
   # Calculate prevalence per toxicity 
-  n_prevalence_arm_lymphedema <- max(a_toxicity[1,,v_tox[1]])
-  n_prevalence_pain <- max(a_toxicity[1,,v_tox[2]])
-  n_prevalence_fatigue <- max(a_toxicity[1,,v_tox[3]])
-  n_prevalence_breast_atrophy <- max(a_toxicity[1,,v_tox[4]])
+  m_tox_max <- apply(a_toxicity, c(1, 3), max)                                             # Max toxicity over time per treatment per toxicity
+  n_prevalence_arm_lymphedema <- m_tox_max[v_treatments[1], v_tox[1]]
+  n_prevalence_pain <- m_tox_max[v_treatments[1], v_tox[2]]
+  n_prevalence_fatigue <- m_tox_max[v_treatments[1], v_tox[3]]
+  n_prevalence_fibrosis_induration <- m_tox_max[v_treatments[1], v_tox[4]]
   
   # Estimate number of patients receiving preventative measures (i.e. proportion of positive tests)
   n_highrisk_arm_lymphedema <- n_prevalence_arm_lymphedema * params$AI_se_arm_lymphedema + # True positives 
@@ -209,15 +210,19 @@ f_model <- function(params, intermediate = FALSE) {
     (1 - n_prevalence_pain) * (1 - params$AI_sp_pain)                                      # False positives
   n_highrisk_fatigue <- n_prevalence_fatigue * params$AI_se_fatigue +                      # True positives 
     (1 - n_prevalence_fatigue) * (1 - params$AI_sp_fatigue)                                # False positives
-  n_highrisk_breast_atrophy <- n_prevalence_breast_atrophy * params$AI_se_breast_atrophy + # True positives 
-    (1 - n_prevalence_breast_atrophy) * (1 - params$AI_sp_breast_atrophy)                  # False positives
+  n_highrisk_fibrosis_induration <- n_prevalence_fibrosis_induration * params$AI_se_fibrosis_induration + # True positives 
+    (1 - n_prevalence_fibrosis_induration) * (1 - params$AI_sp_fibrosis_induration)                  # False positives
   
   #### Outcomes ----
   # calculate discount weight for each cycle
-  m_discount <- matrix(c(1 / (1 + params$discount_costs) ^ (0:n_t / 12), 
-                         1 / (1 + params$discount_qalys) ^ (0:n_t / 12),
-                         1 / (1 + params$discount_lys) ^ (0:n_t / 12)),
-                       nrow = n_t + 1, ncol = 3)
+  m_discount <- cbind((1 + params$discount_costs)^(-(0:n_t)/12),
+                      (1 + params$discount_qalys)^(-(0:n_t)/12),
+                      (1 + params$discount_lys)^(-(0:n_t)/12))
+  
+  m_discount[1:12, ] <- 1                                                              # No discounting in the 1st year
+  m_discount[361:(n_t+1), ] <- cbind((1 + params$discount_costs_30y)^(-(360:n_t)/12),  # Different discounting 30Y+ (FR setting) 
+                                     (1 + params$discount_qalys_30y)^(-(360:n_t)/12),
+                                     (1 + params$discount_lys_30y)^(-(360:n_t)/12))
   
   # Cost and (dis)utility matrices
   m_cost <- matrix(c(params$cost_ef_y6,          # Cost for health state 1 "Event free"
@@ -235,18 +240,18 @@ f_model <- function(params, intermediate = FALSE) {
                         params$utility_death),   # Utility for health state 4 "Death"
                       nrow = n_t + 1, ncol = n_states, byrow = TRUE)
   
-  m_utility <- apply(m_utility, 2, function(col) pmin(m_gen_pop_utility[,2], col)) # Ensure utility  are =< age and gender matched general population utility
+  m_utility <-  pmin(m_utility, m_gen_pop_utility$utility)          # Ensure utility  are =< age and gender matched general population utility
   
   m_tox_cost <- matrix(c(params$cost_arm_lymphedema,                # Monthly costs for arm_lymphedema
                          params$cost_pain,                          # Monthly costs for pain
                          params$cost_fatigue,                       # Monthly costs for fatigue
-                         params$cost_breast_atrophy),               # Monthly costs for breast_atrophy
+                         params$cost_fibrosis_induration),               # Monthly costs for fibrosis_induration
                        nrow = n_t + 1, ncol = 4, byrow = TRUE)
   
   m_tox_disutility <- matrix(c(params$disutility_arm_lymphedema,    # Disutility for arm_lymphedema
                                params$disutility_pain,              # Disutility for pain
                                params$disutility_fatigue,           # Disutility for fatigue
-                               params$disutility_breast_atrophy),   # Disutility for breast_atrophy
+                               params$disutility_fibrosis_induration),   # Disutility for fibrosis_induration
                              nrow = n_t + 1, ncol = 4, byrow = TRUE)
   
   # Calculate LYs, QALYs and costs per cycle
@@ -274,26 +279,34 @@ f_model <- function(params, intermediate = FALSE) {
     rep(m_discount[, 3], each = n_treatments) *               # Multiply by discount factor
     1/12                                                      # Multiply by time correction  (monthly cycles) 
   
-  # Event related costs
-  m_event_costs <- matrix((a_transition_dynamics[, , 1, 2] * params$cost_lrr_event +      # Costs related to developing locoregional recurrence
-                             a_transition_dynamics[, , 1, 3] * params$cost_dm_event +     # Costs related to developing distant metastasis
-                             a_transition_dynamics[, , 2, 3] * params$cost_dm_event +     # Costs related to developing distant metastasis
-                             a_transition_dynamics[, , 1, 4] * params$cost_death_event +  # Costs related to end of life
-                             a_transition_dynamics[, , 2, 4] * params$cost_death_event +  # Costs related to end of life
-                             a_transition_dynamics[, , 3, 4] * params$cost_death_event) * # Costs related to end of life
-                            rep(m_discount[-1, 1], each = n_treatments),                  # Multiply by discount factor
+  # Event related costs 
+  m_event_costs <- matrix((a_transition_dynamics[, , 1, 2] * params$cost_lrr_event +          # Costs related to developing locoregional recurrence
+                             a_transition_dynamics[, , 1, 3] * params$cost_dm_event +         # Costs related to developing distant metastasis
+                             a_transition_dynamics[, , 2, 3] * params$cost_dm_event +         # Costs related to developing distant metastasis
+                             a_transition_dynamics[, , 1, 4] * params$cost_death_event +      # Costs related to end of life
+                             a_transition_dynamics[, , 2, 4] * params$cost_death_event +      # Costs related to end of life
+                             a_transition_dynamics[, , 3, 4] * params$cost_death_event) *     # Costs related to end of life
+                            rep(m_discount[-1, 1], each = n_treatments),                      # Multiply by discount factor
                           nrow = n_treatments, ncol = n_t)
   
+  m_event_costs_tox <- cbind(m_tox_max[,v_tox[1]] * params$cost_arm_lymphedema_event, # Add one off costs related to arm lymphedema
+                             m_tox_max[,v_tox[2]] * params$cost_pain_event,           # Add one off costs related to pain
+                             m_tox_max[,v_tox[3]] * params$cost_fatigue_event,        # Add one off costs related to fatigue
+                             m_tox_max[,v_tox[4]] * params$cost_fibrosis_induration)  # Add one off costs related to fibrosis induration
+  
+  # One off toxicity costs are added to first cycle (assuming no discounting)
+  a_costs_tox[, 1, ] <- m_event_costs_tox
+  
   # Toxicity prevention costs and disutility (assumed in 1st cycle, so no discounting)
-  n_tox_prev_costs <- n_highrisk_arm_lymphedema * params$cost_prev_arm_lymphedema +    
-    n_highrisk_pain * params$cost_prev_pain + 
-    n_highrisk_fatigue * params$cost_prev_fatigue + 
-    n_highrisk_breast_atrophy * params$cost_prev_breast_atrophy 
+  n_tox_prev_costs <- n_highrisk_arm_lymphedema * params$cost_prev_arm_lymphedema_event +    
+    n_highrisk_pain * params$cost_prev_pain_event + 
+    n_highrisk_fatigue * params$cost_prev_fatigue_event + 
+    n_highrisk_fibrosis_induration * params$cost_prev_fibrosis_induration_event 
   
   n_tox_prev_disutility <- n_highrisk_arm_lymphedema * params$disutility_prev_arm_lymphedema +    
     n_highrisk_pain * params$disutility_prev_pain + 
     n_highrisk_fatigue * params$disutility_prev_fatigue + 
-    n_highrisk_breast_atrophy * params$disutility_prev_breast_atrophy 
+    n_highrisk_fibrosis_induration * params$disutility_prev_fibrosis_induration 
   
   #### Results ----
   if(intermediate == FALSE) { 
@@ -342,6 +355,7 @@ f_model <- function(params, intermediate = FALSE) {
              ) # close dimnames 
       ) # end matrix 
     
+    # Costs
     m_res_intermediate[, 1:n_states] <- a_costs[1,,]                                                         # health state costs t1 
     m_res_intermediate[, (n_states + 1):(n_states + length(v_tox))] <- a_costs_tox[1,,]                      # toxicity costs t1 
     m_res_intermediate[, (n_states + 1 + length(v_tox))] <- c(params$cost_t1 + 0,                            # event costs t1 (no n_tox_prev_costs)
@@ -353,6 +367,7 @@ f_model <- function(params, intermediate = FALSE) {
     m_res_intermediate[, n_dim + (n_states + 1 + length(v_tox))] <- c(params$cost_t2 + n_tox_prev_costs,     # event costs t2
                                                                       m_event_costs[2,])    
     
+    # QALYs
     n_dim <- dim(m_res_intermediate)[2] / 3 * 1 
     m_res_intermediate[, n_dim + 1:n_states] <- a_qalys[1,,]                                                 # health state QALYs t1
     m_res_intermediate[, n_dim + (n_states + 1):(n_states + length(v_tox))] <- a_qalys_tox[1,,]              # toxicity QALYs t1
@@ -363,6 +378,7 @@ f_model <- function(params, intermediate = FALSE) {
     m_res_intermediate[, n_dim + (n_states + 1):(n_states + length(v_tox))] <- a_qalys_tox[2,,]              # toxicity QALYs t2
     m_res_intermediate[, n_dim + (n_states + 1 + length(v_tox))] <- c(n_tox_prev_disutility, rep(0, n_t))    # event QALYs t2 
     
+    # LYs / incidence
     n_dim <- dim(m_res_intermediate)[2] / 3 * 2 
     m_res_intermediate[, n_dim + 1:n_states] <- cbind(a_lys[1,,], rep(0, n_t + 1))                           # health state LYs t1
     m_res_intermediate[, n_dim + (n_states + 1):(n_states + length(v_tox))] <- a_toxicity[1,,]               # toxicity incidence t1
