@@ -56,8 +56,8 @@ if (n_setting == 1) {
   v_wtp <- seq(from = 0, to = 50000, by = 2000) 
 } else if (n_setting == 2) {
   n_currency <- "Euro"
-  n_wtp <- 112586  # Based on: https://www.ispor.org/docs/default-source/euro2023/2023ispor-poster-ee759129256-pdf.pdf
-  v_wtp <- seq(from = 0, to = 120000, by = 2000) 
+  n_wtp <- 60000  
+  v_wtp <- seq(from = 0, to = 100000, by = 2000) 
 } else if (n_setting == 3) {
   n_currency <- "Euro"
   n_wtp <- 80000
