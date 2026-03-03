@@ -166,7 +166,7 @@ f_input <- function(n_sim = 5000, seed = 12345, setting = 1) {
       cost_death_event = generate_gamma(11549.86, 11549.86 * 0.30, n_sim, is_psa),                                    
       
       # Toxicity prevention costs (e.g. arm sleeve) - one-off
-      cost_prev_arm_lymphedema_event = generate_gamma(666.3204523, 11.27235178, n_sim, is_psa),    # Used Belgian HCRU and cost, inflated with UK CPI.
+      cost_prev_arm_lymphedema_event = generate_gamma(666.3204523, 154.9692158, n_sim, is_psa),    # Used Belgian HCRU and cost, inflated with UK CPI.
       cost_prev_pain_event = generate_static(0, n_sim, is_psa),    
       cost_prev_fatigue_event = generate_static(0, n_sim, is_psa),                                                        
       cost_prev_fibrosis_induration_event = generate_static(0, n_sim, is_psa),                                            
@@ -220,7 +220,7 @@ f_input <- function(n_sim = 5000, seed = 12345, setting = 1) {
       cost_death_event = generate_gamma(4803.938484, 4803.938484 * 0.30, n_sim, is_psa),                                    
       
       # Toxicity prevention costs (e.g. arm sleeve) - one-off
-      cost_prev_arm_lymphedema_event = generate_gamma(652.4742443, 11.03811114, n_sim, is_psa),    # Used Belgian HCRU and cost, inflated with French CPI.
+      cost_prev_arm_lymphedema_event = generate_gamma(652.4742443, 151.7489395, n_sim, is_psa),    # Used Belgian HCRU and cost, inflated with French CPI.
       cost_prev_pain_event = generate_static(0, n_sim, is_psa),                                                           
       cost_prev_fatigue_event = generate_static(0, n_sim, is_psa),                                                        
       cost_prev_fibrosis_induration_event = generate_static(0, n_sim, is_psa),                                            
@@ -274,7 +274,7 @@ f_input <- function(n_sim = 5000, seed = 12345, setting = 1) {
       cost_death_event = generate_gamma(6183.78592, 6183.78592 * 0.30, n_sim, is_psa),                                    
       
       # Toxicity prevention costs (e.g. arm sleeve) - one-off
-      cost_prev_arm_lymphedema_event = generate_gamma(805.311062, 13.62369945, n_sim, is_psa),    # Used Belgian HCRU and cost, inflated with Dutch CPI.
+      cost_prev_arm_lymphedema_event = generate_gamma(805.311062, 187.2949019, n_sim, is_psa),    # Used Belgian HCRU and cost, inflated with Dutch CPI.
       cost_prev_pain_event = generate_static(0, n_sim, is_psa),                                                           
       cost_prev_fatigue_event = generate_static(0, n_sim, is_psa),                                                        
       cost_prev_fibrosis_induration_event = generate_static(0, n_sim, is_psa),                                            
