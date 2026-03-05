@@ -12,6 +12,7 @@ df_input_owsa <- f_input(n_sim = n_sim, setting = n_setting) # generate input pa
 df_input_owsa <- df_input_owsa[, apply(df_input_owsa, 2, var, na.rm = TRUE) != 0] # only select parameters with variance > 0
 
 #### Obtain deterministic sensitivity analyses ----
+# Obtain OWSA object
 obj_owsa_dam <- run_owsa_det( # generate dampack OWSA object
   params_range = data.frame( # dataframe to be used for OWSA
     pars = names(df_input_owsa), # parameter names
@@ -26,8 +27,55 @@ obj_owsa_dam <- run_owsa_det( # generate dampack OWSA object
   progress = TRUE # show progression in console
 ) # end run_owsa_det
 
-df_input_twsa <- df_input_owsa[, c("disutility_arm_lymphedema", "hr_prev_arm_lymphedema")] 
-obj_twsa_dam1 <- run_twsa_det( # generate dampack TWSA object
+# Inputs for TWSA
+df_input_twsa <- if(n_setting == 1) {
+  data.frame(
+    twsa_1 = c("cost_t2", 
+               "disutility_arm_lymphedema"),
+    twsa_2 = c("cost_t2", 
+               "hr_prev_arm_lymphedema"),
+    twsa_3 = c("cost_t2", 
+               "cost_prev_arm_lymphedema_event"),
+    twsa_4 = c("disutility_arm_lymphedema", 
+               "hr_prev_arm_lymphedema"),
+    twsa_5 = c("disutility_arm_lymphedema", 
+               "cost_prev_arm_lymphedema_event"),
+    twsa_6 = c("hr_prev_arm_lymphedema", 
+               "cost_prev_arm_lymphedema_event")
+  )} else if(n_setting == 2) {
+    data.frame(
+      twsa_1 = c("cost_t2", 
+                 "disutility_arm_lymphedema"),
+      twsa_2 = c("cost_t2", 
+                 "hr_prev_arm_lymphedema"),
+      twsa_3 = c("cost_t2", 
+                 "cost_prev_arm_lymphedema_event"),
+      twsa_4 = c("disutility_arm_lymphedema", 
+                 "hr_prev_arm_lymphedema"),
+      twsa_5 = c("disutility_arm_lymphedema", 
+                 "cost_prev_arm_lymphedema_event"),
+      twsa_6 = c("hr_prev_arm_lymphedema", 
+                 "cost_prev_arm_lymphedema_event")
+    )} else if(n_setting == 3) { 
+      data.frame(
+        twsa_1 = c("cost_t2", 
+                   "disutility_arm_lymphedema"),
+        twsa_2 = c("cost_t2", 
+                   "hr_prev_arm_lymphedema"),
+        twsa_3 = c("cost_t2", 
+                   "cost_prev_arm_lymphedema_event"),
+        twsa_4 = c("disutility_arm_lymphedema", 
+                   "hr_prev_arm_lymphedema"),
+        twsa_5 = c("disutility_arm_lymphedema", 
+                   "cost_prev_arm_lymphedema_event"),
+        twsa_6 = c("hr_prev_arm_lymphedema", 
+                   "cost_prev_arm_lymphedema_event")
+      )  
+    }
+
+# Obtain TWSA objects
+df_input_twsa <- df_input_owsa[, df_input_twsa$twsa_1] 
+obj_twsa_dam_1 <- run_twsa_det( # generate dampack TWSA object
   params_range = data.frame( # dataframe to be used for TWSA
     pars = names(df_input_twsa), # parameter names
     min = stack(sapply(df_input_twsa, quantile, prob = 0.025, names = FALSE))[,1], # use 95% percentiles for twsa
@@ -40,8 +88,8 @@ obj_twsa_dam1 <- run_twsa_det( # generate dampack TWSA object
   progress = TRUE # show progression in console
 ) # end run_twsa_det
 
-df_input_twsa <- df_input_owsa[, c("cost_arm_lymphedema_event", "hr_prev_arm_lymphedema")] 
-obj_twsa_dam2 <- run_twsa_det( # generate dampack TWSA object
+df_input_twsa <- df_input_owsa[, df_input_twsa$twsa_2] 
+obj_twsa_dam_2 <- run_twsa_det( # generate dampack TWSA object
   params_range = data.frame( # dataframe to be used for TWSA
     pars = names(df_input_twsa), # parameter names
     min = stack(sapply(df_input_twsa, quantile, prob = 0.025, names = FALSE))[,1], # use 95% percentiles for twsa
@@ -54,8 +102,8 @@ obj_twsa_dam2 <- run_twsa_det( # generate dampack TWSA object
   progress = TRUE # show progression in console
 ) # end run_twsa_det
 
-df_input_twsa <- df_input_owsa[, c("disutility_arm_lymphedema", "cost_arm_lymphedema_event")] 
-obj_twsa_dam3 <- run_twsa_det( # generate dampack TWSA object
+df_input_twsa <- df_input_owsa[, df_input_twsa$twsa_3] 
+obj_twsa_dam_3 <- run_twsa_det( # generate dampack TWSA object
   params_range = data.frame( # dataframe to be used for TWSA
     pars = names(df_input_twsa), # parameter names
     min = stack(sapply(df_input_twsa, quantile, prob = 0.025, names = FALSE))[,1], # use 95% percentiles for twsa
@@ -68,8 +116,8 @@ obj_twsa_dam3 <- run_twsa_det( # generate dampack TWSA object
   progress = TRUE # show progression in console
 ) # end run_twsa_det
 
-df_input_twsa <- df_input_owsa[, c("disutility_arm_lymphedema", "cost_t2")] 
-obj_twsa_dam4 <- run_twsa_det( # generate dampack TWSA object
+df_input_twsa <- df_input_owsa[, df_input_twsa$twsa_4] 
+obj_twsa_dam_4 <- run_twsa_det( # generate dampack TWSA object
   params_range = data.frame( # dataframe to be used for TWSA
     pars = names(df_input_twsa), # parameter names
     min = stack(sapply(df_input_twsa, quantile, prob = 0.025, names = FALSE))[,1], # use 95% percentiles for twsa
@@ -82,8 +130,8 @@ obj_twsa_dam4 <- run_twsa_det( # generate dampack TWSA object
   progress = TRUE # show progression in console
 ) # end run_twsa_det
 
-df_input_twsa <- df_input_owsa[, c("hr_prev_arm_lymphedema", "cost_prev_arm_lymphedema_event")] 
-obj_twsa_dam5 <- run_twsa_det( # generate dampack TWSA object
+df_input_twsa <- df_input_owsa[, df_input_twsa$twsa_5] 
+obj_twsa_dam_5 <- run_twsa_det( # generate dampack TWSA object
   params_range = data.frame( # dataframe to be used for TWSA
     pars = names(df_input_twsa), # parameter names
     min = stack(sapply(df_input_twsa, quantile, prob = 0.025, names = FALSE))[,1], # use 95% percentiles for twsa
@@ -96,8 +144,8 @@ obj_twsa_dam5 <- run_twsa_det( # generate dampack TWSA object
   progress = TRUE # show progression in console
 ) # end run_twsa_det
 
-df_input_twsa <- df_input_owsa[, c("tp_ef_ef", "cost_arm_lymphedema_event")] 
-obj_twsa_dam6 <- run_twsa_det( # generate dampack TWSA object
+df_input_twsa <- df_input_owsa[, df_input_twsa$twsa_6] 
+obj_twsa_dam_6 <- run_twsa_det( # generate dampack TWSA object
   params_range = data.frame( # dataframe to be used for TWSA
     pars = names(df_input_twsa), # parameter names
     min = stack(sapply(df_input_twsa, quantile, prob = 0.025, names = FALSE))[,1], # use 95% percentiles for twsa
@@ -193,77 +241,77 @@ dev.off()
 
 # Two way sensitivity analyses strategy plots Cost
 png(file = paste0("plots/Setting_", n_setting, "_twsa_cost_", "1.png"), width = 1500, height = 1500)
-plot(obj_twsa_dam1$twsa_Cost)
+plot(obj_twsa_dam_1$twsa_Cost)
 dev.off()
 
 png(file = paste0("plots/Setting_", n_setting, "_twsa_cost_", "2.png"), width = 1500, height = 1500)
-plot(obj_twsa_dam2$twsa_Cost)
+plot(obj_twsa_dam_2$twsa_Cost)
 dev.off()
 
 png(file = paste0("plots/Setting_", n_setting, "_twsa_cost_", "3.png"), width = 1500, height = 1500)
-plot(obj_twsa_dam3$twsa_Cost)
+plot(obj_twsa_dam_3$twsa_Cost)
 dev.off()
 
 png(file = paste0("plots/Setting_", n_setting, "_twsa_cost_", "4.png"), width = 1500, height = 1500)
-plot(obj_twsa_dam4$twsa_Cost)
+plot(obj_twsa_dam_4$twsa_Cost)
 dev.off()
 
 png(file = paste0("plots/Setting_", n_setting, "_twsa_cost_", "5.png"), width = 1500, height = 1500)
-plot(obj_twsa_dam5$twsa_Cost)
+plot(obj_twsa_dam_5$twsa_Cost)
 dev.off()
 
 png(file = paste0("plots/Setting_", n_setting, "_twsa_cost_", "6.png"), width = 1500, height = 1500)
-plot(obj_twsa_dam6$twsa_Cost)
+plot(obj_twsa_dam_6$twsa_Cost)
 dev.off()
 
 # Two way sensitivity analyses strategy plots QALY
 png(file = paste0("plots/Setting_", n_setting, "_twsa_qaly_", "1.png"), width = 1500, height = 1500)
-plot(obj_twsa_dam1$twsa_QALY)
+plot(obj_twsa_dam_1$twsa_QALY)
 dev.off()
 
 png(file = paste0("plots/Setting_", n_setting, "_twsa_qaly_", "2.png"), width = 1500, height = 1500)
-plot(obj_twsa_dam2$twsa_QALY)
+plot(obj_twsa_dam_2$twsa_QALY)
 dev.off()
 
 png(file = paste0("plots/Setting_", n_setting, "_twsa_qaly_", "3.png"), width = 1500, height = 1500)
-plot(obj_twsa_dam3$twsa_QALY)
+plot(obj_twsa_dam_3$twsa_QALY)
 dev.off()
 
 png(file = paste0("plots/Setting_", n_setting, "_twsa_qaly_", "4.png"), width = 1500, height = 1500)
-plot(obj_twsa_dam4$twsa_QALY)
+plot(obj_twsa_dam_4$twsa_QALY)
 dev.off()
 
 png(file = paste0("plots/Setting_", n_setting, "_twsa_qaly_", "5.png"), width = 1500, height = 1500)
-plot(obj_twsa_dam5$twsa_QALY)
+plot(obj_twsa_dam_5$twsa_QALY)
 dev.off()
 
 png(file = paste0("plots/Setting_", n_setting, "_twsa_qaly_", "6.png"), width = 1500, height = 1500)
-plot(obj_twsa_dam6$twsa_QALY)
+plot(obj_twsa_dam_6$twsa_QALY)
 dev.off()
 
 # Two way sensitivity analyses strategy plots NMB
 png(file = paste0("plots/Setting_", n_setting, "_twsa_nmb_", "1.png"), width = 1500, height = 1500)
-plot(obj_twsa_dam1$twsa_NMB)
+plot(obj_twsa_dam_1$twsa_NMB)
 dev.off()
 
 png(file = paste0("plots/Setting_", n_setting, "_twsa_nmb_", "2.png"), width = 1500, height = 1500)
-plot(obj_twsa_dam2$twsa_NMB)
+plot(obj_twsa_dam_2$twsa_NMB)
 dev.off()
 
 png(file = paste0("plots/Setting_", n_setting, "_twsa_nmb_", "3.png"), width = 1500, height = 1500)
-plot(obj_twsa_dam3$twsa_NMB)
+plot(obj_twsa_dam_3$twsa_NMB)
 dev.off()
 
 png(file = paste0("plots/Setting_", n_setting, "_twsa_nmb_", "4.png"), width = 1500, height = 1500)
-plot(obj_twsa_dam4$twsa_NMB)
+plot(obj_twsa_dam_4$twsa_NMB)
 dev.off()
 
 png(file = paste0("plots/Setting_", n_setting, "_twsa_nmb_", "5.png"), width = 1500, height = 1500)
-plot(obj_twsa_dam5$twsa_NMB)
+plot(obj_twsa_dam_5$twsa_NMB)
 dev.off()
 
 png(file = paste0("plots/Setting_", n_setting, "_twsa_nmb_", "6.png"), width = 1500, height = 1500)
-plot(obj_twsa_dam6$twsa_NMB)
+plot(obj_twsa_dam_6$twsa_NMB)
 dev.off()
 
 #### Obtain deterministic scenario analyses ----
@@ -271,34 +319,67 @@ dev.off()
 df_input_scen <- f_input(n_sim = 1, setting = n_setting)
 m_results_scen_0 <- f_model(df_input_scen)
 
-# 1
+# 1 Add WGS costs + AI accuracy (based on all sources) for arm lympedema
 df_input_scen <- f_input(n_sim = 1, setting = n_setting)
-df_input_scen$cost_t2 <- 10000
+
+df_input_scen$cost_t2 <- if(n_setting == 1) {1} else 
+  if(n_setting == 2) {2} else 
+    if(n_setting == 3) {3}
+df_input_scen$AI_se_arm_lymphedema <- if(n_setting == 1) {1} else 
+  if(n_setting == 2) {2} else 
+    if(n_setting == 3) {3}
+df_input_scen$AI_sp_arm_lymphedema <- if(n_setting == 1) {1} else 
+  if(n_setting == 2) {2} else 
+    if(n_setting == 3) {3}
+
 m_results_scen_1 <- f_model(df_input_scen)
 
-# 2
+# 2 Adjust arm lymphedema disutility to literature value
 df_input_scen <- f_input(n_sim = 1, setting = n_setting)
-df_input_scen$AI_se_arm_lymphedema <- 0.70
+
+df_input_scen$disutility_arm_lymphedema <- if(n_setting == 1) {1} else 
+  if(n_setting == 2) {2} else 
+    if(n_setting == 3) {3}
+
 m_results_scen_2 <- f_model(df_input_scen)
 
-# 3
+# 3 Exclusion of Grade 3 arm lymphedema costs
 df_input_scen <- f_input(n_sim = 1, setting = n_setting)
-df_input_scen$AI_sp_arm_lymphedema <- 0.50
+
+df_input_scen$cost_arm_lymphedema <- if(n_setting == 1) {1} else 
+  if(n_setting == 2) {2} else 
+    if(n_setting == 3) {3}
+df_input_scen$cost_arm_lymphedema_event <- if(n_setting == 1) {1} else 
+  if(n_setting == 2) {2} else 
+    if(n_setting == 3) {3}
+
 m_results_scen_3 <- f_model(df_input_scen)
 
-# 4
+# 4 Alternative long term arm lymphedema incidence
 df_input_scen <- f_input(n_sim = 1, setting = n_setting)
-df_input_scen$hr_prev_arm_lymphedema <- 0.85
+
+df_input_scen$p_arm_lymphedema_m72 <- if(n_setting == 1) {1} else 
+  if(n_setting == 2) {2} else 
+    if(n_setting == 3) {3}
+
 m_results_scen_4 <- f_model(df_input_scen)
 
-# 5
+# 5 Alternative costs of arm sleeve
 df_input_scen <- f_input(n_sim = 1, setting = n_setting)
-df_input_scen$disutility_arm_lymphedema <- -0.3
+
+df_input_scen$cost_prev_arm_lymphedema_event <- if(n_setting == 1) {1} else 
+  if(n_setting == 2) {2} else 
+    if(n_setting == 3) {3}
+
 m_results_scen_5 <- f_model(df_input_scen)
 
-# 6
+# 6 Alternative effectiveness of arm sleeve
 df_input_scen <- f_input(n_sim = 1, setting = n_setting)
-df_input_scen$cost_arm_lymphedema <- 5000
+
+df_input_scen$hr_prev_arm_lymphedema <- if(n_setting == 1) {1} else 
+  if(n_setting == 2) {2} else 
+    if(n_setting == 3) {3}
+
 m_results_scen_6 <- f_model(df_input_scen)
 
 #### Deterministic scenario analyses results ----

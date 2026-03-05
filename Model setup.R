@@ -56,8 +56,8 @@ if (n_setting == 1) {
   v_wtp <- seq(from = 0, to = 50000, by = 2000) 
 } else if (n_setting == 2) {
   n_currency <- "Euro"
-  n_wtp <- 112586    # Based on https://www.ispor.org/heor-resources/presentations-database/presentation/euro2023-3788/129256
-  v_wtp <- seq(from = 0, to = 130000, by = 2000) 
+  n_wtp <- 50000
+  v_wtp <- seq(from = 0, to = 100000, by = 2000) 
 } else if (n_setting == 3) {
   n_currency <- "Euro"
   n_wtp <- 80000
