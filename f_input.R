@@ -166,18 +166,18 @@ f_input <- function(n_sim = 5000, seed = 12345, setting = 1) {
       cost_death_event = generate_gamma(11549.86, 11549.86 * 0.30, n_sim, is_psa),                                    
       
       # Toxicity prevention costs (e.g. arm sleeve) - one-off
-      cost_prev_arm_lymphedema_event = generate_gamma(666.3204523, 154.9692158, n_sim, is_psa),    # Used Belgian HCRU and cost, inflated with UK CPI.
+      cost_prev_arm_lymphedema_event = generate_gamma(539.7094201, 109.5694295, n_sim, is_psa)* 5/12,    # Used Belgian HCRU and cost, inflated with UK CPI.
       cost_prev_pain_event = generate_static(0, n_sim, is_psa),    
       cost_prev_fatigue_event = generate_static(0, n_sim, is_psa),                                                        
       cost_prev_fibrosis_induration_event = generate_static(0, n_sim, is_psa),                                            
       
       # Toxicity costs (both ongoing and one-off)
-      cost_arm_lymphedema = generate_static(0, n_sim, is_psa),        
+      cost_arm_lymphedema = generate_gamma(26.163125, 26.163125 * 0.3, n_sim, is_psa),        
       cost_pain = generate_gamma(26.07, 26.07 * 0.3, n_sim, is_psa),                                                             
       cost_fatigue = generate_static(0, n_sim, is_psa),         
       cost_fibrosis_induration = generate_gamma(26.07, 26.07 * 0.3, n_sim, is_psa),                                                  
       
-      cost_arm_lymphedema_event = generate_gamma(2448.8685, 2448.8685 * 0.3, n_sim, is_psa),  
+      cost_arm_lymphedema_event = generate_gamma((2448.8685+313.9575), (2448.8685+313.9575) * 0.3, n_sim, is_psa),  
       cost_pain_event = generate_gamma(1504.09, 1504.09 * 0.3, n_sim, is_psa),  
       cost_fatigue_event = generate_gamma(2325.55, 2325.55 * 0.3, n_sim, is_psa),           
       cost_fibrosis_induration_event = generate_gamma(34.59, 34.59 * 0.3, n_sim, is_psa)                                  
@@ -201,7 +201,7 @@ f_input <- function(n_sim = 5000, seed = 12345, setting = 1) {
       disutility_pain = -generate_beta(0.0513998, 0.0231084, n_sim, is_psa),                    # Hypo-G01 analyses
       disutility_fatigue = -generate_beta(0.0376353, 0.023412, n_sim, is_psa),                  # Hypo-G01 analyses
       disutility_fibrosis_induration = -generate_static(0, n_sim, is_psa),                      # Hypo-G01 analyses
-
+      
       # Strategy costs
       cost_t1 = generate_gamma(5510.678541, 2486.447128, n_sim, is_psa),                           # Costing analysis by Teresa (assumed without WGS)
       cost_t2 = generate_gamma(36.2043966, 36.80058921, n_sim, is_psa),                            # Costing analysis by Teresa (assumed without WGS)  
@@ -220,18 +220,18 @@ f_input <- function(n_sim = 5000, seed = 12345, setting = 1) {
       cost_death_event = generate_gamma(4803.938484, 4803.938484 * 0.30, n_sim, is_psa),                                    
       
       # Toxicity prevention costs (e.g. arm sleeve) - one-off
-      cost_prev_arm_lymphedema_event = generate_gamma(652.4742443, 151.7489395, n_sim, is_psa),    # Used Belgian HCRU and cost, inflated with French CPI.
+      cost_prev_arm_lymphedema_event = generate_gamma(652.4742443, 151.7489395, n_sim, is_psa)* 5/12,    # Used Belgian HCRU and cost, inflated with French CPI.
       cost_prev_pain_event = generate_static(0, n_sim, is_psa),                                                           
       cost_prev_fatigue_event = generate_static(0, n_sim, is_psa),                                                        
       cost_prev_fibrosis_induration_event = generate_static(0, n_sim, is_psa),                                            
       
       # Toxicity costs (both ongoing and one-off)
-      cost_arm_lymphedema = generate_static(0, n_sim, is_psa),        
+      cost_arm_lymphedema = generate_gamma(14.51, 14.51 * 0.3, n_sim, is_psa),        
       cost_pain = generate_static(0, n_sim, is_psa),                                                                
       cost_fatigue = generate_static(0, n_sim, is_psa),               
       cost_fibrosis_induration = generate_gamma(11.11443596, 11.11443596 * 0.3, n_sim, is_psa),                                                  
       
-      cost_arm_lymphedema_event = generate_gamma(1358.11, 1358.11 * 0.3, n_sim, is_psa),  
+      cost_arm_lymphedema_event = generate_gamma((174.12+1358.11), (174.12+1358.11) * 0.3, n_sim, is_psa),  
       cost_pain_event = generate_gamma(1565.89, 1565.89 * 0.3, n_sim, is_psa),                                                          
       cost_fatigue_event = generate_gamma(1461.09, 1461.09 * 0.3, n_sim, is_psa),    
       cost_fibrosis_induration_event = generate_gamma(40.53, 40.53 * 0.3, n_sim, is_psa)                                           
@@ -274,18 +274,18 @@ f_input <- function(n_sim = 5000, seed = 12345, setting = 1) {
       cost_death_event = generate_gamma(6183.78592, 6183.78592 * 0.30, n_sim, is_psa),                                    
       
       # Toxicity prevention costs (e.g. arm sleeve) - one-off
-      cost_prev_arm_lymphedema_event = generate_gamma(805.311062, 187.2949019, n_sim, is_psa),    # Used Belgian HCRU and cost, inflated with Dutch CPI.
+      cost_prev_arm_lymphedema_event = generate_gamma(805.311062, 187.2949019, n_sim, is_psa)* 5/12,    # Used Belgian HCRU and cost, inflated with Dutch CPI.
       cost_prev_pain_event = generate_static(0, n_sim, is_psa),                                                           
       cost_prev_fatigue_event = generate_static(0, n_sim, is_psa),                                                        
       cost_prev_fibrosis_induration_event = generate_static(0, n_sim, is_psa),                                            
       
       # Toxicity costs (both ongoing and one-off)
-      cost_arm_lymphedema = generate_static(0, n_sim, is_psa),        
+      cost_arm_lymphedema = generate_gamma(20.59284359, 20.59284359 * 0.3, n_sim, is_psa),        
       cost_pain = generate_gamma(22.51, 22.51 * 0.3, n_sim, is_psa),                                                                    
       cost_fatigue = generate_gamma(26.85, 26.85 * 0.3, n_sim, is_psa),                
       cost_fibrosis_induration = generate_gamma(15.77411819, 15.77411819 * 0.3, n_sim, is_psa),                                                  
       
-      cost_arm_lymphedema_event = generate_gamma(1927.49016, 1927.49016 * 0.3, n_sim, is_psa),  
+      cost_arm_lymphedema_event = generate_gamma((247.114123 + 1927.49016), (247.114123 + 1927.49016) * 0.3, n_sim, is_psa),  
       cost_pain_event = generate_gamma(794.40, 794.40 * 0.3, n_sim, is_psa), 
       cost_fatigue_event = generate_gamma(172.14, 172.14 * 0.3, n_sim, is_psa),           
       cost_fibrosis_induration_event = generate_gamma(40.53, 40.53 * 0.3, n_sim, is_psa)                                           

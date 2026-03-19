@@ -48,7 +48,7 @@ n_age_baseline <- 60                                    # Baseline age
 n_p_female <- 1.00                                      # Proportion females
 
 # Country specific
-n_setting <- 1 # must be 1 (UK), 2 (FR), or 3 (NL)
+n_setting <- 2 # must be 1 (UK), 2 (FR), or 3 (NL)
 
 if (n_setting == 1) {
   n_currency <- "Pound"
@@ -56,8 +56,8 @@ if (n_setting == 1) {
   v_wtp <- seq(from = 0, to = 50000, by = 2000) 
 } else if (n_setting == 2) {
   n_currency <- "Euro"
-  n_wtp <- 50000
-  v_wtp <- seq(from = 0, to = 100000, by = 2000) 
+  n_wtp <- 50000  
+  v_wtp <- seq(from = 0, to = 70000, by = 2000) 
 } else if (n_setting == 3) {
   n_currency <- "Euro"
   n_wtp <- 80000

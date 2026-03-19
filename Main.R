@@ -111,8 +111,8 @@ obj_bcea <- bcea( # create bcea object
 # Running mean plots
 for (x in 1:dim(m_results)[2]) {
   v_result <- m_results[, x]
-
-  png(file = paste0("plots/Setting_", n_setting, "_convergence_", colnames(m_results)[x], ".png"), width = 1500, height = 1500)
+  
+  png(file = paste0("plots/Setting_", n_setting, "_convergence_", colnames(m_results)[x], ".png"), width = 500, height = 500)
   plot(cumsum(v_result) / seq_along(v_result),
        type = "l",
        xlab = "Number of simulations",
@@ -121,7 +121,7 @@ for (x in 1:dim(m_results)[2]) {
        ylim = c(mean(v_result) - sd(v_result) * 0.5,
                 mean(v_result) + sd(v_result) * 0.5),
        main = paste("Convergence plot -", colnames(m_results)[x]))
-
+  
   abline(h = mean(v_result), col = "red", lty = 2)
   dev.off()
 }
@@ -142,8 +142,8 @@ m_inc_results <- matrix(
 
 for (x in 1:dim(m_inc_results)[2]) {
   v_result <- m_inc_results[, x]
-
-  png(file = paste0("plots/Setting_", n_setting, "_convergence_", colnames(m_inc_results)[x], ".png"), width = 1500, height = 1500)
+  
+  png(file = paste0("plots/Setting_", n_setting, "_convergence_", colnames(m_inc_results)[x], ".png"), width = 500, height = 500)
   plot(cumsum(v_result) / seq_along(v_result),
        type = "l",
        xlab = "Number of simulations",
@@ -152,7 +152,7 @@ for (x in 1:dim(m_inc_results)[2]) {
        ylim = c(mean(v_result) - sd(v_result) * 0.5,
                 mean(v_result) + sd(v_result) * 0.5),
        main = paste("Convergence plot -", colnames(m_inc_results)[x]))
-
+  
   abline(h = mean(v_result), col = "red", lty = 2)
   dev.off()
 }
@@ -187,7 +187,7 @@ sink()
 # iqaly_CrI <- quantile(m_results[,3] - m_results[,4], probs = c(0.025, 0.975))
 
 # Cost effectiveness frontier
-png(file = paste0("plots/Setting_", n_setting, "_ce_frontier", ".png"), width = 1500, height = 1500)
+png(file = paste0("plots/Setting_", n_setting, "_ce_frontier", ".png"), width = 500, height = 500)
 plot(
   x = obj_icers, # icers object
   currency = n_currency, # costs units
@@ -197,7 +197,7 @@ plot(
 dev.off()
 
 # Incremental cost effectiveness plane
-png(file = paste0("plots/Setting_", n_setting, "_ice_plane", ".png"), width = 1500, height = 1500)
+png(file = paste0("plots/Setting_", n_setting, "_ice_plane", ".png"), width = 500, height = 500)
 contour2(
   he = obj_bcea, # bcea object
   wtp = n_wtp, # selects the wtp
@@ -211,7 +211,7 @@ contour2(
 dev.off()
 
 # Incremental Benefit plots
-png(file = paste0("plots/Setting_", n_setting, "_inmb_vs_wtp", ".png"), width = 1500, height = 1500)
+png(file = paste0("plots/Setting_", n_setting, "_inmb_vs_wtp", ".png"), width = 500, height = 500)
 eib.plot(
   he = obj_bcea, # bcea object
   comparison = 1, # if more than 2 interventions, selects the pairwise comparison
@@ -220,7 +220,7 @@ eib.plot(
 ) # eib.plot end
 dev.off()
 
-png(file = paste0("plots/Setting_", n_setting, "_inmb_density", ".png"), width = 1500, height = 1500)
+png(file = paste0("plots/Setting_", n_setting, "_inmb_density", ".png"), width = 500, height = 500)
 ib.plot(
   he = obj_bcea, # bcea object
   comparison = 1, # if more than 2 interventions, selects the pairwise comparison
@@ -230,7 +230,7 @@ ib.plot(
 dev.off()
 
 # CEAC
-png(file = paste0("plots/Setting_", n_setting, "_ceac", ".png"), width = 1500, height = 1500)
+png(file = paste0("plots/Setting_", n_setting, "_ceac", ".png"), width = 500, height = 500)
 plot(
   ceac(
     psa = obj_psa_dam, 
@@ -244,7 +244,7 @@ plot(
 dev.off()
 
 # ELC
-png(file = paste0("plots/Setting_", n_setting, "_elc", ".png"), width = 1500, height = 1500)
+png(file = paste0("plots/Setting_", n_setting, "_elc", ".png"), width = 500, height = 500)
 plot(
   calc_exp_loss(
     psa = obj_psa_dam, 
@@ -257,7 +257,7 @@ plot(
 dev.off()
 
 # EVPI (per patient)
-png(file = paste0("plots/Setting_", n_setting, "_individual_evpi", ".png"), width = 1500, height = 1500)
+png(file = paste0("plots/Setting_", n_setting, "_individual_evpi", ".png"), width = 500, height = 500)
 plot(
   calc_evpi(
     psa = obj_psa_dam, 
@@ -269,6 +269,15 @@ plot(
   n_y_ticks = 6
 ) # plot end
 dev.off()
+
+obj_evpi <- calc_evpi(
+  psa = obj_psa_dam,
+  wtp = v_wtp,
+  pop = 1
+)
+
+obj_evpi  # view all EVPI values across WTP thresholds
+obj_evpi$EVPI[obj_evpi$WTP == n_wtp]
 
 # info rank
 png(file = paste0("plots/Setting_", n_setting, "_info_rank", ".png"), width = 1500, height = 1500)

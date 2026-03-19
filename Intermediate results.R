@@ -274,7 +274,7 @@ legend(
 dev.off()
 
 # Arm lymphedema incidence
-png(file = paste0("plots/Setting_", n_setting, "_arm_lymphedema_vs_time", ".png"), width = 1500, height = 1500)
+png(file = paste0("plots/Setting_", n_setting, "_arm_lymphedema_vs_time", ".png"), width = 600, height = 350)
 matplot(
   x = 0:n_t,
   y = cbind(
