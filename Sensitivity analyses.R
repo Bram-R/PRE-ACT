@@ -446,6 +446,68 @@ df_input_scen$hr_prev_arm_lymphedema <- if(n_setting == 1) {0.7} else
 
 m_results_scen_6 <- f_model(df_input_scen)
 
+# 7 Assume decreased diagnostics accuracy of the PRE-ACT AI tool
+df_input_scen <- f_input(n_sim = 1, setting = n_setting)
+
+df_input_scen$AI_se_arm_lymphedema <- if(n_setting == 1) {0.80} else 
+  if(n_setting == 2) {0.80} else 
+    if(n_setting == 3) {0.80}
+df_input_scen$AI_sp_arm_lymphedema <- if(n_setting == 1) {0.60} else 
+  if(n_setting == 2) {0.60} else 
+    if(n_setting == 3) {0.60}
+
+m_results_scen_7 <- f_model(df_input_scen)
+
+# 8 Assume increased diagnostics accuracy of the PRE-ACT AI tool
+df_input_scen <- f_input(n_sim = 1, setting = n_setting)
+
+df_input_scen$AI_se_arm_lymphedema <- if(n_setting == 1) {0.90} else 
+  if(n_setting == 2) {0.90} else 
+    if(n_setting == 3) {0.90}
+df_input_scen$AI_sp_arm_lymphedema <- if(n_setting == 1) {0.70} else 
+  if(n_setting == 2) {0.70} else 
+    if(n_setting == 3) {0.70}
+
+m_results_scen_8 <- f_model(df_input_scen)
+
+# 10 Assume disutility for high-risk patients related to anxiety when being classified as high risk
+df_input_scen <- f_input(n_sim = 1, setting = n_setting)
+
+df_input_scen$disutility_prev_arm_lymphedema <- if(n_setting == 1) {-0.001} else 
+  if(n_setting == 2) {-0.001} else 
+    if(n_setting == 3) {-0.001}
+
+m_results_scen_10 <- f_model(df_input_scen)
+
+# 12 Add unforeseen or additional organizational and training costs 
+df_input_scen <- f_input(n_sim = 1, setting = n_setting)
+
+df_input_scen$cost_t2 <- df_input_scen$cost_t2 * 2
+
+m_results_scen_12 <- f_model(df_input_scen)
+
+# 15 Assume increased effectiveness of arm sleeve
+df_input_scen <- f_input(n_sim = 1, setting = n_setting)
+
+df_input_scen$hr_prev_arm_lymphedema <- if(n_setting == 1) {0.55} else 
+  if(n_setting == 2) {0.55} else 
+    if(n_setting == 3) {0.55}
+
+m_results_scen_15 <- f_model(df_input_scen)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 #### Deterministic scenario analyses results ----
 sink(file = paste0("text/Setting_", n_setting, "_Deterministic_scenario_analyses.txt"))
 cat("\n")
@@ -515,6 +577,106 @@ cat("\n")
 calculate_icers( # create calculate_icers object
   cost = as.numeric(m_results_scen_6[1:2]), # mean costs per strategy
   effect = as.numeric(m_results_scen_6[3:4]), # mean effects per strategy
+  strategies = v_treatments # vector of strategy names
+) # calculate_icers end
+
+cat("\n")
+cat("Deterministic scenario 7")
+cat("\n")
+
+calculate_icers( # create calculate_icers object
+  cost = as.numeric(m_results_scen_7[1:2]), # mean costs per strategy
+  effect = as.numeric(m_results_scen_7[3:4]), # mean effects per strategy
+  strategies = v_treatments # vector of strategy names
+) # calculate_icers end
+
+cat("\n")
+cat("Deterministic scenario 8")
+cat("\n")
+
+calculate_icers( # create calculate_icers object
+  cost = as.numeric(m_results_scen_8[1:2]), # mean costs per strategy
+  effect = as.numeric(m_results_scen_8[3:4]), # mean effects per strategy
+  strategies = v_treatments # vector of strategy names
+) # calculate_icers end
+
+cat("\n")
+cat("Deterministic scenario 9")
+cat("\n")
+
+calculate_icers( # create calculate_icers object
+  cost = as.numeric(m_results_scen_9[1:2]), # mean costs per strategy
+  effect = as.numeric(m_results_scen_9[3:4]), # mean effects per strategy
+  strategies = v_treatments # vector of strategy names
+) # calculate_icers end
+
+cat("\n")
+cat("Deterministic scenario 10")
+cat("\n")
+
+calculate_icers( # create calculate_icers object
+  cost = as.numeric(m_results_scen_10[1:2]), # mean costs per strategy
+  effect = as.numeric(m_results_scen_10[3:4]), # mean effects per strategy
+  strategies = v_treatments # vector of strategy names
+) # calculate_icers end
+
+cat("\n")
+cat("Deterministic scenario 11")
+cat("\n")
+
+calculate_icers( # create calculate_icers object
+  cost = as.numeric(m_results_scen_11[1:2]), # mean costs per strategy
+  effect = as.numeric(m_results_scen_11[3:4]), # mean effects per strategy
+  strategies = v_treatments # vector of strategy names
+) # calculate_icers end
+
+cat("\n")
+cat("Deterministic scenario 12")
+cat("\n")
+
+calculate_icers( # create calculate_icers object
+  cost = as.numeric(m_results_scen_12[1:2]), # mean costs per strategy
+  effect = as.numeric(m_results_scen_12[3:4]), # mean effects per strategy
+  strategies = v_treatments # vector of strategy names
+) # calculate_icers end
+
+cat("\n")
+cat("Deterministic scenario 13")
+cat("\n")
+
+calculate_icers( # create calculate_icers object
+  cost = as.numeric(m_results_scen_13[1:2]), # mean costs per strategy
+  effect = as.numeric(m_results_scen_13[3:4]), # mean effects per strategy
+  strategies = v_treatments # vector of strategy names
+) # calculate_icers end
+
+cat("\n")
+cat("Deterministic scenario 14")
+cat("\n")
+
+calculate_icers( # create calculate_icers object
+  cost = as.numeric(m_results_scen_14[1:2]), # mean costs per strategy
+  effect = as.numeric(m_results_scen_14[3:4]), # mean effects per strategy
+  strategies = v_treatments # vector of strategy names
+) # calculate_icers end
+
+cat("\n")
+cat("Deterministic scenario 15")
+cat("\n")
+
+calculate_icers( # create calculate_icers object
+  cost = as.numeric(m_results_scen_15[1:2]), # mean costs per strategy
+  effect = as.numeric(m_results_scen_15[3:4]), # mean effects per strategy
+  strategies = v_treatments # vector of strategy names
+) # calculate_icers end
+
+cat("\n")
+cat("Deterministic scenario 16")
+cat("\n")
+
+calculate_icers( # create calculate_icers object
+  cost = as.numeric(m_results_scen_16[1:2]), # mean costs per strategy
+  effect = as.numeric(m_results_scen_16[3:4]), # mean effects per strategy
   strategies = v_treatments # vector of strategy names
 ) # calculate_icers end
 

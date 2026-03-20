@@ -78,6 +78,7 @@ v_out_det <- as.vector(f_model(f_input(n_sim = 1, setting = n_setting)))
 
 # obtain dampack object
 v_out_mean <- as.vector(colMeans(m_results[, 1:(n_treatments * 2)])) # calculate average results
+print(v_out_mean)
 
 obj_icers <- calculate_icers( # create calculate_icers object
   cost = v_out_mean[1:n_treatments], # mean costs per strategy
@@ -129,11 +130,11 @@ for (x in 1:dim(m_results)[2]) {
 # Running incremental mean plots
 m_inc_results <- matrix(
   data = cbind(
-    m_results[, 1] - m_results[, 2],                   # iCosts
-    m_results[, 3] - m_results[, 4],                   # iQALYs
-    m_results[, 5] - m_results[, 6],                   # iLYs
-    (m_results[, 1] - m_results[, 2]) -
-      (m_results[, 3] - m_results[, 4]) * n_wtp        # iNMB
+    m_results[, 2] - m_results[, 1],                   # iCosts
+    m_results[, 4] - m_results[, 3],                   # iQALYs
+    m_results[, 6] - m_results[, 5],                   # iLYs
+    (m_results[, 2] - m_results[, 1]) -
+      (m_results[, 4] - m_results[, 3]) * n_wtp        # iNMB
   ),
   nrow = n_sim,
   ncol = 4,
@@ -178,13 +179,33 @@ obj_icers_det
 cat("\n")
 sink()
 
-# Optionally obtain 95CI for (incremental) costs and QALYs
-# costCP_CrI <- quantile(m_results[,1], probs = c(0.025, 0.975))
-# costCPAI_CrI <- quantile(m_results[,2], probs = c(0.025, 0.975))
-# qalyCP_CrI <- quantile(m_results[,3], probs = c(0.025, 0.975))
-# qalyCPAI_CrI <- quantile(m_results[,4], probs = c(0.025, 0.975))
-# icost_CrI <- quantile(m_results[,1] - m_results[,2], probs = c(0.025, 0.975))
-# iqaly_CrI <- quantile(m_results[,3] - m_results[,4], probs = c(0.025, 0.975))
+# Obtain 95CI for (incremental) costs and QALYs
+costCP_CrI <- quantile(m_results[,1], probs = c(0.025, 0.975))
+costCPAI_CrI <- quantile(m_results[,2], probs = c(0.025, 0.975))
+qalyCP_CrI <- quantile(m_results[,3], probs = c(0.025, 0.975))
+qalyCPAI_CrI <- quantile(m_results[,4], probs = c(0.025, 0.975))
+icost_CrI <- quantile(m_results[,2] - m_results[,1], probs = c(0.025, 0.975))
+iqaly_CrI <- quantile(m_results[,4] - m_results[,3], probs = c(0.025, 0.975))
+
+l_ci_results <- list(
+  costs = list(
+    CP    = costCP_CrI,
+    CPAI  = costCPAI_CrI,
+    incr  = icost_CrI
+  ),
+  qalys = list(
+    CP    = qalyCP_CrI,
+    CPAI  = qalyCPAI_CrI,
+    incr  = iqaly_CrI
+  )
+)
+
+sink(file = paste0("text/Setting_", n_setting, "_Probabilistic_base_case_CI_results.txt"))
+cat("\n")
+l_ci_results
+cat("\n")
+sink()
+
 
 # Cost effectiveness frontier
 png(file = paste0("plots/Setting_", n_setting, "_ce_frontier", ".png"), width = 500, height = 500)
