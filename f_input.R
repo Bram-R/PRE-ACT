@@ -320,8 +320,5 @@ f_input <- function(n_sim = 5000, seed = 12345, setting = 1) {
   df_input$tp_lrr_death <- (1 - df_input$tp_ef_ef) * df_input$p_event_death
   df_input$cost_t2 <- df_input$cost_t1 + df_input$cost_t2
   
-  # df_input$disutility_arm_lymphedema <- pmin(df_input$utility_arm_lymphedema - df_input$utility_ef, 0)
-  # df_input <- subset(df_input, select = -utility_arm_lymphedema)                                                  # remove temporary variable utility_arm_lymphedema
-  
   return(df_input)
 }
