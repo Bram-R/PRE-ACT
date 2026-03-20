@@ -127,7 +127,20 @@ f_input <- function(n_sim = 5000, seed = 12345, setting = 1) {
     disutility_prev_arm_lymphedema = -generate_static(0, n_sim, is_psa),                
     disutility_prev_pain = -generate_static(0, n_sim, is_psa),    
     disutility_prev_fatigue = -generate_static(0, n_sim, is_psa),     
-    disutility_prev_fibrosis_induration = -generate_static(0, n_sim, is_psa)                     
+    disutility_prev_fibrosis_induration = -generate_static(0, n_sim, is_psa),
+    
+    # Process utility (reflecting broader elements of (dis)value, i.e. impact beyond changes in health outcomes)
+    # Ongoing (life long) utility increment/decrement
+    process_utility_tp = generate_static(0, n_sim, is_psa),                                                
+    process_utility_fp = generate_static(0, n_sim, is_psa),
+    process_utility_fn = generate_static(0, n_sim, is_psa),                                                
+    process_utility_tn = generate_static(0, n_sim, is_psa),
+    
+    # One-off utility increment/decrement
+    process_utility_tp_event = generate_static(0, n_sim, is_psa),                                                
+    process_utility_fp_event = generate_static(0, n_sim, is_psa),
+    process_utility_fn_event = generate_static(0, n_sim, is_psa),                                                
+    process_utility_tn_event = generate_static(0, n_sim, is_psa)
   )
   
   #### UK specific parameters ----

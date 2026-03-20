@@ -203,15 +203,32 @@ f_model <- function(params, intermediate = FALSE) {
   n_prevalence_fatigue <- m_tox_max[v_treatments[1], v_tox[3]]
   n_prevalence_fibrosis_induration <- m_tox_max[v_treatments[1], v_tox[4]]
   
+  # Estimate confusion matrix
+  n_arm_lymphedema_tp <- n_prevalence_arm_lymphedema * params$AI_se_arm_lymphedem
+  n_arm_lymphedema_fp <- (1 - n_prevalence_arm_lymphedema) * (1 - params$AI_sp_arm_lymphedema)
+  n_arm_lymphedema_fn <- n_prevalence_arm_lymphedema * (1 - params$AI_se_arm_lymphedem)
+  n_arm_lymphedema_tn <- (1 - n_prevalence_arm_lymphedema) * params$AI_sp_arm_lymphedema
+  
+  n_pain_tp <- n_prevalence_pain * params$AI_se_arm_lymphedem
+  n_pain_fp <- (1 - n_prevalence_pain) * (1 - params$AI_sp_pain)
+  n_pain_fn <- n_prevalence_pain * (1 - params$AI_se_arm_lymphedem)
+  n_pain_tn <- (1 - n_prevalence_pain) * params$AI_sp_pain
+  
+  n_fatigue_tp <- n_prevalence_fatigue * params$AI_se_arm_lymphedem
+  n_fatigue_fp <- (1 - n_prevalence_fatigue) * (1 - params$AI_sp_fatigue)
+  n_fatigue_fn <- n_prevalence_fatigue * (1 - params$AI_se_arm_lymphedem)
+  n_fatigue_tn <- (1 - n_prevalence_fatigue) * params$AI_sp_fatigue
+  
+  n_fibrosis_induration_tp <- n_prevalence_fibrosis_induration * params$AI_se_arm_lymphedem
+  n_fibrosis_induration_fp <- (1 - n_prevalence_fibrosis_induration) * (1 - params$AI_sp_fibrosis_induration)
+  n_fibrosis_induration_fn <- n_prevalence_fibrosis_induration * (1 - params$AI_se_arm_lymphedem)
+  n_fibrosis_induration_tn <- (1 - n_prevalence_fibrosis_induration) * params$AI_sp_fibrosis_induration
+  
   # Estimate number of patients receiving preventative measures (i.e. proportion of positive tests)
-  n_highrisk_arm_lymphedema <- n_prevalence_arm_lymphedema * params$AI_se_arm_lymphedema + # True positives 
-    (1 - n_prevalence_arm_lymphedema) * (1 - params$AI_sp_arm_lymphedema)                  # False positives
-  n_highrisk_pain <- n_prevalence_pain * params$AI_se_pain +                               # True positives 
-    (1 - n_prevalence_pain) * (1 - params$AI_sp_pain)                                      # False positives
-  n_highrisk_fatigue <- n_prevalence_fatigue * params$AI_se_fatigue +                      # True positives 
-    (1 - n_prevalence_fatigue) * (1 - params$AI_sp_fatigue)                                # False positives
-  n_highrisk_fibrosis_induration <- n_prevalence_fibrosis_induration * params$AI_se_fibrosis_induration + # True positives 
-    (1 - n_prevalence_fibrosis_induration) * (1 - params$AI_sp_fibrosis_induration)                  # False positives
+  n_highrisk_arm_lymphedema <- n_arm_lymphedema_tp + n_arm_lymphedema_fp                
+  n_highrisk_pain <- n_pain_tp + n_pain_fp                                             
+  n_highrisk_fatigue <- n_fatigue_tp + n_fatigue_fp                                
+  n_highrisk_fibrosis_induration <- n_fibrosis_induration_tp + n_fibrosis_induration_fp                  
   
   #### Outcomes ----
   # calculate discount weight for each cycle
@@ -308,11 +325,30 @@ f_model <- function(params, intermediate = FALSE) {
     n_highrisk_fatigue * params$disutility_prev_fatigue + 
     n_highrisk_fibrosis_induration * params$disutility_prev_fibrosis_induration 
   
+  # Process utility related to AI information on arm lympedema (reflecting broader elements of (dis)value, i.e. impact beyond changes in health outcomes)
+  # Ongoing (life long) utility increment/decrement
+  v_process_utility <- (params$process_utility_tp * n_arm_lymphedema_tp +                                               
+                          params$process_utility_fp * n_arm_lymphedema_fp +
+                          params$process_utility_fn * n_arm_lymphedema_fn +                                                 
+                          params$process_utility_tn * n_arm_lymphedema_tn)   
+  
+  v_process_utility <- v_process_utility * m_discount[, 2] *
+    rowSums(a_state_trace[2, , -4]) *
+    1/12
+  
+  # One-off utility increment/decrement
+  n_process_utility_event <- (params$process_utility_tp_event * n_arm_lymphedema_tp +                                               
+                                params$process_utility_fp_event * n_arm_lymphedema_fp +
+                                params$process_utility_fn_event * n_arm_lymphedema_fn +                                                 
+                                params$process_utility_tn_event * n_arm_lymphedema_tn)  
+  
+  v_process_utility[1] <- v_process_utility[1] + n_process_utility_event
+  
   #### Results ----
   if(intermediate == FALSE) { 
     v_results <- setNames(
       c(rowSums(a_costs) + rowSums(m_event_costs) + rowSums(a_costs_tox) + c(params$cost_t1, params$cost_t2) + c(0, n_tox_prev_costs),  
-        rowSums(a_qalys) + rowSums(a_qalys_tox) + c(0, n_tox_prev_disutility), 
+        rowSums(a_qalys) + rowSums(a_qalys_tox) + c(0, n_tox_prev_disutility) + c(0, sum(v_process_utility)), 
         rowSums(a_lys)
       ), # end c     
       c(paste0("Cost_", v_treatments),                          
@@ -376,7 +412,8 @@ f_model <- function(params, intermediate = FALSE) {
     n_dim <- dim(m_res_intermediate)[2] / 3 * 1.5 
     m_res_intermediate[, n_dim + 1:n_states] <- a_qalys[2,,]                                                 # health state QALYs t2
     m_res_intermediate[, n_dim + (n_states + 1):(n_states + length(v_tox))] <- a_qalys_tox[2,,]              # toxicity QALYs t2
-    m_res_intermediate[, n_dim + (n_states + 1 + length(v_tox))] <- c(n_tox_prev_disutility, rep(0, n_t))    # event QALYs t2 
+    m_res_intermediate[, n_dim + (n_states + 1 + length(v_tox))] <- c(n_tox_prev_disutility, rep(0, n_t)) +  # event QALYs t2 including process utility  
+      v_process_utility
     
     # LYs / incidence
     n_dim <- dim(m_res_intermediate)[2] / 3 * 2 
