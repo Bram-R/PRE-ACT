@@ -470,21 +470,87 @@ df_input_scen$AI_sp_arm_lymphedema <- if(n_setting == 1) {0.70} else
 
 m_results_scen_8 <- f_model(df_input_scen)
 
+# 9 Assumed improved quality of life and work productivity for high-risk patients because of better BMI/physical condition
+df_input_scen <- f_input(n_sim = 1, setting = n_setting)
+
+df_input_scen$process_utility_tp <- if(n_setting == 1) {0.01} else
+  if(n_setting == 2) {0.01} else
+    if(n_setting == 3) {0.01}
+
+df_input_scen$process_utility_fp <- if(n_setting == 1) {0.01} else
+  if(n_setting == 2) {0.01} else
+    if(n_setting == 3) {0.01}
+
+df_input_scen$cost_prev_arm_lymphedema_event <- if(n_setting == 1) {539.7094201 * 5/12} else
+  if(n_setting == 2) {652.4742443 * 5/12} else
+    if(n_setting == 3) {-765.7001469} # original cost_prev_arm_lymphedema_event adjusted for cost savings from increased productivity 
+
+m_results_scen_9 <- f_model(df_input_scen)
+
 # 10 Assume disutility for high-risk patients related to anxiety when being classified as high risk
 df_input_scen <- f_input(n_sim = 1, setting = n_setting)
 
-df_input_scen$disutility_prev_arm_lymphedema <- if(n_setting == 1) {-0.001} else 
+df_input_scen$process_utility_tp_event <- if(n_setting == 1) {-0.001} else 
+  if(n_setting == 2) {-0.001} else 
+    if(n_setting == 3) {-0.001}
+
+df_input_scen$process_utility_fp_event <- if(n_setting == 1) {-0.001} else 
   if(n_setting == 2) {-0.001} else 
     if(n_setting == 3) {-0.001}
 
 m_results_scen_10 <- f_model(df_input_scen)
 
+# 11 Assume disutility for patients that developed arm lymphedema but that were classified as low risk, i.e. false negative classification 
+df_input_scen <- f_input(n_sim = 1, setting = n_setting)
+
+df_input_scen$process_utility_fn <- if(n_setting == 1) {-0.001} else 
+  if(n_setting == 2) {-0.001} else 
+    if(n_setting == 3) {-0.001}
+
+m_results_scen_11 <- f_model(df_input_scen)
+
 # 12 Add unforeseen or additional organizational and training costs 
 df_input_scen <- f_input(n_sim = 1, setting = n_setting)
 
-df_input_scen$cost_t2 <- df_input_scen$cost_t2 * 2
+df_input_scen$cost_t2 <- df_input_scen$cost_t2 + if(n_setting == 1) {22.05370746} else 
+  if(n_setting == 2) {36.2043966} else 
+    if(n_setting == 3) {37.65182529}
 
 m_results_scen_12 <- f_model(df_input_scen)
+
+# 13 Assume utility increment for high-risk patients 
+df_input_scen <- f_input(n_sim = 1, setting = n_setting)
+
+df_input_scen$process_utility_tp <- if(n_setting == 1) {0.001} else 
+  if(n_setting == 2) {0.001} else 
+    if(n_setting == 3) {0.001}
+
+df_input_scen$process_utility_fp <- if(n_setting == 1) {0.001} else 
+  if(n_setting == 2) {0.001} else 
+    if(n_setting == 3) {0.001}
+
+m_results_scen_13 <- f_model(df_input_scen)
+
+# 14 Assume utility increment for all patients 
+df_input_scen <- f_input(n_sim = 1, setting = n_setting)
+
+df_input_scen$process_utility_tp_event <- if(n_setting == 1) {0.001} else 
+  if(n_setting == 2) {0.001} else 
+    if(n_setting == 3) {0.001}
+
+df_input_scen$process_utility_fp_event <- if(n_setting == 1) {0.001} else 
+  if(n_setting == 2) {0.001} else 
+    if(n_setting == 3) {0.001}
+
+df_input_scen$process_utility_fn_event <- if(n_setting == 1) {0.001} else 
+  if(n_setting == 2) {0.001} else 
+    if(n_setting == 3) {0.001}
+
+df_input_scen$process_utility_tn_event <- if(n_setting == 1) {0.001} else 
+  if(n_setting == 2) {0.001} else 
+    if(n_setting == 3) {0.001}
+
+m_results_scen_14 <- f_model(df_input_scen)
 
 # 15 Assume increased effectiveness of arm sleeve
 df_input_scen <- f_input(n_sim = 1, setting = n_setting)
@@ -495,17 +561,22 @@ df_input_scen$hr_prev_arm_lymphedema <- if(n_setting == 1) {0.55} else
 
 m_results_scen_15 <- f_model(df_input_scen)
 
+# 16 Combine utility beyond health scenarios 13 and 15
+df_input_scen <- f_input(n_sim = 1, setting = n_setting)
 
+df_input_scen$process_utility_tp <- if(n_setting == 1) {0.001} else 
+  if(n_setting == 2) {0.001} else 
+    if(n_setting == 3) {0.001}
 
+df_input_scen$process_utility_fp <- if(n_setting == 1) {0.001} else 
+  if(n_setting == 2) {0.001} else 
+    if(n_setting == 3) {0.001}
 
+df_input_scen$hr_prev_arm_lymphedema <- if(n_setting == 1) {0.55} else 
+  if(n_setting == 2) {0.55} else 
+    if(n_setting == 3) {0.55}
 
-
-
-
-
-
-
-
+m_results_scen_16 <- f_model(df_input_scen)
 
 
 #### Deterministic scenario analyses results ----
