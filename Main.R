@@ -78,7 +78,7 @@ v_out_det <- as.vector(f_model(f_input(n_sim = 1, setting = n_setting)))
 
 # obtain dampack object
 v_out_mean <- as.vector(colMeans(m_results[, 1:(n_treatments * 2)])) # calculate average results
-print(v_out_mean)
+formatC(v_out_mean, format = "f", digits = 4)
 
 obj_icers <- calculate_icers( # create calculate_icers object
   cost = v_out_mean[1:n_treatments], # mean costs per strategy
@@ -200,7 +200,7 @@ l_ci_results <- list(
   )
 )
 
-sink(file = paste0("text/Setting_", n_setting, "_Probabilistic_base_case_CI_results.txt"))
+sink(file = paste0("text/Setting_", n_setting, "_Probabilistic_base_case_ci_results.txt"))
 cat("\n")
 l_ci_results
 cat("\n")
@@ -251,6 +251,8 @@ ib.plot(
 dev.off()
 
 # CEAC
+obj_ceac <- ceac(psa = obj_psa_dam, wtp = v_wtp)
+
 png(file = paste0("plots/Setting_", n_setting, "_ceac", ".png"), width = 500, height = 500)
 plot(
   ceac(
@@ -263,6 +265,12 @@ plot(
   points = TRUE
 ) # plot end
 dev.off()
+
+sink(file = paste0("text/Setting_", n_setting, "_Probabilistic_base_case_ceac_results.txt"))
+cat("\n")
+obj_ceac
+cat("\n")
+sink()
 
 # ELC
 png(file = paste0("plots/Setting_", n_setting, "_elc", ".png"), width = 500, height = 500)
@@ -296,6 +304,12 @@ obj_evpi <- calc_evpi(
   wtp = v_wtp,
   pop = 1
 )
+
+sink(file = paste0("text/Setting_", n_setting, "_Probabilistic_base_case_evpi_results.txt"))
+cat("\n")
+obj_evpi
+cat("\n")
+sink()
 
 obj_evpi  # view all EVPI values across WTP thresholds
 obj_evpi$EVPI[obj_evpi$WTP == n_wtp]
