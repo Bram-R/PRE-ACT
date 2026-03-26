@@ -481,8 +481,8 @@ df_input_scen$process_utility_fp <- if(n_setting == 1) {0.01} else
   if(n_setting == 2) {0.01} else
     if(n_setting == 3) {0.01}
 
-df_input_scen$cost_prev_arm_lymphedema_event <- if(n_setting == 1) {539.7094201 * 5/12} else
-  if(n_setting == 2) {652.4742443 * 5/12} else
+df_input_scen$cost_prev_arm_lymphedema_event <- if(n_setting == 1) {df_input_scen$cost_prev_arm_lymphedema_event} else
+  if(n_setting == 2) {df_input_scen$cost_prev_arm_lymphedema_event} else
     if(n_setting == 3) {-765.7001469} # original cost_prev_arm_lymphedema_event adjusted for cost savings from increased productivity 
 
 m_results_scen_9 <- f_model(df_input_scen)
@@ -577,7 +577,6 @@ df_input_scen$hr_prev_arm_lymphedema <- if(n_setting == 1) {0.55} else
     if(n_setting == 3) {0.55}
 
 m_results_scen_16 <- f_model(df_input_scen)
-
 
 #### Deterministic scenario analyses results ----
 sink(file = paste0("text/Setting_", n_setting, "_Deterministic_scenario_analyses.txt"))
