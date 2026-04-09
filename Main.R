@@ -179,33 +179,36 @@ obj_icers_det
 cat("\n")
 sink()
 
-# Obtain 95CI for (incremental) costs and QALYs
-costCP_CrI <- quantile(m_results[,1], probs = c(0.025, 0.975))
-costCPAI_CrI <- quantile(m_results[,2], probs = c(0.025, 0.975))
-qalyCP_CrI <- quantile(m_results[,3], probs = c(0.025, 0.975))
-qalyCPAI_CrI <- quantile(m_results[,4], probs = c(0.025, 0.975))
-icost_CrI <- quantile(m_results[,2] - m_results[,1], probs = c(0.025, 0.975))
-iqaly_CrI <- quantile(m_results[,4] - m_results[,3], probs = c(0.025, 0.975))
-
-l_ci_results <- list(
-  costs = list(
-    CP    = costCP_CrI,
-    CPAI  = costCPAI_CrI,
-    incr  = icost_CrI
-  ),
-  qalys = list(
-    CP    = qalyCP_CrI,
-    CPAI  = qalyCPAI_CrI,
-    incr  = iqaly_CrI
-  )
+# Obtain 95CI for (incremental) outcomes
+m_ci_abs <- t(apply(m_results, 2, quantile, probs = c(0.025, 0.975)))
+m_ci_abs <- cbind(
+  mean = colMeans(m_results),
+  lwr  = m_ci_abs[,1],
+  upr  = m_ci_abs[,2]
 )
+
+m_results_incr <- cbind(
+  i_cost = m_results[, "Cost_Current_practice"] - m_results[, "Cost_Current_practice_with_AI"],
+  i_qaly = m_results[, "QALY_Current_practice"] - m_results[, "QALY_Current_practice_with_AI"],
+  i_ly = m_results[, "LY_Current_practice"] - m_results[, "LY_Current_practice_with_AI"]
+)
+
+m_ci_inc <- t(apply(m_results_incr, 2, quantile, probs = c(0.025, 0.975)))
+m_ci_inc <- cbind(
+  mean = colMeans(m_results_incr),
+  lwr  = m_ci_inc[,1],
+  upr  = m_ci_inc[,2]
+)
+
+m_ci_out <- rbind(m_ci_abs, m_ci_inc)
 
 sink(file = paste0("text/Setting_", n_setting, "_Probabilistic_base_case_ci_results.txt"))
 cat("\n")
-l_ci_results
+print(m_ci_results, digits = 10)
 cat("\n")
 sink()
 
+rm(m_ci_abs, m_results_incr, m_ci_inc, m_ci_results)
 
 # Cost effectiveness frontier
 png(file = paste0("plots/Setting_", n_setting, "_ce_frontier", ".png"), width = 500, height = 500)
