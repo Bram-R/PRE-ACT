@@ -74,21 +74,21 @@ m_results <- matrix(
 for (x in 1:n_sim) m_results[x, ] <- f_model(df_input[x, ])
 
 # Run deterministic analyses
-v_out_det <- as.vector(f_model(f_input(n_sim = 1, setting = n_setting))) 
+v_results_det <- as.vector(f_model(f_input(n_sim = 1, setting = n_setting))) 
 
 # obtain dampack object
-v_out_mean <- as.vector(colMeans(m_results[, 1:(n_treatments * 2)])) # calculate average results
-formatC(v_out_mean, format = "f", digits = 4)
+v_results_mean <- as.vector(colMeans(m_results[, 1:(n_treatments * 2)])) # calculate average results
+formatC(v_results_mean, format = "f", digits = 4)
 
 obj_icers <- calculate_icers( # create calculate_icers object
-  cost = v_out_mean[1:n_treatments], # mean costs per strategy
-  effect = v_out_mean[(n_treatments + 1):(n_treatments * 2)], # mean effects per strategy
+  cost = v_results_mean[1:n_treatments], # mean costs per strategy
+  effect = v_results_mean[(n_treatments + 1):(n_treatments * 2)], # mean effects per strategy
   strategies = v_treatments # vector of strategy names
 ) # calculate_icers end
 
 obj_icers_det <- calculate_icers( # create calculate_icers object
-  cost = v_out_det[1:n_treatments], # costs per strategy
-  effect = v_out_det[(n_treatments + 1):(n_treatments * 2)], # effects per strategy
+  cost = v_results_det[1:n_treatments], # costs per strategy
+  effect = v_results_det[(n_treatments + 1):(n_treatments * 2)], # effects per strategy
   strategies = v_treatments # vector of strategy names
 ) # calculate_icers end
 
@@ -158,7 +158,7 @@ for (x in 1:dim(m_inc_results)[2]) {
   dev.off()
 }
 
-rm(v_result, m_inc_results)
+rm(v_result)
 
 #### View results ----
 summary(m_results[,1:4]) # alternatively use summarytools::dfSummary(m_results[,1:4])
@@ -187,20 +187,14 @@ m_ci_abs <- cbind(
   upr  = m_ci_abs[,2]
 )
 
-m_results_incr <- cbind(
-  i_cost = m_results[, "Cost_Current_practice"] - m_results[, "Cost_Current_practice_with_AI"],
-  i_qaly = m_results[, "QALY_Current_practice"] - m_results[, "QALY_Current_practice_with_AI"],
-  i_ly = m_results[, "LY_Current_practice"] - m_results[, "LY_Current_practice_with_AI"]
-)
-
-m_ci_inc <- t(apply(m_results_incr, 2, quantile, probs = c(0.025, 0.975)))
+m_ci_inc <- t(apply(m_inc_results, 2, quantile, probs = c(0.025, 0.975)))
 m_ci_inc <- cbind(
-  mean = colMeans(m_results_incr),
+  mean = colMeans(m_inc_results),
   lwr  = m_ci_inc[,1],
   upr  = m_ci_inc[,2]
 )
 
-m_ci_out <- rbind(m_ci_abs, m_ci_inc)
+m_ci_results <- rbind(m_ci_abs, m_ci_inc)
 
 sink(file = paste0("text/Setting_", n_setting, "_Probabilistic_base_case_ci_results.txt"))
 cat("\n")
@@ -208,7 +202,7 @@ print(m_ci_results, digits = 10)
 cat("\n")
 sink()
 
-rm(m_ci_abs, m_results_incr, m_ci_inc, m_ci_results)
+rm(m_ci_abs, m_ci_inc, m_ci_results)
 
 # Cost effectiveness frontier
 png(file = paste0("plots/Setting_", n_setting, "_ce_frontier", ".png"), width = 500, height = 500)
