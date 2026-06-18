@@ -58,26 +58,47 @@ f_input <- function(n_sim = 5000, seed = 12345, setting = 1) {
     tp_dm_dm = generate_beta(0.478^(1/18), (0.436^(1/18) - 0.519^(1/18)) / (2 * qnorm(.975)), n_sim, is_psa),  # OS (18M OS: 47.8% in PCP arm (Source: KEYNOTE-522, NICE TA851)
     
     # Diagnostic performance AI
-    AI_se_arm_lymphedema = generate_sp_se_cor(                           # Based on Canto, HypoG and REQUITE
+    p_AI_se_arm_lymphedema = generate_sp_se_cor(                           # Based on Canto, HypoG and REQUITE
       mean_sens = 0.850, mean_spec = 0.680, sd_sens = 0.005, sd_spec = 0.011,
       rho = (0.0019*(10^-3)) / sqrt((0.005^2) * (0.011^2)),              # Covariance = 0.0019*(10^-3); mail Guido 20-3-2025
       n = n_sim, is_psa = is_psa, seed = seed)[,1],
-    AI_sp_arm_lymphedema = generate_sp_se_cor(                           # Based on Canto, HypoG and REQUITE
+    p_AI_sp_arm_lymphedema = generate_sp_se_cor(                           # Based on Canto, HypoG and REQUITE
       mean_sens = 0.850, mean_spec = 0.680, sd_sens = 0.005, sd_spec = 0.011,
       rho = (0.0019*(10^-3)) / sqrt((0.005^2) * (0.011^2)),              # Covariance = 0.0019*(10^-3); mail Guido 20-3-2025
       n = n_sim, is_psa = is_psa, seed = seed)[,2],
-    AI_se_pain = generate_static(0.000, n_sim, is_psa),                  # Treat all as negative
-    AI_sp_pain = generate_static(1.000, n_sim, is_psa),                  # Treat all as negative
-    AI_se_fatigue = generate_static(0.000, n_sim, is_psa),               # Treat all as negative
-    AI_sp_fatigue = generate_static(1.000, n_sim, is_psa),               # Treat all as negative
-    AI_se_fibrosis_induration = generate_static(0.000, n_sim, is_psa),        # Treat all as negative
-    AI_sp_fibrosis_induration = generate_static(1.000, n_sim, is_psa),        # Treat all as negative    
+    p_AI_se_pain = generate_static(0.000, n_sim, is_psa),                  # Treat all as negative
+    p_AI_sp_pain = generate_static(1.000, n_sim, is_psa),                  # Treat all as negative
+    p_AI_se_fatigue = generate_static(0.000, n_sim, is_psa),               # Treat all as negative
+    p_AI_sp_fatigue = generate_static(1.000, n_sim, is_psa),               # Treat all as negative
+    p_AI_se_fibrosis_induration = generate_static(0.000, n_sim, is_psa),   # Treat all as negative
+    p_AI_sp_fibrosis_induration = generate_static(1.000, n_sim, is_psa),   # Treat all as negative    
+    
+    # Diagnostic performance CP to model the current use of toxicity preventative measures
+    p_CP_se_arm_lymphedema = generate_beta(0.500, 0.500 * 0.3, n_sim, is_psa),         # 
+    p_CP_sp_arm_lymphedema = generate_beta(0.500, 0.500 * 0.3, n_sim, is_psa),         # 
+    p_CP_se_pain = generate_beta(0.500, 0.500 * 0.3, n_sim, is_psa),                   # 
+    p_CP_sp_pain = generate_beta(0.500, 0.500 * 0.3, n_sim, is_psa),                   #
+    p_CP_se_fatigue = generate_beta(0.500, 0.500 * 0.3, n_sim, is_psa),                # 
+    p_CP_sp_fatigue = generate_beta(0.500, 0.500 * 0.3, n_sim, is_psa),                # 
+    p_CP_se_fibrosis_induration = generate_beta(0.500, 0.500 * 0.3, n_sim, is_psa),    # 
+    p_CP_sp_fibrosis_induration = generate_beta(0.500, 0.500 * 0.3, n_sim, is_psa),    #    
     
     # Toxicity prevention strategy performance (e.g. related to arm sleeve)
     hr_prev_arm_lymphedema = generate_lognormal(mean = 0.61, ci_low = 0.43, ci_high = 0.85, n_sim, is_psa), # Paramanandam 2022 https://doi.org/10.1200/JCO.21.02567
     rr_prev_pain = generate_static(0, n_sim, is_psa), 
     rr_prev_fatigue = generate_static(0, n_sim, is_psa),                                                    
     rr_prev_fibrosis_induration = generate_static(0, n_sim, is_psa),                                                    
+    
+    # Uptake of AI tool and/or toxicity preventative strategy recommendation
+    p_AI_uptake_prev_arm_lymphedema = generate_beta(0.900, 0.900 * 0.3, n_sim, is_psa),         
+    p_AI_uptake_prev_pain = generate_beta(0.900, 0.900 * 0.3, n_sim, is_psa),            
+    p_AI_uptake_prev_fatigue = generate_beta(0.900, 0.900 * 0.3, n_sim, is_psa),           
+    p_AI_uptake_prev_fibrosis_induration = generate_beta(0.900, 0.900 * 0.3, n_sim, is_psa),         
+    
+    p_CP_uptake_prev_arm_lymphedema = generate_beta(0.500, 0.500 * 0.3, n_sim, is_psa),         
+    p_CP_uptake_prev_pain = generate_beta(0.500, 0.500 * 0.3, n_sim, is_psa),            
+    p_CP_uptake_prev_fatigue = generate_beta(0.500, 0.500 * 0.3, n_sim, is_psa),           
+    p_CP_uptake_prev_fibrosis_induration = generate_beta(0.500, 0.500 * 0.3, n_sim, is_psa), 
     
     # Toxicity probabilities
     p_arm_lymphedema_m0 = generate_beta(, , n_sim, is_psa, alpha = 45, beta = 1975),                        # Based on REQUITE

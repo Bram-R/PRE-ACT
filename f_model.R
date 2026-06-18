@@ -163,11 +163,11 @@ f_model <- function(params, intermediate = FALSE) {
                  params$p_arm_lymphedema_m36, params$p_arm_lymphedema_m48, params$p_arm_lymphedema_m60, params$p_arm_lymphedema_m72, params$p_arm_lymphedema_m72)), 
     monthly_cycles = 0:n_t)[,2]
   
-  # a_toxicity[2,,v_tox[1]] <- (a_toxicity[1,,v_tox[1]] * params$AI_se_arm_lymphedema) ^ (1 / params$hr_prev_arm_lymphedema) +  # Old (incorrect) integration of HR
-  #   a_toxicity[1,,v_tox[1]] * (1 - params$AI_se_arm_lymphedema) 
+  # a_toxicity[2,,v_tox[1]] <- (a_toxicity[1,,v_tox[1]] * params$p_AI_se_arm_lymphedema) ^ (1 / params$hr_prev_arm_lymphedema) +  # Old (incorrect) integration of HR
+  #   a_toxicity[1,,v_tox[1]] * (1 - params$p_AI_se_arm_lymphedema) 
   
-  a_toxicity[2,,v_tox[1]] <- (1 - (1 - a_toxicity[1,,v_tox[1]]) ^ params$hr_prev_arm_lymphedema) * params$AI_se_arm_lymphedema +   
-    a_toxicity[1,,v_tox[1]] * (1 - params$AI_se_arm_lymphedema)                                           
+  a_toxicity[2,,v_tox[1]] <- (1 - (1 - a_toxicity[1,,v_tox[1]]) ^ params$hr_prev_arm_lymphedema) * params$p_AI_se_arm_lymphedema +   
+    a_toxicity[1,,v_tox[1]] * (1 - params$p_AI_se_arm_lymphedema)                                           
   
   a_toxicity[1,,v_tox[2]] <- f_interpolate_toxicity(data.frame(
     month = c(0, 2, 12, 24, 36, 48, 60, 72, n_t),
@@ -175,8 +175,8 @@ f_model <- function(params, intermediate = FALSE) {
                  params$p_pain_m36, params$p_pain_m48, params$p_pain_m60, params$p_pain_m72, params$p_pain_m72)), 
     monthly_cycles = 0:n_t)[,2]
   
-  a_toxicity[2,,v_tox[2]] <- a_toxicity[1,,v_tox[2]] * params$AI_se_pain * params$rr_prev_pain +
-    a_toxicity[1,,v_tox[2]] * (1 - params$AI_se_pain) 
+  a_toxicity[2,,v_tox[2]] <- a_toxicity[1,,v_tox[2]] * params$p_AI_se_pain * params$rr_prev_pain +
+    a_toxicity[1,,v_tox[2]] * (1 - params$p_AI_se_pain) 
   
   a_toxicity[1,,v_tox[3]] <- f_interpolate_toxicity(data.frame(
     month = c(0, 2, 12, 24, 36, 48, 60, 72, n_t),
@@ -184,8 +184,8 @@ f_model <- function(params, intermediate = FALSE) {
                  params$p_fatigue_m36, params$p_fatigue_m48, params$p_fatigue_m60, params$p_fatigue_m72, params$p_fatigue_m72)), 
     monthly_cycles = 0:n_t)[,2]
   
-  a_toxicity[2,,v_tox[3]] <- a_toxicity[1,,v_tox[3]] * params$AI_se_fatigue * params$rr_prev_fatigue +
-    a_toxicity[1,,v_tox[3]] * (1 - params$AI_se_fatigue) 
+  a_toxicity[2,,v_tox[3]] <- a_toxicity[1,,v_tox[3]] * params$p_AI_se_fatigue * params$rr_prev_fatigue +
+    a_toxicity[1,,v_tox[3]] * (1 - params$p_AI_se_fatigue) 
   
   a_toxicity[1,,v_tox[4]] <- f_interpolate_toxicity(data.frame(
     month = c(0, 2, 12, 24, 36, 48, 60, 72, n_t),
@@ -193,36 +193,36 @@ f_model <- function(params, intermediate = FALSE) {
                  params$p_fibrosis_induration_m36, params$p_fibrosis_induration_m48, params$p_fibrosis_induration_m60, params$p_fibrosis_induration_m72, params$p_fibrosis_induration_m72)), 
     monthly_cycles = 0:n_t)[,2]
   
-  a_toxicity[2,,v_tox[4]] <- a_toxicity[1,,v_tox[4]] * params$AI_se_fibrosis_induration * params$rr_prev_fibrosis_induration +
-    a_toxicity[1,,v_tox[4]] * (1 - params$AI_se_fibrosis_induration) 
+  a_toxicity[2,,v_tox[4]] <- a_toxicity[1,,v_tox[4]] * params$p_AI_se_fibrosis_induration * params$rr_prev_fibrosis_induration +
+    a_toxicity[1,,v_tox[4]] * (1 - params$p_AI_se_fibrosis_induration) 
   
   # Calculate prevalence per toxicity 
   m_tox_max <- apply(a_toxicity, c(1, 3), max)                                             # Max toxicity over time per treatment per toxicity
-  n_prevalence_arm_lymphedema <- m_tox_max[v_treatments[1], v_tox[1]]
-  n_prevalence_pain <- m_tox_max[v_treatments[1], v_tox[2]]
-  n_prevalence_fatigue <- m_tox_max[v_treatments[1], v_tox[3]]
-  n_prevalence_fibrosis_induration <- m_tox_max[v_treatments[1], v_tox[4]]
+  n_prevalence_arm_lymphedema <- a_toxicity[v_treatments[1], 24, v_tox[1]]                 # Use 24 month toxicity (time point used for AI)
+  n_prevalence_pain <- a_toxicity[v_treatments[1], 24, v_tox[2]]                           # As per arm lymphedema AI tool
+  n_prevalence_fatigue <- a_toxicity[v_treatments[1], 24, v_tox[3]]                        # As per arm lymphedema AI tool 
+  n_prevalence_fibrosis_induration <- a_toxicity[v_treatments[1], 24, v_tox[4]]            # As per arm lymphedema AI tool
   
   # Estimate confusion matrix
-  n_arm_lymphedema_tp <- n_prevalence_arm_lymphedema * params$AI_se_arm_lymphedem
-  n_arm_lymphedema_fp <- (1 - n_prevalence_arm_lymphedema) * (1 - params$AI_sp_arm_lymphedema)
-  n_arm_lymphedema_fn <- n_prevalence_arm_lymphedema * (1 - params$AI_se_arm_lymphedem)
-  n_arm_lymphedema_tn <- (1 - n_prevalence_arm_lymphedema) * params$AI_sp_arm_lymphedema
+  n_arm_lymphedema_tp <- n_prevalence_arm_lymphedema * params$p_AI_se_arm_lymphedem
+  n_arm_lymphedema_fp <- (1 - n_prevalence_arm_lymphedema) * (1 - params$p_AI_sp_arm_lymphedema)
+  n_arm_lymphedema_fn <- n_prevalence_arm_lymphedema * (1 - params$p_AI_se_arm_lymphedem)
+  n_arm_lymphedema_tn <- (1 - n_prevalence_arm_lymphedema) * params$p_AI_sp_arm_lymphedema
   
-  n_pain_tp <- n_prevalence_pain * params$AI_se_arm_lymphedem
-  n_pain_fp <- (1 - n_prevalence_pain) * (1 - params$AI_sp_pain)
-  n_pain_fn <- n_prevalence_pain * (1 - params$AI_se_arm_lymphedem)
-  n_pain_tn <- (1 - n_prevalence_pain) * params$AI_sp_pain
+  n_pain_tp <- n_prevalence_pain * params$p_AI_se_arm_lymphedem
+  n_pain_fp <- (1 - n_prevalence_pain) * (1 - params$p_AI_sp_pain)
+  n_pain_fn <- n_prevalence_pain * (1 - params$p_AI_se_arm_lymphedem)
+  n_pain_tn <- (1 - n_prevalence_pain) * params$p_AI_sp_pain
   
-  n_fatigue_tp <- n_prevalence_fatigue * params$AI_se_arm_lymphedem
-  n_fatigue_fp <- (1 - n_prevalence_fatigue) * (1 - params$AI_sp_fatigue)
-  n_fatigue_fn <- n_prevalence_fatigue * (1 - params$AI_se_arm_lymphedem)
-  n_fatigue_tn <- (1 - n_prevalence_fatigue) * params$AI_sp_fatigue
+  n_fatigue_tp <- n_prevalence_fatigue * params$p_AI_se_arm_lymphedem
+  n_fatigue_fp <- (1 - n_prevalence_fatigue) * (1 - params$p_AI_sp_fatigue)
+  n_fatigue_fn <- n_prevalence_fatigue * (1 - params$p_AI_se_arm_lymphedem)
+  n_fatigue_tn <- (1 - n_prevalence_fatigue) * params$p_AI_sp_fatigue
   
-  n_fibrosis_induration_tp <- n_prevalence_fibrosis_induration * params$AI_se_arm_lymphedem
-  n_fibrosis_induration_fp <- (1 - n_prevalence_fibrosis_induration) * (1 - params$AI_sp_fibrosis_induration)
-  n_fibrosis_induration_fn <- n_prevalence_fibrosis_induration * (1 - params$AI_se_arm_lymphedem)
-  n_fibrosis_induration_tn <- (1 - n_prevalence_fibrosis_induration) * params$AI_sp_fibrosis_induration
+  n_fibrosis_induration_tp <- n_prevalence_fibrosis_induration * params$p_AI_se_arm_lymphedem
+  n_fibrosis_induration_fp <- (1 - n_prevalence_fibrosis_induration) * (1 - params$p_AI_sp_fibrosis_induration)
+  n_fibrosis_induration_fn <- n_prevalence_fibrosis_induration * (1 - params$p_AI_se_arm_lymphedem)
+  n_fibrosis_induration_tn <- (1 - n_prevalence_fibrosis_induration) * params$p_AI_sp_fibrosis_induration
   
   # Estimate number of patients receiving preventative measures (i.e. proportion of positive tests)
   n_highrisk_arm_lymphedema <- n_arm_lymphedema_tp + n_arm_lymphedema_fp                
@@ -306,10 +306,10 @@ f_model <- function(params, intermediate = FALSE) {
                             rep(m_discount[-1, 1], each = n_treatments),                      # Multiply by discount factor
                           nrow = n_treatments, ncol = n_t)
   
-  m_event_costs_tox <- cbind(m_tox_max[,v_tox[1]] * params$cost_arm_lymphedema_event, # Add one off costs related to arm lymphedema
-                             m_tox_max[,v_tox[2]] * params$cost_pain_event,           # Add one off costs related to pain
-                             m_tox_max[,v_tox[3]] * params$cost_fatigue_event,        # Add one off costs related to fatigue
-                             m_tox_max[,v_tox[4]] * params$cost_fibrosis_induration)  # Add one off costs related to fibrosis induration
+  m_event_costs_tox <- cbind(m_tox_max[,v_tox[1]] * params$cost_arm_lymphedema_event,         # Add one off costs related to arm lymphedema
+                             m_tox_max[,v_tox[2]] * params$cost_pain_event,                   # Add one off costs related to pain
+                             m_tox_max[,v_tox[3]] * params$cost_fatigue_event,                # Add one off costs related to fatigue
+                             m_tox_max[,v_tox[4]] * params$cost_fibrosis_induration)          # Add one off costs related to fibrosis induration
   
   # One off toxicity costs are added to first cycle (assuming no discounting)
   a_costs_tox[, 1, ] <- m_event_costs_tox

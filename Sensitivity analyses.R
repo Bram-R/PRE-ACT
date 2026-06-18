@@ -44,8 +44,8 @@ df_twsa_pairs <- if(n_setting == 1) {
                "cost_prev_arm_lymphedema_event"),
     twsa_7 = c("p_arm_lymphedema_m72", 
                "cost_arm_lymphedema"),
-    twsa_8 = c("AI_se_arm_lymphedema", 
-               "AI_sp_arm_lymphedema")
+    twsa_8 = c("p_AI_se_arm_lymphedema", 
+               "p_AI_sp_arm_lymphedema")
   )} else if(n_setting == 2) {
     data.frame(
       twsa_1 = c("cost_t2", 
@@ -62,8 +62,8 @@ df_twsa_pairs <- if(n_setting == 1) {
                  "cost_prev_arm_lymphedema_event"),
       twsa_7 = c("p_arm_lymphedema_m72", 
                  "cost_arm_lymphedema"),
-      twsa_8 = c("AI_se_arm_lymphedema", 
-                 "AI_sp_arm_lymphedema")
+      twsa_8 = c("p_AI_se_arm_lymphedema", 
+                 "p_AI_sp_arm_lymphedema")
     )} else if(n_setting == 3) { 
       data.frame(
         twsa_1 = c("cost_t2", 
@@ -80,8 +80,8 @@ df_twsa_pairs <- if(n_setting == 1) {
                    "cost_prev_arm_lymphedema_event"),
         twsa_7 = c("p_arm_lymphedema_m72", 
                    "cost_arm_lymphedema"),
-        twsa_8 = c("AI_se_arm_lymphedema", 
-                   "AI_sp_arm_lymphedema")
+        twsa_8 = c("p_AI_se_arm_lymphedema", 
+                   "p_AI_sp_arm_lymphedema")
       )  
     }
 
@@ -389,10 +389,10 @@ df_input_scen <- f_input(n_sim = 1, setting = n_setting)
 df_input_scen$cost_t2 <- df_input_scen$cost_t2 + if(n_setting == 1) {3850.71171} else 
   if(n_setting == 2) {3907.620323} else 
     if(n_setting == 3) {4744.53801}
-df_input_scen$AI_se_arm_lymphedema <- if(n_setting == 1) {0.88} else 
+df_input_scen$p_AI_se_arm_lymphedema <- if(n_setting == 1) {0.88} else 
   if(n_setting == 2) {0.88} else 
     if(n_setting == 3) {0.88}
-df_input_scen$AI_sp_arm_lymphedema <- if(n_setting == 1) {0.70} else 
+df_input_scen$p_AI_sp_arm_lymphedema <- if(n_setting == 1) {0.70} else 
   if(n_setting == 2) {0.70} else 
     if(n_setting == 3) {0.70}
 
@@ -449,10 +449,10 @@ m_results_scen_6 <- f_model(df_input_scen)
 # 7 Assume decreased diagnostics accuracy of the PRE-ACT AI tool
 df_input_scen <- f_input(n_sim = 1, setting = n_setting)
 
-df_input_scen$AI_se_arm_lymphedema <- if(n_setting == 1) {0.80} else 
+df_input_scen$p_AI_se_arm_lymphedema <- if(n_setting == 1) {0.80} else 
   if(n_setting == 2) {0.80} else 
     if(n_setting == 3) {0.80}
-df_input_scen$AI_sp_arm_lymphedema <- if(n_setting == 1) {0.60} else 
+df_input_scen$p_AI_sp_arm_lymphedema <- if(n_setting == 1) {0.60} else 
   if(n_setting == 2) {0.60} else 
     if(n_setting == 3) {0.60}
 
@@ -461,10 +461,10 @@ m_results_scen_7 <- f_model(df_input_scen)
 # 8 Assume increased diagnostics accuracy of the PRE-ACT AI tool
 df_input_scen <- f_input(n_sim = 1, setting = n_setting)
 
-df_input_scen$AI_se_arm_lymphedema <- if(n_setting == 1) {0.90} else 
+df_input_scen$p_AI_se_arm_lymphedema <- if(n_setting == 1) {0.90} else 
   if(n_setting == 2) {0.90} else 
     if(n_setting == 3) {0.90}
-df_input_scen$AI_sp_arm_lymphedema <- if(n_setting == 1) {0.70} else 
+df_input_scen$p_AI_sp_arm_lymphedema <- if(n_setting == 1) {0.70} else 
   if(n_setting == 2) {0.70} else 
     if(n_setting == 3) {0.70}
 
