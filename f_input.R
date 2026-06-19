@@ -95,10 +95,10 @@ f_input <- function(n_sim = 5000, seed = 12345, setting = 1) {
     p_AI_uptake_prev_fatigue = generate_beta(0.900, 0.900 * 0.3, n_sim, is_psa),           
     p_AI_uptake_prev_fibrosis_induration = generate_beta(0.900, 0.900 * 0.3, n_sim, is_psa),         
     
-    p_CP_uptake_prev_arm_lymphedema = generate_beta(0.500, 0.500 * 0.3, n_sim, is_psa),         
-    p_CP_uptake_prev_pain = generate_beta(0.500, 0.500 * 0.3, n_sim, is_psa),            
-    p_CP_uptake_prev_fatigue = generate_beta(0.500, 0.500 * 0.3, n_sim, is_psa),           
-    p_CP_uptake_prev_fibrosis_induration = generate_beta(0.500, 0.500 * 0.3, n_sim, is_psa), 
+    p_CP_uptake_prev_arm_lymphedema = generate_beta(0.100, 0.100 * 0.3, n_sim, is_psa),         
+    p_CP_uptake_prev_pain = generate_beta(0.100, 0.100 * 0.3, n_sim, is_psa),            
+    p_CP_uptake_prev_fatigue = generate_beta(0.100, 0.100 * 0.3, n_sim, is_psa),           
+    p_CP_uptake_prev_fibrosis_induration = generate_beta(0.100, 0.100 * 0.3, n_sim, is_psa), 
     
     # Toxicity probabilities
     p_arm_lymphedema_m0 = generate_beta(, , n_sim, is_psa, alpha = 45, beta = 1975),                        # Based on REQUITE

@@ -365,7 +365,7 @@ matplot(
   y = m_out_dis_cycle_res[, 19:36], 
   #ylim = c(0, 1),
   type = "l",
-  ylab = "Costs",
+  ylab = "QALYs",
   xlab = "Cycle",
   main = paste0("Average health state QALYs ", v_treatments[1], " and ", v_treatments[2]),
   col = rainbow(9),
@@ -378,6 +378,54 @@ legend(
   cex = 0.75,
   col = rainbow(9), 
   lty =  c(rep(1, 9), rep(2, 9)),
+  bty = "n"
+) # legend end
+dev.off()
+
+
+# Toxicity costs
+png(file = paste0("plots/Setting_", n_setting, "_costs_by_tox_vs_time", ".png"), width = 1500, height = 1500)
+matplot(
+  x = 0:n_t,
+  y = m_out_dis_cycle_res[, c(5:8, 14:17)], 
+  type = "l",
+  ylab = "Costs",
+  xlab = "Cycle",
+  main = paste0("Average toxicity costs for ", v_treatments[1], " and ", v_treatments[2]),
+  col = rainbow(4),
+  lty = c(rep(1, 4), rep(2, 4))
+) # matplot end
+legend(
+  "topright", 
+  inset = c(0.05, 0),
+  dimnames(m_out_dis_cycle_res[, c(5:8, 14:17)])[[2]], 
+  cex = 0.75,
+  col = rainbow(4), 
+  lty =  c(rep(1, 4), rep(2, 4)),
+  bty = "n"
+) # legend end
+dev.off()
+
+# Toxicity QALYs
+png(file = paste0("plots/Setting_", n_setting, "_qalys_by_toxicity_vs_time", ".png"), width = 1500, height = 1500)
+matplot(
+  x = 0:n_t,
+  y = m_out_dis_cycle_res[, c(23:26, 32:35)], 
+  #ylim = c(0, 1),
+  type = "l",
+  ylab = "QALYs",
+  xlab = "Cycle",
+  main = paste0("Average toxicity QALYs ", v_treatments[1], " and ", v_treatments[2]),
+  col = rainbow(4),
+  lty = c(rep(1, 4), rep(2, 4))
+) # matplot end
+legend(
+  "topright", 
+  inset = c(0.05, 0),
+  dimnames(m_out_dis_cycle_res[, c(23:26, 32:35)])[[2]], 
+  cex = 0.75,
+  col = rainbow(4), 
+  lty =  c(rep(1, 4), rep(2, 4)),
   bty = "n"
 ) # legend end
 dev.off()

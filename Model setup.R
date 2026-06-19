@@ -40,7 +40,7 @@ v_treatments <- c("Current_practice",
                   "Current_practice_with_AI")           # Vector of strategy names
 n_treatments <- length(v_treatments)                    # Number of treatments
 v_tox <- c("arm_lymphedema", "pain", 
-           "fatigue", "fibrosis_induration")                 # Vector of toxicity names
+           "fatigue", "fibrosis_induration")            # Vector of toxicity names
 n_tox  <- length(v_tox)                                 # Number of toxicities
 n_t <- 40 * 12                                          # Model time horizon (monthly cycle)
 n_sim <- 5000                                           # Number of Monte Carlo simulations
