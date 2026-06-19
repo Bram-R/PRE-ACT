@@ -752,3 +752,264 @@ calculate_icers( # create calculate_icers object
 
 cat("\n")
 sink()
+
+# Clear workspace
+rm(list = ls())
+
+# Load custom functions
+source("Model setup.R")            # Model setup and definitions
+
+#### Probabilistic scenario analyses ---- 
+##### 0: Base-case ##### 
+m_results_prob_scenario_0 <- matrix( # Matrix to store result 
+  data = NA,
+  nrow = n_sim,
+  ncol = 3 * n_treatments,
+  dimnames = list(1:n_sim, c(paste0("Cost_", v_treatments), paste0("QALY_", v_treatments), paste0("LY_", v_treatments)))
+)
+
+df_input_prob_scenario_0 <- f_input(n_sim = n_sim)
+
+for (x in 1:n_sim) m_results_prob_scenario_0[x, ] <- f_model(df_input_prob_scenario_0[x, ])
+
+v_out_mean <- as.vector(colMeans(m_results_prob_scenario_0[, 1:(n_treatments * 2)])) # calculate average results
+
+obj_icers_prob_scenario_0 <- calculate_icers( # create calculate_icers object
+  cost = v_out_mean[1:n_treatments], # mean costs per strategy
+  effect = v_out_mean[(n_treatments + 1):(n_treatments * 2)], # mean effects per strategy
+  strategies = v_treatments # vector of strategy names
+) # calculate_icers end
+
+##### 1: prob_scenario: XXX ##### 
+m_results_prob_scenario_1 <- matrix( # Matrix to store result 
+  data = NA,
+  nrow = n_sim,
+  ncol = 3 * n_treatments,
+  dimnames = list(1:n_sim, c(paste0("Cost_", v_treatments), paste0("QALY_", v_treatments), paste0("LY_", v_treatments)))
+)
+
+df_input_prob_scenario_1 <- f_input(n_sim = n_sim)
+
+for (x in 1:n_sim) m_results_prob_scenario_1[x, ] <- f_model(df_input_prob_scenario_1[x, ])
+
+v_out_mean <- as.vector(colMeans(m_results_prob_scenario_1[, 1:(n_treatments * 2)])) # calculate average results
+
+obj_icers_prob_scenario_1 <- calculate_icers( # create calculate_icers object
+  cost = v_out_mean[1:n_treatments], # mean costs per strategy
+  effect = v_out_mean[(n_treatments + 1):(n_treatments * 2)], # mean effects per strategy
+  strategies = v_treatments # vector of strategy names
+) # calculate_icers end
+
+##### 2: prob_scenario: XXX ##### 
+m_results_prob_scenario_2 <- matrix( # Matrix to store result 
+  data = NA,
+  nrow = n_sim,
+  ncol = 3 * n_treatments,
+  dimnames = list(1:n_sim, c(paste0("Cost_", v_treatments), paste0("QALY_", v_treatments), paste0("LY_", v_treatments)))
+)
+
+df_input_prob_scenario_2 <- f_input(n_sim = n_sim)
+
+for (x in 1:n_sim) m_results_prob_scenario_2[x, ] <- f_model(df_input_prob_scenario_2[x, ])
+
+v_out_mean <- as.vector(colMeans(m_results_prob_scenario_2[, 1:(n_treatments * 2)])) # calculate average results
+
+obj_icers_prob_scenario_2 <- calculate_icers( # create calculate_icers object
+  cost = v_out_mean[1:n_treatments], # mean costs per strategy
+  effect = v_out_mean[(n_treatments + 1):(n_treatments * 2)], # mean effects per strategy
+  strategies = v_treatments # vector of strategy names
+) # calculate_icers end
+
+##### 3: prob_scenario: XXX ##### 
+m_results_prob_scenario_3 <- matrix( # Matrix to store result 
+  data = NA,
+  nrow = n_sim,
+  ncol = 3 * n_treatments,
+  dimnames = list(1:n_sim, c(paste0("Cost_", v_treatments), paste0("QALY_", v_treatments), paste0("LY_", v_treatments)))
+)
+
+df_input_prob_scenario_3 <- f_input(n_sim = n_sim)
+
+for (x in 1:n_sim) m_results_prob_scenario_3[x, ] <- f_model(df_input_prob_scenario_3[x, ])
+
+v_out_mean <- as.vector(colMeans(m_results_prob_scenario_3[, 1:(n_treatments * 2)])) # calculate average results
+
+obj_icers_prob_scenario_3 <- calculate_icers( # create calculate_icers object
+  cost = v_out_mean[1:n_treatments], # mean costs per strategy
+  effect = v_out_mean[(n_treatments + 1):(n_treatments * 2)], # mean effects per strategy
+  strategies = v_treatments # vector of strategy names
+) # calculate_icers end
+
+##### 4: prob_scenario: XXX ##### 
+m_results_prob_scenario_4 <- matrix( # Matrix to store result 
+  data = NA,
+  nrow = n_sim,
+  ncol = 3 * n_treatments,
+  dimnames = list(1:n_sim, c(paste0("Cost_", v_treatments), paste0("QALY_", v_treatments), paste0("LY_", v_treatments)))
+)
+
+df_input_prob_scenario_4 <- f_input(n_sim = n_sim)
+
+for (x in 1:n_sim) m_results_prob_scenario_4[x, ] <- f_model(df_input_prob_scenario_4[x, ])
+
+v_out_mean <- as.vector(colMeans(m_results_prob_scenario_4[, 1:(n_treatments * 2)])) # calculate average results
+
+obj_icers_prob_scenario_4 <- calculate_icers( # create calculate_icers object
+  cost = v_out_mean[1:n_treatments], # mean costs per strategy
+  effect = v_out_mean[(n_treatments + 1):(n_treatments * 2)], # mean effects per strategy
+  strategies = v_treatments # vector of strategy names
+) # calculate_icers end
+
+##### 5: prob_scenario: XXX ##### 
+m_results_prob_scenario_5 <- matrix( # Matrix to store result 
+  data = NA,
+  nrow = n_sim,
+  ncol = 3 * n_treatments,
+  dimnames = list(1:n_sim, c(paste0("Cost_", v_treatments), paste0("QALY_", v_treatments), paste0("LY_", v_treatments)))
+)
+
+df_input_prob_scenario_5 <- f_input(n_sim = n_sim)
+
+for (x in 1:n_sim) m_results_prob_scenario_5[x, ] <- f_model(df_input_prob_scenario_5[x, ])
+
+v_out_mean <- as.vector(colMeans(m_results_prob_scenario_5[, 1:(n_treatments * 2)])) # calculate average results
+
+obj_icers_prob_scenario_5 <- calculate_icers( # create calculate_icers object
+  cost = v_out_mean[1:n_treatments], # mean costs per strategy
+  effect = v_out_mean[(n_treatments + 1):(n_treatments * 2)], # mean effects per strategy
+  strategies = v_treatments # vector of strategy names
+) # calculate_icers end
+
+##### 6: prob_scenario: XXX ##### 
+m_results_prob_scenario_6 <- matrix( # Matrix to store result 
+  data = NA,
+  nrow = n_sim,
+  ncol = 3 * n_treatments,
+  dimnames = list(1:n_sim, c(paste0("Cost_", v_treatments), paste0("QALY_", v_treatments), paste0("LY_", v_treatments)))
+)
+
+df_input_prob_scenario_6 <- f_input(n_sim = n_sim)
+
+for (x in 1:n_sim) m_results_prob_scenario_6[x, ] <- f_model(df_input_prob_scenario_6[x, ])
+
+v_out_mean <- as.vector(colMeans(m_results_prob_scenario_6[, 1:(n_treatments * 2)])) # calculate average results
+
+obj_icers_prob_scenario_6 <- calculate_icers( # create calculate_icers object
+  cost = v_out_mean[1:n_treatments], # mean costs per strategy
+  effect = v_out_mean[(n_treatments + 1):(n_treatments * 2)], # mean effects per strategy
+  strategies = v_treatments # vector of strategy names
+) # calculate_icers end
+
+##### Probabilistic scenario results ##### 
+sink(file = paste0("text/Probabilistic_scenario_analyses.txt"))
+cat("\n")
+cat("Probabilistic base-case")
+cat("\n")
+
+obj_icers_prob_scenario_0
+
+cat("\n")
+cat("Probabilistic scenario analysis 1: XXX")
+cat("\n")
+
+obj_icers_prob_scenario_1
+
+cat("\n")
+cat("Probabilistic scenario analysis 2: XXX")
+cat("\n")
+
+obj_icers_prob_scenario_2
+
+cat("\n")
+cat("Probabilistic scenario analysis 3: XXX")
+cat("\n")
+
+obj_icers_prob_scenario_3
+
+cat("\n")
+cat("Probabilistic scenario analysis 4: XXX")
+cat("\n")
+
+obj_icers_prob_scenario_4
+
+cat("\n")
+cat("Probabilistic scenario analysis 5: XXX")
+cat("\n")
+
+obj_icers_prob_scenario_5
+
+cat("\n")
+cat("Probabilistic scenario analysis 6: XXX")
+cat("\n")
+
+obj_icers_prob_scenario_6
+
+cat("\n")
+sink()
+
+# Cost effectiveness frontiers for scenarios
+png(file = paste0("plots/", "ce_frontier_prob_scenario_0", ".png"), width = 1500, height = 1500)
+plot(
+  x = obj_icers_prob_scenario_0, # icers object
+  currency = n_currency, # costs units
+  effect_units = "QALYs", # effects units
+  label = "all" # add label to all strategies
+) # plot end
+dev.off()
+
+png(file = paste0("plots/", "ce_frontier_prob_scenario_1", ".png"), width = 1500, height = 1500)
+plot(
+  x = obj_icers_prob_scenario_1, # icers object
+  currency = n_currency, # costs units
+  effect_units = "QALYs", # effects units
+  label = "all" # add label to all strategies
+) # plot end
+dev.off()
+
+png(file = paste0("plots/", "ce_frontier_prob_scenario_2", ".png"), width = 1500, height = 1500)
+plot(
+  x = obj_icers_prob_scenario_2, # icers object
+  currency = n_currency, # costs units
+  effect_units = "QALYs", # effects units
+  label = "all" # add label to all strategies
+) # plot end
+dev.off()
+
+png(file = paste0("plots/", "ce_frontier_prob_scenario_3", ".png"), width = 1500, height = 1500)
+plot(
+  x = obj_icers_prob_scenario_3, # icers object
+  currency = n_currency, # costs units
+  effect_units = "QALYs", # effects units
+  label = "all" # add label to all strategies
+) # plot end
+dev.off()
+
+png(file = paste0("plots/", "ce_frontier_prob_scenario_4", ".png"), width = 1500, height = 1500)
+plot(
+  x = obj_icers_prob_scenario_4, # icers object
+  currency = n_currency, # costs units
+  effect_units = "QALYs", # effects units
+  label = "all" # add label to all strategies
+) # plot end
+dev.off()
+
+png(file = paste0("plots/", "ce_frontier_prob_scenario_5", ".png"), width = 1500, height = 1500)
+plot(
+  x = obj_icers_prob_scenario_5, # icers object
+  currency = n_currency, # costs units
+  effect_units = "QALYs", # effects units
+  label = "all" # add label to all strategies
+) # plot end
+dev.off()
+
+
+png(file = paste0("plots/", "ce_frontier_prob_scenario_6", ".png"), width = 1500, height = 1500)
+plot(
+  x = obj_icers_prob_scenario_6, # icers object
+  currency = n_currency, # costs units
+  effect_units = "QALYs", # effects units
+  label = "all" # add label to all strategies
+) # plot end
+dev.off()
+
+
