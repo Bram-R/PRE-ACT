@@ -60,7 +60,7 @@ txt <- capture.output(
 writeLines(txt, paste0("text/Setting_", n_setting, "_Intermediate_results.txt"))
 rm(df_tmp, txt)
 
-##### Costs and QALYs per cycle ----
+#### Costs and QALYs per cycle ----
 a_out_cycle_res <- array(
   c(apply(a_out_interm[, 1:9, ], c(1, 3), sum),
     apply(a_out_interm[, 10:18, ], c(1, 3), sum),
