@@ -1,36 +1,65 @@
 f_input <- function(n_sim = 5000, seed = 12345, setting = 1) {
-  #' Generate Inputs for Probabilistic Sensitivity Analysis (PSA)
+  #' Generate model input parameters
   #'
-  #' This function generates a structured data frame containing input parameters for 
-  #' probabilistic sensitivity analysis (PSA). It incorporates various distributions 
-  #' (beta, gamma, log-normal, and static values) to account for uncertainty in 
-  #' model parameters related to transition probabilities, utilities, and costs.
+  #' Generates complete model input parameters for deterministic analysis (DA)
+  #' or probabilistic sensitivity analysis (PSA). The function samples uncertain
+  #' parameters from their respective probability distributions and combines
+  #' these with deterministic assumptions into a single data frame that serves
+  #' as input for the health economic model.
   #'
-  #' @param n_sim Integer. Number of simulations (use `1` for deterministic values). Default is `5000`.
-  #' @param seed Integer. Random seed for reproducibility. Default is `12345`.
-  #' @param setting Integer. Selected setting `1` = UK, `2` = FR, `3` = NL. Default is `1`.
-  #' 
-  #' @details
-  #' The function:
+  #' The generated inputs include:
   #' \itemize{
-  #'   \item Sets a random seed to ensure reproducibility.
-  #'   \item Adjusts inputs based on setting where appropriate.
-  #'   \item Uses helper functions (`generate_static`, `generate_beta`, `generate_gamma`, `generate_lognormal`)
-  #'         to sample values from different probability distributions.
-  #'   \item Defines transition probabilities, health state utilities, toxicity parameters, and costs.
-  #'   \item Adjusts probability dependencies where needed (e.g., `tp_lrr_death` based on other inputs).
+  #'   \item State-transition probabilities.
+  #'   \item Diagnostic performance of the AI strategy and current practice.
+  #'   \item Toxicity prevention effectiveness and uptake.
+  #'   \item Toxicity incidence over time.
+  #'   \item Health-state utilities, toxicity disutilities and process utilities.
+  #'   \item Health-state, event and intervention costs.
+  #'   \item Country-specific discount rates and economic parameters.
   #' }
-  #' 
-  #' The generated inputs align with the structure needed for state-transition modeling in economic evaluations.
   #'
-  #' @return A data frame (`df_input`) where each row corresponds to a unique set of sampled PSA parameters.
+  #' @param n_sim Integer. Number of parameter sets to generate. Use
+  #'   `n_sim = 1` for deterministic analysis and `n_sim > 1` for PSA.
+  #' @param seed Integer. Random seed used to ensure reproducibility.
+  #' @param setting Integer. Country setting used to apply country-specific
+  #'   model inputs:
+  #'   \itemize{
+  #'     \item `1` = United Kingdom (UK)
+  #'     \item `2` = France (FR)
+  #'     \item `3` = The Netherlands (NL)
+  #'   }
+  #'
+  #' @details
+  #' Uncertain parameters are sampled from beta, gamma and log-normal
+  #' distributions where appropriate, while deterministic parameters are
+  #' generated as static values.
+  #'
+  #' Country-specific costs, disutilities and discount rates are added according
+  #' to the selected setting. Finally, deterministic dependencies between
+  #' parameters are calculated (e.g., transition probabilities and strategy
+  #' costs derived from sampled parameters).
+  #'
+  #' The returned object contains one row per simulation and is intended as
+  #' input for `f_model()`.
+  #'
+  #' @return
+  #' A data frame with `n_sim` rows, where each row represents one complete set
+  #' of model input parameters.
   #'
   #' @examples
-  #' # Generate a small set of PSA inputs (100 simulations)
-  #' psa_inputs <- f_input(n_sim = 100, seed = 12345)
+  #' # Deterministic analysis
+  #' df_input <- f_input(
+  #'   n_sim = 1,
+  #'   seed = 12345,
+  #'   setting = 1
+  #' )
   #'
-  #' # Generate deterministic inputs (single set of parameters)
-  #' deterministic_inputs <- f_input(n_sim = 1, seed = 12345)
+  #' # Probabilistic sensitivity analysis
+  #' df_input_psa <- f_input(
+  #'   n_sim = 5000,
+  #'   seed = 12345,
+  #'   setting = 1
+  #' )
   #'
   #' @export
   

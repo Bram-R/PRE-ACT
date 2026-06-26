@@ -19,7 +19,7 @@ df_input <- f_input(n_sim = n_sim, setting = n_setting)
 # - Event: One-off costs and QALYs, i.e. treatment costs, toxicity prevention costs (e.g. arm sleeve) as well as one-off costs related to the development of recurrence (either loco-regional or distant) as well as mortality. 
 
 # Probabilistic results (intermediate)
-a_out_interm <- f_wrapper_intermediate(df_input)
+a_out_interm <- f_run_intermediate(df_input)
 
 # str(a_out_interm[,,]) # inspect
 # names(a_out_interm[1, , 1]) # inspect

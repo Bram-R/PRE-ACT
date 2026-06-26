@@ -28,7 +28,7 @@ obj_owsa_dam <- run_owsa_det( # generate dampack OWSA object
   params_range = df_params_range, # close params_range dataframe 
   params_basecase = f_input(n_sim = 1, setting = n_setting), # base-case parameters (n_sim = 1 provides deterministic parameters)
   nsamp = 100, # number of sets of parameter values to be generated (between min and max)
-  FUN = f_wrapper_sa, wtp = n_wtp, # function that produces outcomes
+  FUN = f_run_sa, wtp = n_wtp, # function that produces outcomes
   outcomes = c("QALY", "Cost", "NMB", "iQALY", "iCost", "iCER", "iNMB"), # outcomes of interest produced by FUN 
   progress = TRUE # show progression in console
 ) # end run_owsa_det
@@ -96,7 +96,7 @@ obj_twsa_dam_1 <- run_twsa_det( # generate dampack TWSA object
   params_range = df_params_range[df_params_range$pars %in% df_twsa_pairs$twsa_1, ], # selected parameters and range for twsa
   params_basecase = f_input(n_sim = 1, setting = n_setting), # base-case parameters (n_sim = 1 provides deterministic parameters)
   nsamp = 100, # number of sets of parameter values to be generated (between min and max)
-  FUN = f_wrapper_sa, wtp = n_wtp, # function that produces outcomes
+  FUN = f_run_sa, wtp = n_wtp, # function that produces outcomes
   outcomes = c("QALY", "Cost", "NMB"), # outcomes of interest produced by FUN 
   progress = TRUE # show progression in console
 ) # end run_twsa_det
@@ -105,7 +105,7 @@ obj_twsa_dam_2 <- run_twsa_det( # generate dampack TWSA object
   params_range = df_params_range[df_params_range$pars %in% df_twsa_pairs$twsa_2, ], # selected parameters and range for twsa
   params_basecase = f_input(n_sim = 1, setting = n_setting), # base-case parameters (n_sim = 1 provides deterministic parameters)
   nsamp = 100, # number of sets of parameter values to be generated (between min and max)
-  FUN = f_wrapper_sa, wtp = n_wtp, # function that produces outcomes
+  FUN = f_run_sa, wtp = n_wtp, # function that produces outcomes
   outcomes = c("QALY", "Cost", "NMB"), # outcomes of interest produced by FUN 
   progress = TRUE # show progression in console
 ) # end run_twsa_det
@@ -114,7 +114,7 @@ obj_twsa_dam_3 <- run_twsa_det( # generate dampack TWSA object
   params_range = df_params_range[df_params_range$pars %in% df_twsa_pairs$twsa_3, ], # selected parameters and range for twsa
   params_basecase = f_input(n_sim = 1, setting = n_setting), # base-case parameters (n_sim = 1 provides deterministic parameters)
   nsamp = 100, # number of sets of parameter values to be generated (between min and max)
-  FUN = f_wrapper_sa, wtp = n_wtp, # function that produces outcomes
+  FUN = f_run_sa, wtp = n_wtp, # function that produces outcomes
   outcomes = c("QALY", "Cost", "NMB"), # outcomes of interest produced by FUN 
   progress = TRUE # show progression in console
 ) # end run_twsa_det
@@ -123,7 +123,7 @@ obj_twsa_dam_4 <- run_twsa_det( # generate dampack TWSA object
   params_range = df_params_range[df_params_range$pars %in% df_twsa_pairs$twsa_4, ], # selected parameters and range for twsa
   params_basecase = f_input(n_sim = 1, setting = n_setting), # base-case parameters (n_sim = 1 provides deterministic parameters)
   nsamp = 100, # number of sets of parameter values to be generated (between min and max)
-  FUN = f_wrapper_sa, wtp = n_wtp, # function that produces outcomes
+  FUN = f_run_sa, wtp = n_wtp, # function that produces outcomes
   outcomes = c("QALY", "Cost", "NMB"), # outcomes of interest produced by FUN 
   progress = TRUE # show progression in console
 ) # end run_twsa_det
@@ -132,7 +132,7 @@ obj_twsa_dam_5 <- run_twsa_det( # generate dampack TWSA object
   params_range = df_params_range[df_params_range$pars %in% df_twsa_pairs$twsa_5, ], # selected parameters and range for twsa
   params_basecase = f_input(n_sim = 1, setting = n_setting), # base-case parameters (n_sim = 1 provides deterministic parameters)
   nsamp = 100, # number of sets of parameter values to be generated (between min and max)
-  FUN = f_wrapper_sa, wtp = n_wtp, # function that produces outcomes
+  FUN = f_run_sa, wtp = n_wtp, # function that produces outcomes
   outcomes = c("QALY", "Cost", "NMB"), # outcomes of interest produced by FUN 
   progress = TRUE # show progression in console
 ) # end run_twsa_det
@@ -141,7 +141,7 @@ obj_twsa_dam_6 <- run_twsa_det( # generate dampack TWSA object
   params_range = df_params_range[df_params_range$pars %in% df_twsa_pairs$twsa_6, ], # selected parameters and range for twsa
   params_basecase = f_input(n_sim = 1, setting = n_setting), # base-case parameters (n_sim = 1 provides deterministic parameters)
   nsamp = 100, # number of sets of parameter values to be generated (between min and max)
-  FUN = f_wrapper_sa, wtp = n_wtp, # function that produces outcomes
+  FUN = f_run_sa, wtp = n_wtp, # function that produces outcomes
   outcomes = c("QALY", "Cost", "NMB"), # outcomes of interest produced by FUN 
   progress = TRUE # show progression in console
 ) # end run_twsa_det
@@ -150,7 +150,7 @@ obj_twsa_dam_7 <- run_twsa_det( # generate dampack TWSA object
   params_range = df_params_range[df_params_range$pars %in% df_twsa_pairs$twsa_7, ], # selected parameters and range for twsa
   params_basecase = f_input(n_sim = 1, setting = n_setting), # base-case parameters (n_sim = 1 provides deterministic parameters)
   nsamp = 100, # number of sets of parameter values to be generated (between min and max)
-  FUN = f_wrapper_sa, wtp = n_wtp, # function that produces outcomes
+  FUN = f_run_sa, wtp = n_wtp, # function that produces outcomes
   outcomes = c("QALY", "Cost", "NMB"), # outcomes of interest produced by FUN 
   progress = TRUE # show progression in console
 ) # end run_twsa_det
@@ -159,7 +159,7 @@ obj_twsa_dam_8 <- run_twsa_det( # generate dampack TWSA object
   params_range = df_params_range[df_params_range$pars %in% df_twsa_pairs$twsa_8, ], # selected parameters and range for twsa
   params_basecase = f_input(n_sim = 1, setting = n_setting), # base-case parameters (n_sim = 1 provides deterministic parameters)
   nsamp = 100, # number of sets of parameter values to be generated (between min and max)
-  FUN = f_wrapper_sa, wtp = n_wtp, # function that produces outcomes
+  FUN = f_run_sa, wtp = n_wtp, # function that produces outcomes
   outcomes = c("QALY", "Cost", "NMB"), # outcomes of interest produced by FUN 
   progress = TRUE # show progression in console
 ) # end run_twsa_det

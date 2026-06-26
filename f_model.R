@@ -1,75 +1,80 @@
 f_model <- function(params, intermediate = FALSE) {
-  #' State-Transition Model
+  #' Run the state-transition model
   #'
-  #' This function simulates a state-transition model using a Markov framework. It calculates 
-  #' the expected costs, quality-adjusted life years (QALYs), and life-years (LYs) for two 
-  #' treatment strategies over a specified time horizon.
+  #' Evaluates the health economic model for a single parameter set. The model
+  #' compares an AI-guided toxicity prevention strategy with current practice
+  #' using a cohort state-transition model to estimate discounted costs,
+  #' quality-adjusted life-years (QALYs) and life-years (LYs).
   #'
-  #' @param params A named list containing model parameters, including:
-  #' \itemize{
-  #'   \item **Transition Probabilities:**
-  #'     \itemize{
-  #'       \item \code{tp_ef_ef}: Probability of remaining in "Event-Free".
-  #'       \item \code{p_event_lrr}, \code{p_event_death}: Probability of event being locoregional recurrence (LRR) or death.
-  #'       \item \code{tp_lrr_dm}, \code{tp_lrr_death}: Probability of transitioning from LRR to distant metastasis (DM) or death.
-  #'       \item \code{tp_dm_death}: Probability of transitioning from DM to death.
-  #'     }
-  #'   \item **Health State Utilities:**
-  #'     \itemize{
-  #'       \item \code{utility_ef}, \code{utility_lrr}, \code{utility_dm}, \code{utility_death}: QALY weights per state.
-  #'     }
-  #'   \item **Costs:**
-  #'     \itemize{
-  #'       \item \code{cost_t1}, \code{cost_t2}: Strategy-specific costs.
-  #'       \item \code{cost_ef_y6}, \code{cost_lrr}, \code{cost_dm}, \code{cost_death}: Costs per health state.
-  #'       \item \code{cost_lrr_event}, \code{cost_dm_event}, \code{cost_death_event}: Event-related costs.
-  #'       \item \code{cost_prev_arm_lymphedema_event}, \code{cost_prev_pain_event}, \code{cost_prev_fatigue_event}, \code{cost_prev_fibrosis_induration_event}: Costs of toxicity prevention.
-  #'     }
-  #'   \item **Discount Rates:**
-  #'     \itemize{
-  #'       \item \code{discount_costs}, \code{discount_qalys}, \code{discount_lys}: Discount rates for costs, QALYs, and life-years.
-  #'     }
-  #' }
+  #' In addition to disease progression, the model explicitly represents
+  #' toxicity prediction, uptake of preventative interventions, toxicity
+  #' prevalence over time, toxicity-related costs and disutilities, and process
+  #' utility associated with the AI strategy.
   #'
-  #' @param intermediate Logical. If \code{FALSE} (default), the function returns a named vector of total 
-  #' costs, QALYs, and LYs for each treatment strategy. If \code{TRUE}, it returns detailed 
-  #' intermediate cycle-level outputs in a matrix format for further analysis.
+  #' @param params Named list (or single row of the data frame returned by
+  #'   `f_input()`) containing one complete set of model parameters.
+  #' @param intermediate Logical. If `FALSE` (default), returns aggregate
+  #'   discounted costs, QALYs and life-years for both strategies.
+  #'   If `TRUE`, returns cycle-level model outputs for validation,
+  #'   debugging and visualization.
   #'
   #' @details
-  #' This function:
-  #' \itemize{
-  #'   \item Defines transition matrices for each treatment.
-  #'   \item Ensures transition probabilities are consistent (e.g., adjusting for background mortality).
-  #'   \item Estimates state transitions.
-  #'   \item Estimates **toxicities over time** using `f_interpolate_toxicity()`.
-  #'   \item Computes **discounted costs, QALYs, and LYs** for each treatment strategy.
-  #'   \item Returns either a named vector with aggregate results or a matrix with detailed cycle-level outputs.
+  #' The function performs the following steps:
+  #' \enumerate{
+  #'   \item Constructs transition probability matrices while ensuring
+  #'         consistency with age- and sex-specific background mortality.
+  #'   \item Simulates the cohort state-transition model over the specified
+  #'         time horizon.
+  #'   \item Estimates toxicity prevalence over time using
+  #'         `f_interpolate_toxicity()`.
+  #'   \item Applies diagnostic performance, uptake of preventative
+  #'         interventions and intervention effectiveness to estimate
+  #'         toxicity outcomes.
+  #'   \item Calculates discounted health-state costs, toxicity costs,
+  #'         event costs, utilities, disutilities, process utility and
+  #'         life-years.
+  #'   \item Aggregates discounted outcomes for both strategies.
   #' }
   #'
-  #' @return 
-  #' If \code{intermediate = FALSE}, returns a named vector containing:
-  #' \itemize{
-  #'   \item \code{Cost_Current_practice}, \code{Cost_New_treatment}
-  #'   \item \code{QALY_Current_practice}, \code{QALY_New_treatment}
-  #'   \item \code{LY_Current_practice}, \code{LY_New_treatment}
-  #' }
+  #' The function evaluates a single parameter set. Probabilistic sensitivity
+  #' analysis is performed by repeatedly calling `f_model()` for each row of
+  #' the parameter sets generated by `f_input()`.
   #'
-  #' If \code{intermediate = TRUE}, returns a **matrix** containing:
+  #' @return
+  #' If `intermediate = FALSE`, a named numeric vector containing:
   #' \itemize{
-  #'   \item **Cycle-level health state costs, toxicity costs, and event costs** for each treatment.
-  #'   \item **Cycle-level QALYs and LYs** for each treatment.
-  #'   \item **Markov trace** (state occupancy probabilities) for each treatment.
-  #'   \item **Toxicity prevalence over time** for each treatment.
+  #'   \item Total discounted costs.
+  #'   \item Total discounted QALYs.
+  #'   \item Total discounted life-years.
+  #' }
+  #' for both strategies.
+  #'
+  #' If `intermediate = TRUE`, a matrix containing cycle-level:
+  #' \itemize{
+  #'   \item Health-state costs.
+  #'   \item Toxicity costs.
+  #'   \item Event costs.
+  #'   \item Health-state QALYs.
+  #'   \item Toxicity disutilities.
+  #'   \item Health-state life-years.
+  #'   \item Toxicity prevalence.
   #' }
   #'
   #' @examples
-  #' # Run model with aggregate results
-  #' results <- f_model(f_input(n_sim = 1))
-  #' print(results)
+  #' # Generate deterministic inputs
+  #' df_input <- f_input(
+  #'   n_sim = 1,
+  #'   setting = 1
+  #' )
   #'
-  #' # Run model with intermediate results
-  #' results_intermediate <- f_model(f_input(n_sim = 1), intermediate = TRUE)
-  #' head(results_intermediate)
+  #' # Evaluate the model
+  #' f_model(df_input[1, ])
+  #'
+  #' # Return cycle-level outputs
+  #' f_model(
+  #'   df_input[1, ],
+  #'   intermediate = TRUE
+  #' )
   #'
   #' @export
   
@@ -353,7 +358,7 @@ f_model <- function(params, intermediate = FALSE) {
   a_costs <- a_state_trace[, , ] * 
     rep(m_cost, each = n_treatments) *                        # Multiply by cost matrix
     rep(m_discount[, 1], each = n_treatments)                 # Multiply by discount factor
-
+  
   a_costs_tox <- a_toxicity[, , ] *
     rep(m_tox_cost, each = n_treatments) *                    # Multiply by cost matrix
     rep(m_discount[, 1], each = n_treatments) *               # Multiply by discount factor
@@ -518,7 +523,7 @@ f_model <- function(params, intermediate = FALSE) {
     # Check if there are any NA values
     # any(is.na(m_res_intermediate))
     # Returns TRUE if at least one NA exists
-
+    
     # Check if there are any negative values
     # any(m_res_intermediate[, 1:9] < 0)
     # any(m_res_intermediate[, 10:18] < 0)
@@ -526,7 +531,7 @@ f_model <- function(params, intermediate = FALSE) {
     # any(m_res_intermediate[, 28:36] < 0) # these might be negative (disutilies)
     # any(m_res_intermediate[, 37:45] < 0)
     # any(m_res_intermediate[, 46:54] < 0)
-
+    
   } # close if statement
 }
 
