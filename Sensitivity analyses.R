@@ -9,18 +9,24 @@ source("Model setup.R")            # Model setup and definitions
 
 #### Model Inputs ----
 df_input_owsa <- f_input(n_sim = n_sim, setting = n_setting) # generate input parameters (min and max values for OWSA) with default n_sim
-df_input_owsa <- df_input_owsa[, apply(df_input_owsa, 2, var, na.rm = TRUE) != 0] # only select parameters with variance > 0
+df_params_range <- data.frame( # dataframe to be used for OWSA
+  pars = names(df_input_owsa), # parameter names
+  min = stack(sapply(df_input_owsa, quantile, prob = 0.025, names = FALSE))[,1], # use 95% percentiles for owsa
+  max = stack(sapply(df_input_owsa, quantile, prob = 0.975, names = FALSE))[,1] # use 95% percentiles for owsa 
+)
+
+# Adjust ranges for specific inputs
+# df_params_range[df_params_range$pars == "p_AI_se_arm_lymphedema", c("min", "max")] <- c(0.50, 1.00)
+# df_params_range[df_params_range$pars == "p_AI_sp_arm_lymphedema", c("min", "max")] <- c(0.50, 1.00)
+
+# Remove parameters without variance (i.e. min = max)
+df_params_range <- subset(df_params_range, min != max)
 
 #### Obtain deterministic sensitivity analyses ----
 ##### Obtain OWSA object ##### 
 obj_owsa_dam <- run_owsa_det( # generate dampack OWSA object
-  params_range = data.frame( # dataframe to be used for OWSA
-    pars = names(df_input_owsa), # parameter names
-    min = stack(sapply(df_input_owsa, quantile, prob = 0.025, names = FALSE))[,1], # use 95% percentiles for owsa
-    max = stack(sapply(df_input_owsa, quantile, prob = 0.975, names = FALSE))[,1] # use 95% percentiles for owsa 
-  ), # close params_range dataframe 
+  params_range = df_params_range, # close params_range dataframe 
   params_basecase = f_input(n_sim = 1, setting = n_setting), # base-case parameters (n_sim = 1 provides deterministic parameters)
-  #lapply(df_input_owsa, mean), # alternative to f_input(n_sim = 1, setting = n_setting) = mean of psa inputs 
   nsamp = 100, # number of sets of parameter values to be generated (between min and max)
   FUN = f_wrapper_sa, wtp = n_wtp, # function that produces outcomes
   outcomes = c("QALY", "Cost", "NMB", "iQALY", "iCost", "iCER", "iNMB"), # outcomes of interest produced by FUN 
@@ -86,13 +92,8 @@ df_twsa_pairs <- if(n_setting == 1) {
     }
 
 ##### Obtain TWSA objects ##### 
-df_input_twsa <- df_input_owsa[, df_twsa_pairs$twsa_1] 
 obj_twsa_dam_1 <- run_twsa_det( # generate dampack TWSA object
-  params_range = data.frame( # dataframe to be used for TWSA
-    pars = names(df_input_twsa), # parameter names
-    min = stack(sapply(df_input_twsa, quantile, prob = 0.025, names = FALSE))[,1], # use 95% percentiles for twsa
-    max = stack(sapply(df_input_twsa, quantile, prob = 0.975, names = FALSE))[,1] # use 95% percentiles for twsa 
-  ), # close params_range dataframe 
+  params_range = df_params_range[df_params_range$pars %in% df_twsa_pairs$twsa_1, ], # selected parameters and range for twsa
   params_basecase = f_input(n_sim = 1, setting = n_setting), # base-case parameters (n_sim = 1 provides deterministic parameters)
   nsamp = 100, # number of sets of parameter values to be generated (between min and max)
   FUN = f_wrapper_sa, wtp = n_wtp, # function that produces outcomes
@@ -100,13 +101,8 @@ obj_twsa_dam_1 <- run_twsa_det( # generate dampack TWSA object
   progress = TRUE # show progression in console
 ) # end run_twsa_det
 
-df_input_twsa <- df_input_owsa[, df_twsa_pairs$twsa_2] 
 obj_twsa_dam_2 <- run_twsa_det( # generate dampack TWSA object
-  params_range = data.frame( # dataframe to be used for TWSA
-    pars = names(df_input_twsa), # parameter names
-    min = stack(sapply(df_input_twsa, quantile, prob = 0.025, names = FALSE))[,1], # use 95% percentiles for twsa
-    max = stack(sapply(df_input_twsa, quantile, prob = 0.975, names = FALSE))[,1] # use 95% percentiles for twsa 
-  ), # close params_range dataframe 
+  params_range = df_params_range[df_params_range$pars %in% df_twsa_pairs$twsa_2, ], # selected parameters and range for twsa
   params_basecase = f_input(n_sim = 1, setting = n_setting), # base-case parameters (n_sim = 1 provides deterministic parameters)
   nsamp = 100, # number of sets of parameter values to be generated (between min and max)
   FUN = f_wrapper_sa, wtp = n_wtp, # function that produces outcomes
@@ -114,13 +110,8 @@ obj_twsa_dam_2 <- run_twsa_det( # generate dampack TWSA object
   progress = TRUE # show progression in console
 ) # end run_twsa_det
 
-df_input_twsa <- df_input_owsa[, df_twsa_pairs$twsa_3] 
 obj_twsa_dam_3 <- run_twsa_det( # generate dampack TWSA object
-  params_range = data.frame( # dataframe to be used for TWSA
-    pars = names(df_input_twsa), # parameter names
-    min = stack(sapply(df_input_twsa, quantile, prob = 0.025, names = FALSE))[,1], # use 95% percentiles for twsa
-    max = stack(sapply(df_input_twsa, quantile, prob = 0.975, names = FALSE))[,1] # use 95% percentiles for twsa 
-  ), # close params_range dataframe 
+  params_range = df_params_range[df_params_range$pars %in% df_twsa_pairs$twsa_3, ], # selected parameters and range for twsa
   params_basecase = f_input(n_sim = 1, setting = n_setting), # base-case parameters (n_sim = 1 provides deterministic parameters)
   nsamp = 100, # number of sets of parameter values to be generated (between min and max)
   FUN = f_wrapper_sa, wtp = n_wtp, # function that produces outcomes
@@ -128,13 +119,8 @@ obj_twsa_dam_3 <- run_twsa_det( # generate dampack TWSA object
   progress = TRUE # show progression in console
 ) # end run_twsa_det
 
-df_input_twsa <- df_input_owsa[, df_twsa_pairs$twsa_4] 
 obj_twsa_dam_4 <- run_twsa_det( # generate dampack TWSA object
-  params_range = data.frame( # dataframe to be used for TWSA
-    pars = names(df_input_twsa), # parameter names
-    min = stack(sapply(df_input_twsa, quantile, prob = 0.025, names = FALSE))[,1], # use 95% percentiles for twsa
-    max = stack(sapply(df_input_twsa, quantile, prob = 0.975, names = FALSE))[,1] # use 95% percentiles for twsa 
-  ), # close params_range dataframe 
+  params_range = df_params_range[df_params_range$pars %in% df_twsa_pairs$twsa_4, ], # selected parameters and range for twsa
   params_basecase = f_input(n_sim = 1, setting = n_setting), # base-case parameters (n_sim = 1 provides deterministic parameters)
   nsamp = 100, # number of sets of parameter values to be generated (between min and max)
   FUN = f_wrapper_sa, wtp = n_wtp, # function that produces outcomes
@@ -142,13 +128,8 @@ obj_twsa_dam_4 <- run_twsa_det( # generate dampack TWSA object
   progress = TRUE # show progression in console
 ) # end run_twsa_det
 
-df_input_twsa <- df_input_owsa[, df_twsa_pairs$twsa_5] 
 obj_twsa_dam_5 <- run_twsa_det( # generate dampack TWSA object
-  params_range = data.frame( # dataframe to be used for TWSA
-    pars = names(df_input_twsa), # parameter names
-    min = stack(sapply(df_input_twsa, quantile, prob = 0.025, names = FALSE))[,1], # use 95% percentiles for twsa
-    max = stack(sapply(df_input_twsa, quantile, prob = 0.975, names = FALSE))[,1] # use 95% percentiles for twsa 
-  ), # close params_range dataframe 
+  params_range = df_params_range[df_params_range$pars %in% df_twsa_pairs$twsa_5, ], # selected parameters and range for twsa
   params_basecase = f_input(n_sim = 1, setting = n_setting), # base-case parameters (n_sim = 1 provides deterministic parameters)
   nsamp = 100, # number of sets of parameter values to be generated (between min and max)
   FUN = f_wrapper_sa, wtp = n_wtp, # function that produces outcomes
@@ -156,13 +137,8 @@ obj_twsa_dam_5 <- run_twsa_det( # generate dampack TWSA object
   progress = TRUE # show progression in console
 ) # end run_twsa_det
 
-df_input_twsa <- df_input_owsa[, df_twsa_pairs$twsa_6] 
 obj_twsa_dam_6 <- run_twsa_det( # generate dampack TWSA object
-  params_range = data.frame( # dataframe to be used for TWSA
-    pars = names(df_input_twsa), # parameter names
-    min = stack(sapply(df_input_twsa, quantile, prob = 0.025, names = FALSE))[,1], # use 95% percentiles for twsa
-    max = stack(sapply(df_input_twsa, quantile, prob = 0.975, names = FALSE))[,1] # use 95% percentiles for twsa 
-  ), # close params_range dataframe 
+  params_range = df_params_range[df_params_range$pars %in% df_twsa_pairs$twsa_6, ], # selected parameters and range for twsa
   params_basecase = f_input(n_sim = 1, setting = n_setting), # base-case parameters (n_sim = 1 provides deterministic parameters)
   nsamp = 100, # number of sets of parameter values to be generated (between min and max)
   FUN = f_wrapper_sa, wtp = n_wtp, # function that produces outcomes
@@ -170,13 +146,8 @@ obj_twsa_dam_6 <- run_twsa_det( # generate dampack TWSA object
   progress = TRUE # show progression in console
 ) # end run_twsa_det
 
-df_input_twsa <- df_input_owsa[, df_twsa_pairs$twsa_7] 
 obj_twsa_dam_7 <- run_twsa_det( # generate dampack TWSA object
-  params_range = data.frame( # dataframe to be used for TWSA
-    pars = names(df_input_twsa), # parameter names
-    min = stack(sapply(df_input_twsa, quantile, prob = 0.025, names = FALSE))[,1], # use 95% percentiles for twsa
-    max = stack(sapply(df_input_twsa, quantile, prob = 0.975, names = FALSE))[,1] # use 95% percentiles for twsa 
-  ), # close params_range dataframe 
+  params_range = df_params_range[df_params_range$pars %in% df_twsa_pairs$twsa_7, ], # selected parameters and range for twsa
   params_basecase = f_input(n_sim = 1, setting = n_setting), # base-case parameters (n_sim = 1 provides deterministic parameters)
   nsamp = 100, # number of sets of parameter values to be generated (between min and max)
   FUN = f_wrapper_sa, wtp = n_wtp, # function that produces outcomes
@@ -184,13 +155,8 @@ obj_twsa_dam_7 <- run_twsa_det( # generate dampack TWSA object
   progress = TRUE # show progression in console
 ) # end run_twsa_det
 
-df_input_twsa <- df_input_owsa[, df_twsa_pairs$twsa_8] 
 obj_twsa_dam_8 <- run_twsa_det( # generate dampack TWSA object
-  params_range = data.frame( # dataframe to be used for TWSA
-    pars = names(df_input_twsa), # parameter names
-    min = stack(sapply(df_input_twsa, quantile, prob = 0.025, names = FALSE))[,1], # use 95% percentiles for twsa
-    max = stack(sapply(df_input_twsa, quantile, prob = 0.975, names = FALSE))[,1] # use 95% percentiles for twsa 
-  ), # close params_range dataframe 
+  params_range = df_params_range[df_params_range$pars %in% df_twsa_pairs$twsa_8, ], # selected parameters and range for twsa
   params_basecase = f_input(n_sim = 1, setting = n_setting), # base-case parameters (n_sim = 1 provides deterministic parameters)
   nsamp = 100, # number of sets of parameter values to be generated (between min and max)
   FUN = f_wrapper_sa, wtp = n_wtp, # function that produces outcomes
