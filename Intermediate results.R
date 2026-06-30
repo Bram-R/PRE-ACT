@@ -67,7 +67,7 @@ a_out_cycle_res <- array(
     apply(a_out_interm[, 19:27, ], c(1, 3), sum),
     apply(a_out_interm[, 28:36, ], c(1, 3), sum)
   ),
-  dim = c(481, 5000, 4)
+  dim = c(dim(a_out_interm)[1], dim(a_out_interm)[2], 4)
 )
 
 a_out_cycle_res <- aperm(a_out_cycle_res, perm = c(1, 3, 2))
