@@ -36,58 +36,34 @@ obj_owsa_dam <- run_owsa_det( # generate dampack OWSA object
 ##### Inputs for TWSA ##### 
 df_twsa_pairs <- if(n_setting == 1) {
   data.frame(
-    twsa_1 = c("cost_t2", 
-               "disutility_arm_lymphedema"),
-    twsa_2 = c("cost_t2", 
-               "hr_prev_arm_lymphedema"),
-    twsa_3 = c("cost_t2", 
-               "cost_prev_arm_lymphedema_event"),
-    twsa_4 = c("disutility_arm_lymphedema", 
-               "hr_prev_arm_lymphedema"),
-    twsa_5 = c("disutility_arm_lymphedema", 
-               "cost_prev_arm_lymphedema_event"),
-    twsa_6 = c("hr_prev_arm_lymphedema", 
-               "cost_prev_arm_lymphedema_event"),
-    twsa_7 = c("p_arm_lymphedema_m72", 
-               "cost_arm_lymphedema"),
-    twsa_8 = c("p_AI_se_arm_lymphedema", 
-               "p_AI_sp_arm_lymphedema")
+    twsa_1 = c("cost_t2", "disutility_arm_lymphedema"),
+    twsa_2 = c("cost_t2", "hr_prev_arm_lymphedema"),
+    twsa_3 = c("cost_t2", "cost_prev_arm_lymphedema_event"),
+    twsa_4 = c("disutility_arm_lymphedema", "hr_prev_arm_lymphedema"),
+    twsa_5 = c("disutility_arm_lymphedema", "cost_prev_arm_lymphedema_event"),
+    twsa_6 = c("hr_prev_arm_lymphedema", "cost_prev_arm_lymphedema_event"),
+    twsa_7 = c("p_arm_lymphedema_m72", "cost_arm_lymphedema"),
+    twsa_8 = c("p_AI_se_arm_lymphedema", "p_AI_sp_arm_lymphedema")
   )} else if(n_setting == 2) {
     data.frame(
-      twsa_1 = c("cost_t2", 
-                 "disutility_arm_lymphedema"),
-      twsa_2 = c("cost_t2", 
-                 "hr_prev_arm_lymphedema"),
-      twsa_3 = c("cost_t2", 
-                 "cost_prev_arm_lymphedema_event"),
-      twsa_4 = c("disutility_arm_lymphedema", 
-                 "hr_prev_arm_lymphedema"),
-      twsa_5 = c("disutility_arm_lymphedema", 
-                 "cost_prev_arm_lymphedema_event"),
-      twsa_6 = c("hr_prev_arm_lymphedema", 
-                 "cost_prev_arm_lymphedema_event"),
-      twsa_7 = c("p_arm_lymphedema_m72", 
-                 "cost_arm_lymphedema"),
-      twsa_8 = c("p_AI_se_arm_lymphedema", 
-                 "p_AI_sp_arm_lymphedema")
+      twsa_1 = c("cost_t2", "disutility_arm_lymphedema"),
+      twsa_2 = c("cost_t2", "hr_prev_arm_lymphedema"),
+      twsa_3 = c("cost_t2", "cost_prev_arm_lymphedema_event"),
+      twsa_4 = c("disutility_arm_lymphedema", "hr_prev_arm_lymphedema"),
+      twsa_5 = c("disutility_arm_lymphedema", "cost_prev_arm_lymphedema_event"),
+      twsa_6 = c("hr_prev_arm_lymphedema", "cost_prev_arm_lymphedema_event"),
+      twsa_7 = c("p_arm_lymphedema_m72", "cost_arm_lymphedema"),
+      twsa_8 = c("p_AI_se_arm_lymphedema", "p_AI_sp_arm_lymphedema")
     )} else if(n_setting == 3) { 
       data.frame(
-        twsa_1 = c("cost_t2", 
-                   "disutility_arm_lymphedema"),
-        twsa_2 = c("cost_t2", 
-                   "hr_prev_arm_lymphedema"),
-        twsa_3 = c("cost_t2", 
-                   "cost_prev_arm_lymphedema_event"),
-        twsa_4 = c("disutility_arm_lymphedema", 
-                   "hr_prev_arm_lymphedema"),
-        twsa_5 = c("disutility_arm_lymphedema", 
-                   "cost_prev_arm_lymphedema_event"),
-        twsa_6 = c("hr_prev_arm_lymphedema", 
-                   "cost_prev_arm_lymphedema_event"),
-        twsa_7 = c("p_arm_lymphedema_m72", 
-                   "cost_arm_lymphedema"),
-        twsa_8 = c("p_AI_se_arm_lymphedema", 
-                   "p_AI_sp_arm_lymphedema")
+        twsa_1 = c("cost_t2", "disutility_arm_lymphedema"),
+        twsa_2 = c("cost_t2", "hr_prev_arm_lymphedema"),
+        twsa_3 = c("cost_t2", "cost_prev_arm_lymphedema_event"),
+        twsa_4 = c("disutility_arm_lymphedema", "hr_prev_arm_lymphedema"),
+        twsa_5 = c("disutility_arm_lymphedema", "cost_prev_arm_lymphedema_event"),
+        twsa_6 = c("hr_prev_arm_lymphedema", "cost_prev_arm_lymphedema_event"),
+        twsa_7 = c("p_arm_lymphedema_m72", "cost_arm_lymphedema"),
+        twsa_8 = c("p_AI_se_arm_lymphedema", "p_AI_sp_arm_lymphedema")
       )  
     }
 
